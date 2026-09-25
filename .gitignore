@@ -1,0 +1,57 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# Next.js build output
+.next/
+out/
+build/
+dist/
+
+# Testing
+coverage/
+*.lcov
+
+# Debug / dev-server logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+dev-out.log
+dev-run.log
+frontend-run.log
+
+# Environment variables (local overrides only; .env.example is committed)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+!.env.example
+
+# TypeScript
+*.tsbuildinfo
+
+# Caches
+.eslintcache
+.turbo/
+.cache/
+.stylelintcache
+
+# Vercel / hosting
+.vercel
+
+# Editor & OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
