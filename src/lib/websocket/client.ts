@@ -1,8 +1,11 @@
 import SockJS from 'sockjs-client';
 import { Client, StompSubscription } from '@stomp/stompjs';
 import { useEffect, useRef, useCallback } from 'react';
+import { resolveWsOrigin } from '@/lib/api/config';
 
-const WS_URL = process.env.NEXT_PUBLIC_WS_URL || 'http://localhost:8080';
+// Same value as the REST client; the scheme is rewritten to ws/wss below.
+// One setting in .env.local controls both. See @/lib/api/config.
+const WS_URL = resolveWsOrigin();
 
 const toHttpUrl = (url: string): string => {
   if (typeof window === 'undefined') return url;

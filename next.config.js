@@ -1,3 +1,41 @@
+/**
+ * NEXT_PUBLIC_API_URL is the one line that switches development and production
+ * (see src/lib/api/config.ts). It is inlined into the client bundle at build
+ * time, so a wrong value is baked in silently and only fails at runtime, in the
+ * browser, as a Mixed Content error. Fail the build instead, while it can still
+ * be fixed.
+ */
+function assertApiUrlIsSecure() {
+  if (process.env.NODE_ENV !== 'production') return;
+
+  const value = (process.env.NEXT_PUBLIC_API_URL || '').trim();
+  if (!value) {
+    throw new Error(
+      'NEXT_PUBLIC_API_URL is not set. It is inlined into the client bundle at ' +
+        'build time, so it cannot be supplied as a runtime variable. Set it in ' +
+        '.env.local - see .env.example - then rebuild.'
+    );
+  }
+
+  let host = '';
+  try {
+    host = new URL(value).host;
+  } catch {
+    throw new Error(`NEXT_PUBLIC_API_URL is not a valid URL: ${value}`);
+  }
+
+  const localHosts = /^(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/i;
+  if (/^http:\/\//i.test(value) && !localHosts.test(host)) {
+    throw new Error(
+      `NEXT_PUBLIC_API_URL is plain HTTP (${value}). The site is served over ` +
+        `HTTPS, so the browser will block every request as Mixed Content. Use ` +
+        `https://api.aivioncare.aiconfidencecure.com, then rebuild.`
+    );
+  }
+}
+
+assertApiUrlIsSecure();
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,

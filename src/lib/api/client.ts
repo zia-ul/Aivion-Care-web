@@ -1,7 +1,9 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { AuthResponse, RefreshTokenRequest } from '@/types';
+import { resolveApiOrigin } from './config';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+// One setting in .env.local. See ./config.ts.
+const API_URL = resolveApiOrigin();
 
 export const apiClient = axios.create({
   baseURL: API_URL,
