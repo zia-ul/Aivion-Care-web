@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { authApi } from '@/lib/api/endpoints';
+import { getRoleHomePath } from '@/lib/helpers';
 import { useAuthStore } from '@/lib/stores/auth';
 import toast from 'react-hot-toast';
 import { Card, Button, Input } from '@/components/ui';
@@ -39,16 +40,11 @@ export default function LoginPage() {
       });
 
       const role = data.user.role;
-      if (role === 'SUPER_ADMIN') router.push('/super-admin/hospitals');
-      else if (role === 'DOCTOR') {
-        if (data.user.doctorApproved === true) {
-          router.push('/doctor/dashboard');
-        } else {
-          router.push('/approval-pending');
-        }
+      if (role === 'DOCTOR' && data.user.doctorApproved !== true) {
+        router.push('/approval-pending');
+      } else {
+        router.push(getRoleHomePath(role));
       }
-      else if (role === 'PATIENT') router.push('/patient/dashboard');
-      else router.push('/patient/dashboard');
     } catch (error: any) {
       const msg =
         error?.response?.data?.message ||
@@ -67,7 +63,7 @@ export default function LoginPage() {
       <div className="pointer-events-none absolute -bottom-32 -right-24 h-80 w-80 rounded-full bg-info/10 blur-3xl" aria-hidden="true" />
       <div className="relative w-full max-w-md">
         <div className="mb-6 text-center">
-          <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-accent text-surface-10 shadow-[0_10px_30px_rgba(34,211,197,0.22)]">
+          <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-accent-fill text-white shadow-[0_10px_30px_rgba(34,211,197,0.22)]">
             <HeartPulse size={28} strokeWidth={2.2} aria-hidden="true" />
           </span>
           <p className="text-xs font-bold uppercase tracking-[0.24em] text-accent/75">Aivion Care</p>

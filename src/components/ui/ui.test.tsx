@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import { Card } from '@/components/ui/Card';
 import { StatCard } from '@/components/ui/StatCard';
 import { StatusBadge } from '@/components/ui/StatusBadge';
@@ -7,6 +7,11 @@ import { Button } from '@/components/ui/Button';
 import { Input, Textarea, Select } from '@/components/ui';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { LoadingState } from '@/components/ui/LoadingState';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
+import { useThemeStore, THEME_STORAGE_KEY } from '@/lib/stores/theme';
+import { webrtcWsService } from '@/lib/websocket/webrtc-client';
+import InitiativesSection from '@/components/landing/InitiativesSection';
+import { mouPartners } from '@/components/landing/initiativesData';
 import type { LucideIcon } from 'lucide-react';
 
 const TestIcon = () => <span data-testid="icon">Icon</span>;
@@ -369,5 +374,180 @@ describe('LoadingState', () => {
   it('renders centered content', () => {
     const { container } = render(<LoadingState />);
     expect(container.firstChild).toHaveClass('flex', 'items-center', 'justify-center');
+  });
+});
+
+describe('ThemeToggle', () => {
+  beforeEach(() => {
+    useThemeStore.setState({ theme: 'dark', ready: true });
+    document.documentElement.removeAttribute('data-theme');
+    window.localStorage.clear();
+  });
+
+  it('renders an accessible switch reflecting the dark theme', () => {
+    render(<ThemeToggle />);
+    const toggle = screen.getByRole('switch');
+    expect(toggle).toHaveAttribute('aria-checked', 'true');
+    expect(toggle).toHaveAttribute('aria-label', 'Switch to light theme');
+  });
+
+  it('swaps theme and persists the choice on click', () => {
+    render(<ThemeToggle />);
+    const toggle = screen.getByRole('switch');
+
+    act(() => {
+      fireEvent.click(toggle);
+    });
+
+    expect(useThemeStore.getState().theme).toBe('light');
+    expect(document.documentElement.getAttribute('data-theme')).toBe('light');
+    expect(window.localStorage.getItem(THEME_STORAGE_KEY)).toBe('light');
+    expect(toggle).toHaveAttribute('aria-label', 'Switch to dark theme');
+  });
+
+  it('toggles back to dark', () => {
+    useThemeStore.setState({ theme: 'light', ready: true });
+    render(<ThemeToggle />);
+
+    act(() => {
+      fireEvent.click(screen.getByRole('switch'));
+    });
+
+    expect(useThemeStore.getState().theme).toBe('dark');
+    expect(document.documentElement.getAttribute('data-theme')).toBe('dark');
+  });
+});
+
+describe('webrtc signaling service', () => {
+  afterEach(() => {
+    webrtcWsService.disconnect();
+  });
+
+  it('reports disconnected before any socket is opened', () => {
+    webrtcWsService.disconnect();
+    expect(webrtcWsService.isConnected()).toBe(false);
+  });
+
+  it('queues subscriptions made before the socket connects', () => {
+    // Regression guard: subscribe() used to no-op when disconnected, which
+    // silently dropped every signaling message and left calls unnegotiated.
+    webrtcWsService.disconnect();
+    const handler = jest.fn();
+
+    const unsubscribe = webrtcWsService.subscribe('/topic/webrtc/1', handler);
+    expect(typeof unsubscribe).toBe('function');
+
+    // Unsubscribing a queued subscription must not throw.
+    expect(() => unsubscribe()).not.toThrow();
+  });
+
+  it('notifies status listeners with the current state', () => {
+    webrtcWsService.disconnect();
+    const listener = jest.fn();
+    const remove = webrtcWsService.onStatusChange(listener);
+
+    expect(listener).toHaveBeenCalledWith(false);
+    expect(() => remove()).not.toThrow();
+  });
+
+  it('disconnect is safe to call repeatedly', () => {
+    expect(() => {
+      webrtcWsService.disconnect();
+      webrtcWsService.disconnect();
+    }).not.toThrow();
+  });
+});
+
+describe('InitiativesSection', () => {
+  it('renders all three initiative tabs', () => {
+    render(<InitiativesSection />);
+    expect(screen.getByRole('tab', { name: /events/i })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /mou/i })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /awareness programs/i })).toBeInTheDocument();
+  });
+
+  it('shows the events panel by default', () => {
+    render(<InitiativesSection />);
+    expect(screen.getByRole('tab', { name: /events/i })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByText(/community health screening drive/i)).toBeInTheDocument();
+  });
+
+  it('reveals the MoU panel and the nested India entry', () => {
+    render(<InitiativesSection />);
+    act(() => {
+      fireEvent.click(screen.getByRole('tab', { name: /mou/i }));
+    });
+
+    expect(screen.getByText(/memoranda of understanding/i)).toBeInTheDocument();
+    expect(screen.getByText(/india — national health institutions/i)).toBeInTheDocument();
+    expect(screen.getByText(/focus region/i)).toBeInTheDocument();
+  });
+
+  it('shows awareness programs when that tab is selected', () => {
+    render(<InitiativesSection />);
+    act(() => {
+      fireEvent.click(screen.getByRole('tab', { name: /awareness programs/i }));
+    });
+
+    expect(screen.getByText(/preventive health/i)).toBeInTheDocument();
+    expect(screen.getByText(/mental wellbeing/i)).toBeInTheDocument();
+  });
+});
+
+describe('MoU partner data', () => {
+  it('marks India as the single focus region', () => {
+    const focus = mouPartners.filter((partner) => partner.focus);
+    expect(focus).toHaveLength(1);
+    expect(focus[0].name).toMatch(/india/i);
+  });
+});
+
+describe('theme store', () => {
+  beforeEach(() => {
+    window.localStorage.clear();
+    document.documentElement.removeAttribute('data-theme');
+    useThemeStore.setState({ theme: 'dark', ready: false });
+  });
+
+  it('defaults to dark so SSR and the first client render agree', () => {
+    expect(useThemeStore.getState().theme).toBe('dark');
+  });
+
+  it('setTheme applies the attribute and persists it', () => {
+    act(() => {
+      useThemeStore.getState().setTheme('light');
+    });
+
+    expect(useThemeStore.getState().theme).toBe('light');
+    expect(document.documentElement.getAttribute('data-theme')).toBe('light');
+    expect(document.documentElement.style.colorScheme).toBe('light');
+    expect(window.localStorage.getItem(THEME_STORAGE_KEY)).toBe('light');
+  });
+
+  it('toggleTheme flips between the two themes', () => {
+    act(() => {
+      useThemeStore.getState().toggleTheme();
+    });
+    expect(useThemeStore.getState().theme).toBe('light');
+
+    act(() => {
+      useThemeStore.getState().toggleTheme();
+    });
+    expect(useThemeStore.getState().theme).toBe('dark');
+  });
+
+  it('still applies the theme when storage is unavailable', () => {
+    const setItem = jest.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('denied');
+    });
+
+    act(() => {
+      useThemeStore.getState().setTheme('light');
+    });
+
+    expect(useThemeStore.getState().theme).toBe('light');
+    expect(document.documentElement.getAttribute('data-theme')).toBe('light');
+
+    setItem.mockRestore();
   });
 });

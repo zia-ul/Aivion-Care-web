@@ -65,7 +65,7 @@ export function VitalsEditor({ vitals, onChange, disabled = false }: VitalsEdito
                     min="0"
                     max="300"
                   />
-                  <span className="flex items-center text-[#8AB0C0]">/</span>
+                  <span className="flex items-center text-doctor-muted">/</span>
                   <input
                     type="number"
                     placeholder="Diastolic"
@@ -96,7 +96,7 @@ export function VitalsEditor({ vitals, onChange, disabled = false }: VitalsEdito
                   step={def.step}
                   min={def.type === 'number' ? '0' : undefined}
                 />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#8AB0C0]">
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-doctor-muted">
                   {def.unit}
                 </span>
               </div>

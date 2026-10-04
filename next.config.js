@@ -1,6 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // `next dev` and `next build` both default to `.next`, so running one while
+  // the other is live corrupts the other's manifests and webpack cache
+  // (ENOENT on routes-manifest.json, failed pack renames). Give development its
+  // own output directory. Production still uses `.next`, so deploy tooling that
+  // expects the default path is unaffected.
+  distDir: process.env.NODE_ENV === 'development' ? '.next-dev' : '.next',
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
   images: {

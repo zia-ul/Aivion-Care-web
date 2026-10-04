@@ -8,6 +8,10 @@ import {
   CommissionRecord,
   AdminSubscriptionDashboard,
   UpdateDoctorAppointmentAccessRequest,
+  FreeSubscriptionRequestResponse,
+  CreateFreeSubscriptionRequest,
+  ReviewFreeSubscriptionRequest,
+  PaginatedResponse,
 } from '@/types/subscription';
 import {
   ConsultationResponse,
@@ -16,6 +20,42 @@ import {
   VitalsUpdateRequest,
   InvestigationItemRequest,
 } from '@/types/consultation';
+import {
+  PharmacyDiscoveryResponse,
+  PharmacyOrderResponse,
+  MedicineResponse,
+  InventoryBatchResponse,
+  PharmacyEstimateResponse,
+  PharmacyEstimateRequest,
+  PharmacyEstimateItemRequest,
+  PharmacyOrderCreateRequest,
+  PharmacyOrderItemRequest,
+  PharmacyOrderStatusUpdateRequest,
+  PharmacyOrderPaymentUpdateRequest,
+  EstimateDecisionRequest,
+  OrderConfirmRequest,
+  PickupReadyRequest,
+  PickupCompleteRequest,
+  DeliveryDispatchRequest,
+  DeliveryCompleteRequest,
+  InventoryBatchRequest,
+  PrescriptionShareRequest,
+  PrescriptionShareResponse,
+  MedicineScanLookupResponse,
+  InventoryReservationResponse,
+} from '@/types/pharmacy';
+import {
+  PathologyLabDiscoveryResponse,
+  PathologyWorkflowResponse,
+  PathologyRequestCreateRequest,
+  PathologyBookingRequest,
+  PathologyQuotationRequest,
+  PathologyStatusUpdateRequest,
+  PathologyPaymentUpdateRequest,
+  PathologyReportShareRequest,
+  PathologyReportDraftRequest,
+  PathologyDashboardStatsResponse,
+} from '@/types/pathology';
 
 export const authApi = {
   login: (data: { loginId: string; password: string }) =>
@@ -139,7 +179,7 @@ export const consultationApi = {
   getHistory: (patientId?: number) =>
     apiClient.get<ConsultationResponse[]>('/api/v1/consultations/history', { params: patientId ? { patientId } : {} }),
   discardDraft: (appointmentId: number) =>
-    apiClient.post<ConsultationReviewResponse>(`/api/v1/consultations/${appointmentId}/review/discard`, {}),
+    apiClient.delete<ConsultationReviewResponse>(`/api/v1/consultations/${appointmentId}/review`),
   getAssociatedPharmacies: () =>
     apiClient.get<Array<{ id: number; name: string; address?: string; city?: string; state?: string }>>('/api/v1/consultations/pharmacies/associated'),
   sharePrescriptionWithPharmacy: (consultationId: number, data: { pharmacyId: number; notes: string }) =>
@@ -157,6 +197,18 @@ export const chatApi = {
     apiClient.post(`/api/v1/chat/rooms/${roomId}/messages`, data),
   markRead: (roomId: number) => apiClient.put(`/api/v1/chat/rooms/${roomId}/mark-read`),
   getUnreadCount: (roomId: number) => apiClient.get(`/api/v1/chat/rooms/${roomId}/unread-count`),
+  uploadFile: (roomId: number, file: File, message?: string) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    if (message) formData.append('message', message);
+    return apiClient.post(`/api/v1/chat/rooms/${roomId}/upload`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
+  getSignedFileUrl: (messageId: number, ttlSeconds?: number) =>
+    apiClient.post(`/api/v1/chat/files/${messageId}/signed-url`, null, {
+      params: ttlSeconds ? { ttlSeconds } : undefined,
+    }),
 };
 
 export const hospitalApi = {
@@ -175,14 +227,44 @@ export const hospitalApi = {
 };
 
 export const pathologyApi = {
-  getMyProfile: () => apiClient.get('/api/v1/pathology/me/profile'),
-  updateMyProfile: (data: any) => apiClient.put('/api/v1/pathology/me/profile', data),
-  submitForApproval: () => apiClient.post('/api/v1/pathology/me/profile/submit', {}),
+  getMyProfile: () => apiClient.get('/api/v1/pathology/onboarding/me'),
+  updateMyProfile: (data: any) => apiClient.put('/api/v1/pathology/onboarding/me', data),
+  submitForApproval: () => apiClient.post('/api/v1/pathology/onboarding/me/submit', {}),
   uploadDocument: (documentType: string, file: File) => {
     const formData = new FormData();
     formData.append('file', file);
-    return apiClient.post(`/api/v1/pathology/me/profile/documents/${documentType}`, formData);
+    return apiClient.post(`/api/v1/pathology/documents/upload/${documentType}`, formData);
   },
+  // Pathology workflow methods
+  getLabs: () =>
+    apiClient.get<PathologyLabDiscoveryResponse[]>('/api/v1/pathology/workflow/labs'),
+  getMyRequests: () =>
+    apiClient.get<PathologyWorkflowResponse[]>('/api/v1/pathology/workflow/requests/my'),
+  getRequest: (id: number) =>
+    apiClient.get<PathologyWorkflowResponse>(`/api/v1/pathology/workflow/requests/${id}`),
+  createRequest: (data: PathologyRequestCreateRequest) =>
+    apiClient.post<PathologyWorkflowResponse>('/api/v1/pathology/workflow/requests', data),
+  sendQuotation: (id: number, data: PathologyQuotationRequest) =>
+    apiClient.post<PathologyWorkflowResponse>(`/api/v1/pathology/workflow/requests/${id}/quotation`, data),
+  book: (id: number, data: PathologyBookingRequest) =>
+    apiClient.post<PathologyWorkflowResponse>(`/api/v1/pathology/workflow/requests/${id}/book`, data),
+  updatePayment: (id: number, data: PathologyPaymentUpdateRequest) =>
+    apiClient.patch<PathologyWorkflowResponse>(`/api/v1/pathology/workflow/requests/${id}/payment`, data),
+  updateStatus: (id: number, data: PathologyStatusUpdateRequest) =>
+    apiClient.patch<PathologyWorkflowResponse>(`/api/v1/pathology/workflow/requests/${id}/status`, data),
+  saveReportDraft: (id: number, data: PathologyReportDraftRequest) =>
+    apiClient.put<PathologyWorkflowResponse>(`/api/v1/pathology/workflow/requests/${id}/report`, data),
+  completeReport: (id: number) =>
+    apiClient.post<PathologyWorkflowResponse>(`/api/v1/pathology/workflow/requests/${id}/report/complete`),
+  sendReportToPatient: (id: number) =>
+    apiClient.post<PathologyWorkflowResponse>(`/api/v1/pathology/workflow/requests/${id}/report/send-patient`),
+  shareReportWithDoctor: (id: number, data?: PathologyReportShareRequest) =>
+    apiClient.post<PathologyWorkflowResponse>(
+      `/api/v1/pathology/workflow/requests/${id}/report/share-doctor`,
+      data || {}
+    ),
+  getDashboardStats: () =>
+    apiClient.get<PathologyDashboardStatsResponse>('/api/v1/pathology/workflow/dashboard/stats'),
 };
 
 export const superAdminApi = {
@@ -219,6 +301,16 @@ export const subscriptionApi = {
   }) => apiClient.get<AdminSubscriptionDashboard>('/api/v1/subscriptions/admin/dashboard', { params }),
   setDoctorAppointmentWaiver: (doctorId: number, data: UpdateDoctorAppointmentAccessRequest) =>
     apiClient.put(`/api/v1/subscriptions/admin/doctors/${doctorId}/appointment-access`, data),
+  // Free subscription requests
+  createFreeRequest: (data: CreateFreeSubscriptionRequest) =>
+    apiClient.post<FreeSubscriptionRequestResponse>('/api/v1/subscriptions/free-request', data),
+  getMyFreeRequest: () => apiClient.get<FreeSubscriptionRequestResponse>('/api/v1/subscriptions/free-request/me'),
+  getAllFreeRequests: (params?: { status?: string; page?: number; size?: number }) =>
+    apiClient.get<PaginatedResponse<FreeSubscriptionRequestResponse>>('/api/v1/subscriptions/free-request', { params }),
+  getFreeRequest: (requestId: number) =>
+    apiClient.get<FreeSubscriptionRequestResponse>(`/api/v1/subscriptions/free-request/${requestId}`),
+  reviewFreeRequest: (requestId: number, data: ReviewFreeSubscriptionRequest) =>
+    apiClient.put<FreeSubscriptionRequestResponse>(`/api/v1/subscriptions/free-request/${requestId}/review`, data),
 };
 
 export const notificationApi = {
@@ -244,4 +336,66 @@ export const billingApi = {
   getInvoice: (id: number) => apiClient.get(`/api/v1/billing/invoices/${id}`),
   getInvoicePdf: (id: number) =>
     apiClient.get(`/api/v1/billing/invoices/${id}/pdf`, { responseType: 'blob' }),
+};
+
+export const pharmacyApi = {
+  getNearby: (params?: { city?: string }) =>
+    apiClient.get<PharmacyDiscoveryResponse[]>('/api/v1/pharmacy/nearby', { params }),
+  getDoctorAssociated: () =>
+    apiClient.get<PharmacyDiscoveryResponse[]>('/api/v1/pharmacy/doctor-associated'),
+  searchMedicines: (params: { hospitalId: number; q?: string }) =>
+    apiClient.get<MedicineResponse[]>('/api/v1/pharmacy/search', { params }),
+  scanLookup: (params: { code: string; hospitalId?: number; format?: string }) =>
+    apiClient.get<MedicineScanLookupResponse>('/api/v1/pharmacy/inventory/scan-lookup', { params }),
+  getInventoryForPharmacy: (pharmacyId: number, q?: string) =>
+    apiClient.get<InventoryBatchResponse[]>('/api/v1/pharmacy/inventory/batches', {
+      params: { pharmacyId, q },
+    }),
+  myInventoryBatches: () =>
+    apiClient.get<InventoryBatchResponse[]>('/api/v1/pharmacy/inventory/batches/my'),
+  saveInventoryBatch: (data: InventoryBatchRequest) =>
+    apiClient.post<InventoryBatchResponse>('/api/v1/pharmacy/inventory/batches', data),
+  releaseReservation: (reservationId: number) =>
+    apiClient.post<InventoryReservationResponse>(
+      `/api/v1/pharmacy/inventory/reservations/${reservationId}/release`
+    ),
+  createOrder: (data: PharmacyOrderCreateRequest) =>
+    apiClient.post<PharmacyOrderResponse>('/api/v1/pharmacy/orders', data),
+  myOrders: () => apiClient.get<PharmacyOrderResponse[]>('/api/v1/pharmacy/orders/my'),
+  updateOrderStatus: (id: number, data: PharmacyOrderStatusUpdateRequest) =>
+    apiClient.patch<PharmacyOrderResponse>(`/api/v1/pharmacy/orders/${id}/status`, data),
+  updateOrderItems: (id: number, items: PharmacyOrderItemRequest[]) =>
+    apiClient.put<PharmacyOrderResponse>(`/api/v1/pharmacy/orders/${id}/items`, items),
+  updatePaymentStatus: (id: number, data: PharmacyOrderPaymentUpdateRequest) =>
+    apiClient.patch<PharmacyOrderResponse>(`/api/v1/pharmacy/orders/${id}/payment`, data),
+  confirmOrder: (id: number, data?: OrderConfirmRequest) =>
+    apiClient.post<PharmacyOrderResponse>(`/api/v1/pharmacy/orders/${id}/confirm`, data),
+  pickupReady: (id: number, data?: PickupReadyRequest) =>
+    apiClient.post<PharmacyOrderResponse>(`/api/v1/pharmacy/orders/${id}/pickup/ready`, data),
+  pickupComplete: (id: number, data?: PickupCompleteRequest) =>
+    apiClient.post<PharmacyOrderResponse>(`/api/v1/pharmacy/orders/${id}/pickup/complete`, data),
+  dispatchDelivery: (id: number, data?: DeliveryDispatchRequest) =>
+    apiClient.post<PharmacyOrderResponse>(`/api/v1/pharmacy/orders/${id}/delivery/dispatch`, data),
+  completeDelivery: (id: number, data?: DeliveryCompleteRequest) =>
+    apiClient.post<PharmacyOrderResponse>(`/api/v1/pharmacy/orders/${id}/delivery/complete`, data),
+  createEstimate: (data: PharmacyEstimateRequest) =>
+    apiClient.post<PharmacyEstimateResponse>('/api/v1/pharmacy/estimates', data),
+  updateEstimate: (estimateId: number, data: PharmacyEstimateRequest) =>
+    apiClient.put<PharmacyEstimateResponse>(`/api/v1/pharmacy/estimates/${estimateId}`, data),
+  sendEstimate: (estimateId: number) =>
+    apiClient.post<PharmacyEstimateResponse>(`/api/v1/pharmacy/estimates/${estimateId}/send`),
+  decideEstimate: (estimateId: number, data: EstimateDecisionRequest) =>
+    apiClient.post<PharmacyEstimateResponse>(`/api/v1/pharmacy/estimates/${estimateId}/decision`, data),
+  sharePrescription: (data: PrescriptionShareRequest) =>
+    apiClient.post<PrescriptionShareResponse>('/api/v1/pharmacy/prescriptions/share', data),
+};
+
+export const labApi = {
+  search: (hospitalId: number) =>
+    apiClient.get<any[]>('/api/v1/labs/search', { params: { hospitalId } }),
+  getTests: (hospitalId: number) =>
+    apiClient.get<any[]>(`/api/v1/labs/${hospitalId}/tests`),
+  book: (data: any) => apiClient.post('/api/v1/labs/bookings', data),
+  uploadReport: (id: number, data: { reportUrl: string }) =>
+    apiClient.post(`/api/v1/labs/bookings/${id}/upload-report`, data),
 };

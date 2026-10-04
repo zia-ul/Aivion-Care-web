@@ -82,11 +82,11 @@ function BookContent() {
       <AppLayout role="PATIENT" title="Booking Confirmed" subtitle="Appointment details">
         <div className="max-w-xl space-y-4">
           <DarkCard tone="patient" className="text-center">
-            <div className="w-16 h-16 mx-auto rounded-full bg-[#4DD9AC]/20 flex items-center justify-center text-[#4DD9AC]">
+            <div className="w-16 h-16 mx-auto rounded-full bg-doctor-mint/20 flex items-center justify-center text-doctor-mint">
               <CheckCircle2 size={34} />
             </div>
             <h3 className="text-2xl font-extrabold text-white mt-4">Appointment Confirmed</h3>
-            <p className="text-sm text-[#8AB0C0] mt-1">Your slot has been reserved successfully.</p>
+            <p className="text-sm text-doctor-muted mt-1">Your slot has been reserved successfully.</p>
             <div className="grid grid-cols-2 gap-3 mt-6 text-left">
               <InnerRow label="Token number" value={result.tokenNumber ?? '—'} />
               <InnerRow label="Status" value="CONFIRMED" />
@@ -110,7 +110,7 @@ function BookContent() {
     <AppLayout role="PATIENT" title="Select Slot" subtitle={`Dr. ${doctorName || ''}`}>
       <div className="max-w-2xl space-y-5">
         <DarkCard tone="patient">
-          <div className="flex items-center gap-2 text-white font-semibold"><Building2 size={18} className="text-[#4DD9AC]" /> Appointment details</div>
+          <div className="flex items-center gap-2 text-white font-semibold"><Building2 size={18} className="text-doctor-mint" /> Appointment details</div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
             <Field label="Date">
               <input type="date" min={today} max={new Date(Date.now() + 180 * 864e5).toISOString().split('T')[0]} value={date} onChange={(e) => setDate(e.target.value)} className={inputClass} />
@@ -124,7 +124,7 @@ function BookContent() {
             </Field>
           </div>
           {type === 'IN_PERSON' && (
-            <p className="text-xs text-[#F3C979] mt-3">Chat rooms are only created for online (VIDEO/TELECONSULT) appointments.</p>
+            <p className="text-xs text-doctor-gold mt-3">Chat rooms are only created for online (VIDEO/TELECONSULT) appointments.</p>
           )}
         </DarkCard>
 
@@ -133,11 +133,11 @@ function BookContent() {
             <span className="inline-flex items-center gap-2"><CalendarDays size={18} /> Available slots — {date}</span>
           </SectionTitle>
           {loadingSlots ? (
-            <p className="text-sm text-[#5B7A88]">Loading slots...</p>
+            <p className="text-sm text-doctor-dim">Loading slots...</p>
           ) : slotsError ? (
-            <div className="rounded-3xl bg-white border border-[#F3C979]/50 p-5 text-sm text-[#8A6D1F]">{slotsError}</div>
+            <div className="rounded-3xl bg-white border border-doctor-gold/50 p-5 text-sm text-warning-light">{slotsError}</div>
           ) : slots.length === 0 ? (
-            <div className="rounded-3xl bg-white border border-[#D6ECF1] p-6 text-center text-sm text-[#5B7A88]">
+            <div className="rounded-3xl bg-white border border-doctor-border-soft p-6 text-center text-sm text-doctor-dim">
               No available slots on this date. Try another date.
             </div>
           ) : (
@@ -149,7 +149,7 @@ function BookContent() {
                     key={s}
                     onClick={() => setSelectedSlot(s)}
                     className={`py-2.5 rounded-2xl text-sm font-semibold border transition-colors inline-flex items-center justify-center gap-1.5 ${
-                      selected ? 'bg-[#4DD9AC] text-[#0E2A22] border-[#4DD9AC]' : 'bg-white text-[#132633] border-[#B9DCE4] hover:border-[#4DD9AC]'
+                      selected ? 'bg-doctor-mint-fill text-white border-doctor-mint-fill' : 'bg-white text-doctor-ink border-doctor-border-input hover:border-doctor-mint'
                     }`}
                   >
                     <Clock size={14} /> {s}
@@ -161,14 +161,14 @@ function BookContent() {
         </div>
 
         {bookError && (
-          <div className="rounded-3xl bg-white border border-[#F09595]/50 p-5 text-sm text-[#C25A5A]">{bookError}</div>
+          <div className="rounded-3xl bg-white border border-doctor-danger-soft/50 p-5 text-sm text-doctor-red">{bookError}</div>
         )}
 
         <DarkCard tone="patient">
           <div className="flex items-center justify-between gap-4">
             <div className="min-w-0">
               <p className="text-white font-semibold">Selected: {selectedSlot || 'no slot yet'}</p>
-              <p className="text-xs text-[#8AB0C0] mt-1 inline-flex items-center gap-1"><Video size={12} /> {type}</p>
+              <p className="text-xs text-doctor-muted mt-1 inline-flex items-center gap-1"><Video size={12} /> {type}</p>
             </div>
             <ActionButton disabled={!selectedSlot || booking || !hospitalId} onClick={handleBook}>
               {booking ? 'Booking...' : 'Confirm booking'}
@@ -182,8 +182,8 @@ function BookContent() {
 
 function InnerRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl bg-[#2E3946] p-3">
-      <p className="text-xs text-[#8AB0C0]">{label}</p>
+    <div className="rounded-2xl bg-doctor-shell p-3">
+      <p className="text-xs text-doctor-muted">{label}</p>
       <p className="text-white font-semibold mt-0.5">{value}</p>
     </div>
   );
@@ -191,7 +191,7 @@ function InnerRow({ label, value }: { label: string; value: string }) {
 
 export default function BookAppointmentPage() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center min-h-screen text-[#5B7A88]">Loading...</div>}>
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen text-doctor-dim">Loading...</div>}>
       <BookContent />
     </Suspense>
   );

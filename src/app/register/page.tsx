@@ -28,7 +28,7 @@ export default function RegisterPage() {
       <div className="relative mx-auto w-full max-w-5xl">
         <div className="mb-6 flex items-center justify-between gap-4">
           <Link href="/" className="inline-flex items-center gap-3" aria-label="Aivion Care home">
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent text-surface-10"><HeartPulse size={21} /></span>
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-fill text-white"><HeartPulse size={21} /></span>
             <span className="font-extrabold tracking-tight">Aivion Care</span>
           </Link>
           <Link href="/login" className="inline-flex items-center gap-2 rounded-xl border border-tonal-20 bg-surface-20/70 px-4 py-2.5 text-sm font-bold text-primary-light/75 transition hover:border-accent/40 hover:text-accent"><ArrowLeft size={16} /> Sign in</Link>
@@ -54,7 +54,7 @@ export default function RegisterPage() {
                   onClick={() => setRole(option.key)}
                   className={`group flex min-h-[6.5rem] items-start gap-4 rounded-2xl border p-4 text-left transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${active ? 'border-accent/70 bg-accent/10 shadow-[inset_0_0_0_1px_rgba(34,211,197,0.15)]' : 'border-tonal-20/70 bg-surface-20/45 hover:-translate-y-0.5 hover:border-tonal-40 hover:bg-surface-20'}`}
                 >
-                  <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl transition ${active ? 'bg-accent text-surface-10' : 'bg-surface-30 text-accent group-hover:bg-accent/15'}`}><Icon size={21} /></span>
+                  <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl transition ${active ? 'bg-accent-fill text-white' : 'bg-surface-30 text-accent group-hover:bg-accent-fill/15'}`}><Icon size={21} /></span>
                   <span className="min-w-0 flex-1">
                     <span className="flex items-center justify-between gap-2 font-bold text-primary-light">{option.label}{active && <Check size={17} className="text-accent" />}</span>
                     <span className="mt-1 block text-xs leading-5 text-primary-light/45">{option.description}</span>

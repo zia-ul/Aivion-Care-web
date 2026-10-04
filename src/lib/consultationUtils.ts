@@ -3,6 +3,8 @@
  * Centralized helper functions for consultation management
  */
 
+import { VitalData, InvestigationItem, MedicationDetail } from '@/types/consultation';
+
 export function formatRecordingTime(totalSeconds: number): string {
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;
@@ -52,6 +54,25 @@ export function syncVitalsFromConsultation(consultation: any): VitalData[] {
     { label: 'Temp', value: consultation.bodyTemp?.toString() || '', unit: '°F' },
     { label: 'Respiration Rate', value: consultation.respRate?.toString() || '', unit: '/min' },
     { label: 'Blood Glucose', value: consultation.bloodGlucose?.toString() || '', unit: 'mg/dL' },
+  ];
+}
+
+export function syncVitalsFromDraft(vitals: any): VitalData[] {
+  return [
+    { label: 'Weight', value: vitals.weightKg?.toString() || '', unit: 'kg' },
+    { label: 'BMI', value: vitals.bmi?.toString() || '', unit: 'kg/m²' },
+    { 
+      label: 'B.P.', 
+      value: vitals.bpSystolic && vitals.bpDiastolic 
+        ? `${vitals.bpSystolic}/${vitals.bpDiastolic}` 
+        : '', 
+      unit: 'mmHg' 
+    },
+    { label: 'Pulse', value: vitals.heartRate?.toString() || '', unit: 'bpm' },
+    { label: 'SpO2', value: vitals.spo2?.toString() || '', unit: '%' },
+    { label: 'Temp', value: vitals.bodyTemp?.toString() || '', unit: '°F' },
+    { label: 'Respiration Rate', value: vitals.respRate?.toString() || '', unit: '/min' },
+    { label: 'Blood Glucose', value: vitals.bloodGlucose?.toString() || '', unit: 'mg/dL' },
   ];
 }
 
@@ -143,5 +164,3 @@ export function extractInvestigationsForApi(investigations: InvestigationItem[])
       priority: iv.priority || 'NORMAL',
     }));
 }
-
-import { VitalData, InvestigationItem, MedicationDetail } from '@/types/consultation';

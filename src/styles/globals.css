@@ -2,26 +2,248 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Theme tokens.
+ *
+ * Dark is the default (declared on :root) so SSR and pre-hydration renders
+ * match the previous behaviour with no flash. Light overrides every token
+ * that has to change, keyed off [data-theme='light'] on <html>.
+ *
+ * Colours are stored as space-separated RGB channels so Tailwind can apply
+ * opacity modifiers (e.g. bg-surface-20/75) via `rgb(var(--x) / <alpha>)`.
+ */
 :root {
   color-scheme: dark;
-  --primary-light: #ddfbf8;
-  --accent: #22d3c5;
-  --surface-10: #07141d;
-  --surface-20: #0d202b;
-  --surface-30: #143342;
-  --tonal-0: #102a36;
-  --success: #21d6a5;
-  --warning: #f2c66d;
-  --danger: #f47d8a;
-  --info: #4b7cff;
+
+  /* Surfaces - sky/teal depth scale matching aiconfidencecure.com */
+  --surface-10: 7 20 29;    /* #07141d page background */
+  --surface-20: 13 32 43;   /* #0d202b card */
+  --surface-30: 20 51 66;   /* #143342 inner / hover */
+  --surface-40: 26 70 84;
+  --surface-50: 42 97 112;
+
+  /* Borders & tonal scale */
+  --tonal-0: 16 42 54;
+  --tonal-10: 18 58 73;
+  --tonal-20: 26 70 84;     /* default border */
+  --tonal-30: 39 97 114;    /* input border */
+  --tonal-40: 69 132 148;
+  --tonal-50: 118 170 180;
+
+  /* Text */
+  --primary-light: 241 245 249;  /* #f1f5f9 main text (sky-50 tint) */
+  --primary-50: 240 253 250;
+
+  /* Brand - sky → teal gradient matching aiconfidencecure.com logo (#11C7B4 → #1249B5) */
+  --accent: 14 165 233;          /* sky-500 #0ea5e9 primary action */
+  --accent-deep: 13 148 136;     /* teal-600 #0d9488 secondary emphasis */
+  --accent-soft: 240 253 250;    /* teal-50 tint for accent backgrounds */
+  /* Foreground used ON an accent fill. Always light: buttons carry a white label.
+     The fills they sit on are the dedicated *-fill tokens below, which are deep
+     enough for white text to clear AA in both themes. */
+  --on-accent: 255 255 255;
+
+  /* Solid-fill variants for buttons and badges.
+     --accent and the --c-* palette stay light in this theme so they keep working
+     as text and icons on the dark background. A light fill however needs a dark
+     label, which put black text on every tab and button. These deeper shades of
+     the same hues carry a white label instead, so buttons read light-on-dark as
+     intended without inverting the palette. */
+  --accent-fill: 3 105 161;      /* sky-700     white 5.9:1 */
+  --success-fill: 4 120 84;      /* emerald-700 white 5.0:1 */
+  --danger-fill: 185 28 28;      /* red-700     white 6.1:1 */
+  --info-fill: 3 105 161;        /* sky-700 */
+  --c-blue-fill: 29 78 216;      /* blue-700   white 6.2:1 */
+  --c-mint-fill: 15 118 110;     /* teal-700   white 5.1:1 */
+  --c-lavender-fill: 109 40 217; /* violet-700 white 7.4:1 */
+  --c-red-fill: 185 28 28;       /* red-700 */
+  --c-gold-fill: 180 83 9;       /* amber-700  white 6.4:1 */
+  --c-pink-fill: 190 24 93;      /* pink-700 */
+  --c-slate-fill: 71 85 105;     /* slate-600  white 7.0:1 */
+
+  /* SOAP clinical summary palette. Four clearly distinct hues so no two sections
+   read alike: Subjective blue, Objective purple, Assessment yellow, Plan green.
+   Three tokens per section, all RGB channels for rgb(var(--x)):
+     --soap-x-tint  card background - the DARK shade of the hue in this theme,
+                    the LIGHT shade in the light theme
+     --soap-x       letter badge, left rail, heading, bullet dots
+     --soap-x-text  body copy, readable on that tint
+   The tint flips with the theme, so accent and text flip with it. */
+  /* Dark theme: deep fills, vivid mid-tone accents, light body text. */
+  --soap-s-tint: 11 36 71;         /* #0b2447  blue-950   Subjective */
+  --soap-s: 96 165 250;            /* #60a5fa  blue-400 */
+  --soap-s-text: 219 234 254;      /* #dbeafe  blue-100 */
+  --soap-o-tint: 36 16 70;         /* #241046  purple-950 Objective */
+  --soap-o: 192 132 252;           /* #c084fc  purple-400 */
+  --soap-o-text: 243 232 255;      /* #f3e8ff  purple-100 */
+  --soap-a-tint: 45 37 5;          /* #2d2505  yellow-950 Assessment */
+  --soap-a: 250 204 21;            /* #facc15  yellow-400 */
+  --soap-a-text: 254 249 195;      /* #fef9c3  yellow-100 */
+  --soap-p-tint: 5 46 22;          /* #052e16  green-950  Plan */
+  --soap-p: 74 222 128;            /* #4ade80  green-400 */
+  --soap-p-text: 220 252 231;      /* #dcfce7  green-100 */
+  --soap-note-tint: 30 41 59;      /* #1e293b  unlabelled narrative */
+  --soap-note: 148 163 184;        /* #94a3b8  slate-400 */
+  --soap-note-text: 226 232 240;   /* #e2e8f0  slate-200 */
+
+  /* Status - "light"/"lighter" variants are used as text, so they must
+     stay readable against their own 10% tinted background. */
+  --success: 16 185 129;         /* emerald-500 */
+  --success-light: 5 150 105;    /* emerald-600 */
+  --success-lighter: 11 167 130;
+  --warning: 245 158 11;         /* amber-500 */
+  --warning-light: 217 119 6;
+  --warning-lighter: 251 191 36;
+  --danger: 239 68 68;           /* red-500 */
+  --danger-light: 220 38 38;
+  --danger-lighter: 248 113 113;
+  --info: 14 165 233;            /* sky-500 */
+  --info-light: 2 132 199;       /* sky-600 */
+  --info-lighter: 3 105 161;
+
+  /* Doctor workspace sub-palette (was hardcoded hex in components/doctor) */
+  --c-surface-a: 15 23 42;       /* slate-900 panel */
+  --c-surface-b: 30 41 59;       /* slate-800 elevated */
+  --c-muted: 148 163 184;       /* slate-400 muted text */
+  --c-blue: 59 130 246;          /* blue-500 */
+  --c-lavender: 167 139 250;     /* violet-400 */
+  --c-mint: 45 212 191;          /* teal-400 */
+  --c-gold: 251 191 36;          /* amber-300 */
+  --c-red: 239 68 68;           /* red-500 */
+  --c-pink: 244 114 182;        /* pink-400 */
+  --c-slate: 148 163 184;       /* slate-400 muted blue */
+  --c-danger-soft: 248 113 113;
+  --c-border-soft: 203 213 225; /* slate-300 */
+  --c-border-input: 148 163 184;
+  --c-ink: 15 23 42;            /* slate-900 dark heading ink */
+  --c-shell: 30 41 59;          /* slate-800 */
+  --c-shell-deep: 2 6 23;       /* slate-950 */
+  --c-shell-black: 0 0 0;
+  --c-rec-red: 239 68 68;
+  --c-dim: 100 116 139;         /* slate-500 */
+
+  /* Non-colour */
   --radius-card: 24px;
   --radius-input: 18px;
   --font-body: 15px;
   --font-heading: 20px;
   --font-support: 12px;
-  --gradient-bg: linear-gradient(145deg, #07141d 0%, #0c2430 55%, #07141d 100%);
-  --gradient-dark: linear-gradient(145deg, #03090f 0%, #0a1b26 58%, #06151e 100%);
+
+  --gradient-bg: linear-gradient(145deg, #0b1a24 0%, #0f2838 55%, #0b1a24 100%);
+  --gradient-dark: linear-gradient(145deg, #071018 0%, #0a1f2c 58%, #06151e 100%);
   --shadow-soft: 0 16px 32px rgba(0, 0, 0, 0.34);
+
+  --glow-a: rgba(14, 165, 233, 0.10);   /* sky-500 glow */
+  --glow-b: rgba(13, 148, 136, 0.08);   /* teal-600 glow */
+  --scroll-track: rgba(7, 20, 29, 0.7);
+  --scroll-thumb: #276172;
+  --scroll-thumb-hover: #458494;
+}
+
+[data-theme='light'] {
+  color-scheme: light;
+
+  /* Surfaces invert: page becomes airy, cards stay white for elevation. */
+  --surface-10: 248 250 252;   /* slate-50 page background */
+  --surface-20: 255 255 255;   /* white card */
+  --surface-30: 241 245 249;   /* slate-100 inner / hover */
+  --surface-40: 226 232 240;
+  --surface-50: 203 213 225;
+
+  --tonal-0: 255 255 255;
+  --tonal-10: 241 245 249;
+  --tonal-20: 203 213 225;    /* slate-300 default border */
+  --tonal-30: 148 163 184;    /* slate-400 input border */
+  --tonal-40: 100 116 139;
+  --tonal-50: 71 85 105;
+
+  /* Text flips to dark ink. */
+  --primary-light: 15 23 42;   /* slate-900 main text */
+  --primary-50: 13 148 136;
+
+  /* Sky → teal brand tokens, readable on white. The accent steps down to sky-700
+     here because this theme's action fills are dark: that keeps `bg-accent` with
+     a light label at 5.5:1, and it also lifts `text-accent` on white from 2.9:1. */
+  --accent: 3 105 161;          /* sky-700 */
+  --accent-deep: 13 148 136;  /* teal-600 */
+  --accent-soft: 240 253 250; /* teal-50 */
+  /* Foreground used ON an accent fill. Always light, matching the dark theme. */
+  --on-accent: 255 255 255;
+
+  /* Same solid-fill variants as the dark theme: deep hues that carry a white
+     label, so light theme buttons read white-on-colour rather than dark-on-light. */
+  --accent-fill: 3 105 161;      /* sky-700     white 5.9:1 */
+  --success-fill: 4 120 84;      /* emerald-700 white 5.0:1 */
+  --danger-fill: 185 28 28;      /* red-700     white 6.1:1 */
+  --info-fill: 3 105 161;        /* sky-700     white 5.9:1 */
+  --c-blue-fill: 29 78 216;      /* blue-700 */
+  --c-mint-fill: 15 118 110;     /* teal-700 */
+  --c-lavender-fill: 109 40 217; /* violet-700 */
+  --c-red-fill: 185 28 28;
+  --c-gold-fill: 180 83 9;
+  --c-pink-fill: 190 24 93;
+  --c-slate-fill: 71 85 105;
+
+  /* SOAP palette on white: light fills of the same four hues, deep accents and
+     dark body text. Each is the light counterpart of the dark theme's shade. */
+  --soap-s-tint: 219 234 254;      /* #dbeafe  blue-100 */
+  --soap-s: 30 64 175;             /* #1e40af  blue-800 */
+  --soap-s-text: 30 58 138;        /* #1e3a8a  blue-900 */
+  --soap-o-tint: 243 232 255;      /* #f3e8ff  purple-100 */
+  --soap-o: 107 33 168;            /* #6b21a8  purple-800 */
+  --soap-o-text: 88 28 135;        /* #581c87  purple-900 */
+  --soap-a-tint: 254 249 195;      /* #fef9c3  yellow-100 - light yellow */
+  --soap-a: 133 77 14;             /* #854d0e  yellow-800 */
+  --soap-a-text: 113 63 18;        /* #713f12  yellow-900 */
+  --soap-p-tint: 220 252 231;      /* #dcfce7  green-100 - light green */
+  --soap-p: 21 128 61;             /* #15803d  green-700 */
+  --soap-p-text: 20 83 45;         /* #14532d  green-900 */
+  --soap-note-tint: 241 245 249;   /* #f1f5f9  slate-100 */
+  --soap-note: 51 65 85;           /* #334155  slate-700 */
+  --soap-note-text: 30 41 59;      /* #1e293b  slate-800 */
+
+  --success: 4 120 84;           /* emerald-700, deeper so the light label clears AA on white */
+  --success-light: 4 120 84;
+  --success-lighter: 3 92 66;
+  --warning: 217 119 6;
+  --warning-light: 133 88 8;
+  --warning-lighter: 107 71 6;
+  --danger: 185 28 28;           /* red-700, deeper so the dark ink clears AA on white */
+  --danger-light: 176 38 61;
+  --danger-lighter: 138 30 48;
+  --info: 3 105 161;      /* sky-700, deeper so light text clears AA */
+  --info-light: 2 132 199;
+  --info-lighter: 3 105 161;
+
+  --c-surface-a: 255 255 255;
+  --c-surface-b: 241 245 249;
+  --c-muted: 71 85 105;
+  --c-blue: 37 99 235;
+  --c-lavender: 109 40 217;
+  --c-mint: 15 118 110;     /* teal-700 */
+  --c-gold: 161 131 10;
+  --c-red: 185 28 28;            /* red-700 */
+  --c-pink: 225 29 72;
+  --c-slate: 51 65 85;
+  --c-danger-soft: 220 38 38;
+  --c-border-soft: 203 213 225;
+  --c-border-input: 148 163 184;
+  --c-ink: 15 23 42;
+  --c-shell: 226 232 240;
+  --c-shell-deep: 241 245 249;
+  --c-shell-black: 15 23 42;
+  --c-rec-red: 220 38 38;
+  --c-dim: 100 116 139;
+
+  --gradient-bg: linear-gradient(145deg, #f8fafc 0%, #eef2f6 55%, #f8fafc 100%);
+  --gradient-dark: linear-gradient(145deg, #ffffff 0%, #f1f5f9 58%, #ffffff 100%);
+  --shadow-soft: 0 16px 32px rgba(15, 23, 42, 0.10);
+
+  --glow-a: rgba(14, 165, 233, 0.08);
+  --glow-b: rgba(13, 148, 136, 0.07);
+  --scroll-track: rgba(248 250 252 / 0.7);
+  --scroll-thumb: #94a3b8;
+  --scroll-thumb-hover: #64748b;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -33,19 +255,120 @@ html {
   scrollbar-gutter: stable;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: var(--surface-10);
+  background: rgb(var(--surface-10));
+}
+
+/* Animate the theme swap, but never on first paint - see ThemeScript, which
+   sets data-theme before hydration so there is nothing to animate from. */
+html.theme-ready,
+html.theme-ready body,
+html.theme-ready * {
+  transition: background-color 200ms ease, border-color 200ms ease, color 200ms ease, fill 200ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.theme-ready,
+  html.theme-ready body,
+  html.theme-ready * { transition: none !important; }
+}
+
+/* ---- shadcn/ui-style tokens used by the Aivion Care landing page ---- */
+:root {
+  --background: rgb(var(--surface-10));
+  --foreground: rgb(var(--primary-light));
+  --card: rgb(var(--surface-20));
+  --card-foreground: rgb(var(--primary-light));
+  --popover: rgb(var(--surface-20));
+  --popover-foreground: rgb(var(--primary-light));
+  --primary: rgb(var(--accent));
+  --primary-foreground: rgb(var(--on-accent));
+  --secondary: rgb(var(--tonal-30));
+  --secondary-foreground: rgb(var(--primary-light));
+  --muted: rgb(var(--tonal-30));
+  --muted-foreground: rgb(var(--tonal-50));
+  --accent: rgb(var(--accent-soft));
+  --accent-foreground: rgb(var(--accent-deep));
+  --destructive: rgb(var(--danger));
+  --border: rgb(var(--tonal-20));
+  --input: rgb(var(--tonal-30));
+  --ring: rgb(var(--accent));
+  --radius: 1rem;
+}
+
+[data-theme='light'] {
+  --background: rgb(var(--surface-10));
+  --foreground: rgb(var(--primary-light));
+  --card: rgb(var(--surface-20));
+  --card-foreground: rgb(var(--primary-light));
+  --popover: rgb(var(--surface-20));
+  --popover-foreground: rgb(var(--primary-light));
+  --primary: rgb(var(--accent));
+  --primary-foreground: rgb(var(--on-accent));
+  --secondary: rgb(var(--tonal-10));
+  --secondary-foreground: rgb(var(--primary-light));
+  --muted: rgb(var(--tonal-10));
+  --muted-foreground: rgb(var(--tonal-50));
+  --accent: rgb(var(--accent-soft));
+  --accent-foreground: rgb(var(--accent-deep));
+  --destructive: rgb(var(--danger));
+  --border: rgb(var(--tonal-20));
+  --input: rgb(var(--tonal-30));
+  --ring: rgb(var(--accent));
+  --radius: 1rem;
+}
+
+@layer base {
+  * {
+    border-color: rgb(var(--border));
+  }
+  body {
+    background-color: rgb(var(--background));
+    color: rgb(var(--foreground));
+  }
+}
+
+@layer components {
+  .surface-panel {
+    @apply rounded-2xl border border-border/70 bg-card/80 shadow-soft backdrop-blur-xl;
+  }
+  .font-display {
+    font-family: Manrope, Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  .text-muted-foreground {
+    color: rgb(var(--muted-foreground));
+  }
+  .text-foreground {
+    color: rgb(var(--foreground));
+  }
+  .bg-background {
+    background-color: rgb(var(--background));
+  }
+  .text-primary-foreground {
+    color: rgb(var(--primary-foreground));
+  }
+  .shadow-sky-500\/20 {
+    box-shadow: 0 10px 25px -5px rgba(14, 165, 233, 0.20), 0 4px 6px -4px rgba(14, 165, 233, 0.10);
+  }
+  .shadow-sky-500\/15 {
+    box-shadow: 0 8px 20px -6px rgba(14, 165, 233, 0.15), 0 3px 5px -4px rgba(14, 165, 233, 0.08);
+  }
+  .shadow-sky-500\/10 {
+    box-shadow: 0 6px 16px -6px rgba(14, 165, 233, 0.10), 0 2px 4px -3px rgba(14, 165, 233, 0.06);
+  }
+  .shadow-sky-500\/30 {
+    box-shadow: 0 14px 30px -8px rgba(14, 165, 233, 0.30), 0 6px 10px -5px rgba(14, 165, 233, 0.12);
+  }
 }
 
 body {
   min-height: 100vh;
   min-height: 100dvh;
   overflow-x: hidden;
-  background:
-    radial-gradient(circle at 8% 0%, rgba(34, 211, 197, 0.08), transparent 30%),
-    radial-gradient(circle at 92% 14%, rgba(63, 143, 224, 0.07), transparent 28%),
-    var(--gradient-bg);
-  color: var(--primary-light);
-  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif);
+  background: var(--gradient-bg);
+  color: rgb(var(--primary-light));
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
   text-rendering: optimizeLegibility;
 }
 
@@ -68,17 +391,70 @@ select:focus-visible {
   outline-offset: 3px;
 }
 
-::selection { background: rgba(34, 211, 197, 0.28); color: var(--primary-light); }
-option { color: var(--primary-light); background: var(--surface-20); }
+::selection { background: rgba(var(--accent) / 0.28); color: rgb(var(--primary-light)); }
+option { color: rgb(var(--primary-light)); background: rgb(var(--surface-20)); }
 
 ::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: rgba(7, 20, 29, 0.7); }
-::-webkit-scrollbar-thumb { border: 2px solid rgba(7, 20, 29, 0.7); border-radius: 999px; background: #276172; }
-::-webkit-scrollbar-thumb:hover { background: #458494; }
+::-webkit-scrollbar-track { background: var(--scroll-track); }
+::-webkit-scrollbar-thumb { border: 2px solid var(--scroll-track); border-radius: 999px; background: var(--scroll-thumb); }
+::-webkit-scrollbar-thumb:hover { background: var(--scroll-thumb-hover); }
 
 @supports (padding: max(0px)) {
   .safe-bottom { padding-bottom: max(0.5rem, env(safe-area-inset-bottom)); }
 }
+
+/* ---- Landing page animations ---- */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.animate-fade-in { animation: fade-in 0.6s ease-out both; }
+.animate-fade-in-up { animation: fade-in-up 0.7s ease-out both; }
+.animate-float { animation: float 6s ease-in-out infinite; }
+.animate-pulse-slow { animation: pulse-slow 4s ease-in-out infinite; }
+.animate-shimmer { animation: shimmer 3s linear infinite; background-size: 200% 100%; }
+.animate-spin-slow { animation: spin-slow 20s linear infinite; }
+.animate-gradient { animation: gradient-shift 12s ease infinite; background-size: 200% 200%; }
+
+.animation-delay-100 { animation-delay: 100ms; }
+.animation-delay-200 { animation-delay: 200ms; }
+.animation-delay-300 { animation-delay: 300ms; }
+.animation-delay-400 { animation-delay: 400ms; }
+.animation-delay-500 { animation-delay: 500ms; }
+.animation-delay-600 { animation-delay: 600ms; }
+.animation-delay-700 { animation-delay: 700ms; }
+.animation-delay-800 { animation-delay: 800ms; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

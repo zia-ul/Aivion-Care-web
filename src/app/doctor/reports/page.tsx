@@ -34,7 +34,7 @@ export default function DoctorReportsPage() {
   return (
     <AppLayout role="DOCTOR" title="Reports" subtitle="Performance and care trends">
       <div className="space-y-5">
-        {loading ? <p className="text-sm text-[#5B7A88]">Loading reports...</p> : (
+        {loading ? <p className="text-sm text-doctor-dim">Loading reports...</p> : (
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
             <StatTile title="Patients" value={stats.totalPatients ?? 0} sub={stats.totalPatientsTrend} icon={<Users size={20} />} color={FL.mint} />
             <StatTile title="Appointments" value={stats.todayAppointments ?? 0} sub={stats.todayAppointmentsSub} icon={<CalendarDays size={20} />} color={FL.blue} />
@@ -43,8 +43,8 @@ export default function DoctorReportsPage() {
           </div>
         )}
         <DarkCard>
-          <h2 className="flex items-center gap-2 text-lg font-bold text-white"><BarChart3 size={19} className="text-[#4DD9AC]" /> Care overview</h2>
-          <p className="mt-2 text-sm leading-6 text-[#8AB0C0]">Use these indicators to review patient volume, appointments, recovery progress, and cases that need follow-up. Detailed trends are sourced from the doctor dashboard API.</p>
+          <h2 className="flex items-center gap-2 text-lg font-bold text-white"><BarChart3 size={19} className="text-doctor-mint" /> Care overview</h2>
+          <p className="mt-2 text-sm leading-6 text-doctor-muted">Use these indicators to review patient volume, appointments, recovery progress, and cases that need follow-up. Detailed trends are sourced from the doctor dashboard API.</p>
         </DarkCard>
       </div>
     </AppLayout>

@@ -205,6 +205,21 @@ export interface ConsultationAiDraftResponse {
   investigations: InvestigationItem[];
 }
 
+// --- SOAP summary ---
+/** One line inside a SOAP section. `label` is the Plan sub-heading when present. */
+export interface ConsultationSoapItemResponse {
+  label?: string | null;
+  text: string;
+}
+
+/** A SOAP section of the AI transcript summary; `code` drives the section colour. */
+export interface ConsultationSoapSectionResponse {
+  code: 'S' | 'O' | 'A' | 'P' | 'NOTE' | string;
+  label: string;
+  description?: string | null;
+  items: ConsultationSoapItemResponse[];
+}
+
 // --- Review ---
 export interface ConsultationReviewResponse {
   appointmentId: number;
@@ -212,6 +227,7 @@ export interface ConsultationReviewResponse {
   draft: ConsultationAiDraftResponse | null;
   transcript: string;
   transcriptSummary: string;
+  soapSections?: ConsultationSoapSectionResponse[];
   summaryProvider: string;
   recordingUrl?: string;
   liveTranscriptAvailable: boolean;
@@ -271,6 +287,8 @@ export interface ConsultationResponse {
   appointmentType?: string;
   symptoms?: string;
   diagnosis?: string;
+  transcriptSummary?: string;
+  soapSections?: ConsultationSoapSectionResponse[];
   // Vitals (flat for backward compatibility with existing page)
   heartRate?: number;
   bpSystolic?: number;

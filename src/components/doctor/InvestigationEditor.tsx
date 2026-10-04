@@ -11,6 +11,9 @@ interface InvestigationEditorProps {
   disabled?: boolean;
 }
 
+/** Keeps bound inputs controlled even when a draft omits a field. */
+const text = (value: unknown): string => (value == null ? '' : String(value));
+
 export function InvestigationEditor({
   investigations,
   onChange,
@@ -41,18 +44,18 @@ export function InvestigationEditor({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-bold text-white flex items-center gap-2">
-          <FileText className="h-5 w-5 text-[#8AB9D2]" />
+          <FileText className="h-5 w-5 text-doctor-slate" />
           Investigations ({investigations.length})
         </h3>
       </div>
 
       <div className="space-y-3">
         {investigations.map((inv, idx) => (
-          <div key={idx} className="rounded-xl bg-[#2A3D50] p-4 flex flex-col sm:flex-row gap-3 items-end">
+          <div key={idx} className="rounded-xl bg-doctor-raised p-4 flex flex-col sm:flex-row gap-3 items-end">
             <div className="flex-1 min-w-0">
               <Field label="Investigation">
                 <input
-                  value={inv.investigationName}
+                  value={text(inv.investigationName)}
                   onChange={(e) => handleChange(idx, 'investigationName', e.target.value)}
                   disabled={disabled}
                   className={inputClass}
@@ -64,7 +67,7 @@ export function InvestigationEditor({
             <div className="w-40 sm:w-48">
               <Field label="Priority">
                 <select
-                  value={inv.priority}
+                  value={text(inv.priority) || 'NORMAL'}
                   onChange={(e) => handleChange(idx, 'priority', e.target.value)}
                   disabled={disabled}
                   className={inputClass}
@@ -82,7 +85,7 @@ export function InvestigationEditor({
               <Field label="S.No">
                 <input
                   type="number"
-                  value={inv.sno}
+                  value={text(inv.sno)}
                   onChange={(e) => handleChange(idx, 'sno', parseInt(e.target.value) || idx + 1)}
                   disabled={disabled}
                   className={inputClass}
@@ -95,7 +98,7 @@ export function InvestigationEditor({
               type="button"
               onClick={() => handleRemove(idx)}
               disabled={disabled || investigations.length <= 1}
-              className="p-2 rounded-lg bg-[#C25A5A]/10 text-[#C25A5A] hover:bg-[#C25A5A]/20 disabled:opacity-50 flex-shrink-0"
+              className="p-2 rounded-lg bg-doctor-red/10 text-doctor-red hover:bg-doctor-red/20 disabled:opacity-50 flex-shrink-0"
               aria-label="Remove investigation"
             >
               <Trash2 className="h-5 w-5" />
@@ -107,7 +110,7 @@ export function InvestigationEditor({
           type="button"
           onClick={handleAdd}
           disabled={disabled}
-          className="w-full flex items-center justify-center gap-2 rounded-xl border border-[#8AB9D2]/30 bg-transparent px-4 py-2.5 font-semibold text-[#8AB9D2] hover:bg-[#8AB9D2]/10 disabled:opacity-50"
+          className="w-full flex items-center justify-center gap-2 rounded-xl border border-doctor-slate/30 bg-transparent px-4 py-2.5 font-semibold text-doctor-slate hover:bg-doctor-slate/10 disabled:opacity-50"
         >
           <Plus className="h-5 w-5" />
           Add Investigation
@@ -118,9 +121,9 @@ export function InvestigationEditor({
 }
 
 const PRIORITY_OPTIONS_DISPLAY = [
-  { value: 'HIGH', label: 'High', color: 'text-[#C25A5A]' },
-  { value: 'NORMAL', label: 'Normal', color: 'text-[#F3C979]' },
-  { value: 'LOW', label: 'Low', color: 'text-[#4DD9AC]' },
+  { value: 'HIGH', label: 'High', color: 'text-doctor-red' },
+  { value: 'NORMAL', label: 'Normal', color: 'text-doctor-gold' },
+  { value: 'LOW', label: 'Low', color: 'text-doctor-mint' },
 ];
 
 const PRIORITY_OPTIONS_SELECT = PRIORITY_OPTIONS.map((p) => ({ value: p.value, label: p.label }));

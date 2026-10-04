@@ -6,4 +6,6 @@ export { LoadingState } from './LoadingState';
 export { AppointmentCard } from './AppointmentCard';
 export { Button } from './Button';
 export { Input, Textarea, Select, FormField } from './FormField';
+export { Modal } from './Modal';
+export { ThemeToggle } from './ThemeToggle';
 export { DarkCard, InnerCard, LightCard, SectionTitle, Pill, StatTile, ActionButton, Field, inputClass, FL } from './FlutterTheme';

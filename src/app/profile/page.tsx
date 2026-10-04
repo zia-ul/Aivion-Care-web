@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import AppLayout from '@/components/layout/AppLayout';
 import { authApi, doctorApi } from '@/lib/api/endpoints';
+import { isTokenExpired } from '@/lib/helpers';
 import { wsService } from '@/lib/websocket/client';
 import { useAuthStore } from '@/lib/stores/auth';
 import { User, Mail, Phone, Building2, LogOut, FileUp, ShieldCheck, Trash2, AlertTriangle } from 'lucide-react';
@@ -22,8 +23,13 @@ export default function ProfilePage() {
   }, []);
 
   const handleLogout = async () => {
+    const accessToken = localStorage.getItem('accessToken');
     try {
-      await authApi.logout(localStorage.getItem('refreshToken') || undefined);
+      // Skip the round-trip when the access token has already expired: the
+      // server would answer 401 and the browser would log a failed request.
+      if (!isTokenExpired(accessToken)) {
+        await authApi.logout(localStorage.getItem('refreshToken') || undefined);
+      }
     } catch (error) {
       console.error(error);
     } finally {
@@ -46,11 +52,7 @@ export default function ProfilePage() {
     
     setDeleting(true);
     try {
-      if (user?.role === 'DOCTOR') {
-        await doctorApi.deleteProfile();
-      } else {
         await authApi.deleteProfile();
-      }
       try {
         wsService.disconnect();
       } catch {
@@ -163,7 +165,7 @@ export default function ProfilePage() {
             <button onClick={handleLogout} className="flex w-full items-center justify-center gap-2 px-4 py-2 bg-primary-light/10 text-primary-light rounded-input hover:bg-primary-light/20 transition-colors">
               <LogOut size={18} /> Logout
             </button>
-            <button onClick={() => setShowDeleteConfirm(true)} className="flex w-full items-center justify-center gap-2 px-4 py-2 bg-danger/10 text-danger-light rounded-input hover:bg-danger/20 transition-colors">
+            <button onClick={() => setShowDeleteConfirm(true)} className="flex w-full items-center justify-center gap-2 px-4 py-2 bg-danger/10 text-danger-light rounded-input hover:bg-danger-fill/20 transition-colors">
               <Trash2 size={18} /> Delete Account
             </button>
             {showDeleteConfirm && (
@@ -177,7 +179,7 @@ export default function ProfilePage() {
                 </div>
                 <div className="flex gap-2">
                   <button onClick={() => setShowDeleteConfirm(false)} className="flex-1 px-4 py-2 border border-tonal-20/50 text-primary-light rounded-input hover:bg-surface-10/50 transition-colors">Cancel</button>
-                  <button onClick={handleDeleteAccount} disabled={deleting} className="flex-1 px-4 py-2 bg-danger text-white rounded-input hover:bg-danger/90 transition-colors disabled:opacity-50">
+                  <button onClick={handleDeleteAccount} disabled={deleting} className="flex-1 px-4 py-2 bg-danger text-white rounded-input hover:bg-danger-fill/90 transition-colors disabled:opacity-50">
                     {deleting ? 'Deleting...' : 'Delete Permanently'}
                   </button>
                 </div>

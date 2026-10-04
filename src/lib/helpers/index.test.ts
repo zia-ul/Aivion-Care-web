@@ -1,4 +1,4 @@
-import { formatDate, formatTime, getStatusColor, getStatusClasses, cn } from '@/lib/helpers';
+import { formatDate, formatTime, getStatusColor, getStatusClasses, cn, ROLE_HOME, getRoleHomePath } from '@/lib/helpers';
 
 describe('formatDate', () => {
   it('formats valid ISO date string', () => {
@@ -194,5 +194,43 @@ describe('cn', () => {
 
   it('resolves Tailwind conflicts', () => {
     expect(cn('px-4 py-2', 'px-6')).toBe('py-2 px-6');
+  });
+});
+
+describe('getRoleHomePath', () => {
+  it('maps every supported role to a real landing route', () => {
+    expect(getRoleHomePath('PATIENT')).toBe('/patient/dashboard');
+    expect(getRoleHomePath('DOCTOR')).toBe('/doctor/dashboard');
+    expect(getRoleHomePath('SUPER_ADMIN')).toBe('/super-admin/hospitals');
+    expect(getRoleHomePath('HOSPITAL_HEAD')).toBe('/hospital-head/dashboard');
+    expect(getRoleHomePath('PHARMACY')).toBe('/pharmacist/dashboard');
+    expect(getRoleHomePath('PATHOLOGY')).toBe('/pathology/dashboard');
+    expect(getRoleHomePath('LAB_ASSISTANT')).toBe('/lab-assistant/dashboard');
+    expect(getRoleHomePath('RECEPTIONIST')).toBe('/receptionist/dashboard');
+  });
+
+  it('falls back to the patient dashboard for unknown roles', () => {
+    expect(getRoleHomePath('SOMETHING_ELSE')).toBe('/patient/dashboard');
+  });
+
+  it('falls back for null and undefined', () => {
+    expect(getRoleHomePath(null)).toBe('/patient/dashboard');
+    expect(getRoleHomePath(undefined)).toBe('/patient/dashboard');
+  });
+
+  it('exposes the same mapping through ROLE_HOME', () => {
+    Object.entries(ROLE_HOME).forEach(([role, path]) => {
+      expect(getRoleHomePath(role)).toBe(path);
+    });
+  });
+
+  it('never points a role at a route its own AppLayout would reject', () => {
+    // Routes must live under the role's own segment (e.g. /pharmacist) so the
+    // role-based guard in AppLayout does not bounce the user back to /login.
+    expect(getRoleHomePath('PHARMACY').startsWith('/pharmacist')).toBe(true);
+    expect(getRoleHomePath('PATHOLOGY').startsWith('/pathology')).toBe(true);
+    expect(getRoleHomePath('LAB_ASSISTANT').startsWith('/lab-assistant')).toBe(true);
+    expect(getRoleHomePath('RECEPTIONIST').startsWith('/receptionist')).toBe(true);
+    expect(getRoleHomePath('HOSPITAL_HEAD').startsWith('/hospital-head')).toBe(true);
   });
 });

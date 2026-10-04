@@ -6,7 +6,7 @@ import AppLayout from '@/components/layout/AppLayout';
 import { appointmentApi } from '@/lib/api/endpoints';
 import { useAuthStore } from '@/lib/stores/auth';
 import { DarkCard, InnerCard, Pill, ActionButton, StatTile, FL, SectionTitle } from '@/components/ui/FlutterTheme';
-import { Group, CalendarDays, TrendingUp, Siren, MessageCircle, FileText, Sparkles } from 'lucide-react';
+import { Group, CalendarDays, TrendingUp, Siren, MessageCircle, FileText, Sparkles, Shield, DollarSign } from 'lucide-react';
 
 interface Stats { totalPatients?: number; todayAppointments?: number; criticalCases?: number; recoveryRate?: number; totalPatientsTrend?: string; todayAppointmentsSub?: string; recoveryRateTrend?: string; criticalCasesTrend?: string; aiInsight?: string; }
 interface Appt { id: number; patientName?: string; hospitalName?: string; appointmentDate?: string; slotTime?: string; status?: string; type?: string; chatRoomId?: number | null; }
@@ -53,10 +53,10 @@ export default function DoctorDashboard() {
         {stats.aiInsight && (
           <DarkCard>
             <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[#A8A4E7]/15 flex items-center justify-center text-[#A8A4E7] shrink-0"><Sparkles size={18} /></div>
+              <div className="w-10 h-10 rounded-xl bg-doctor-lavender/15 flex items-center justify-center text-doctor-lavender shrink-0"><Sparkles size={18} /></div>
               <div>
                 <p className="text-white font-semibold">AI Insight</p>
-                <p className="text-sm text-[#8AB0C0] mt-1">{stats.aiInsight}</p>
+                <p className="text-sm text-doctor-muted mt-1">{stats.aiInsight}</p>
               </div>
             </div>
           </DarkCard>
@@ -67,9 +67,9 @@ export default function DoctorDashboard() {
             Today&apos;s appointments
           </SectionTitle>
           {loading ? (
-            <p className="text-sm text-[#5B7A88]">Loading appointments…</p>
+            <p className="text-sm text-doctor-dim">Loading appointments…</p>
           ) : todayAppointments.length === 0 ? (
-            <div className="rounded-3xl bg-white border border-[#D6ECF1] p-6 text-center text-sm text-[#5B7A88]">No appointments scheduled for today.</div>
+            <div className="rounded-3xl bg-white border border-doctor-border-soft p-6 text-center text-sm text-doctor-dim">No appointments scheduled for today.</div>
           ) : (
             <div className="space-y-3">
               {todayAppointments.map((a) => (
@@ -80,8 +80,8 @@ export default function DoctorDashboard() {
                         <p className="text-white font-semibold">{a.patientName ?? '—'}</p>
                         <Pill color={statusColor(a.status)}>{a.status ?? ''}</Pill>
                       </div>
-                      <p className="text-xs text-[#8AB0C0] mt-1">{a.hospitalName ?? ''}{a.type ? ` • ${a.type}` : ''}</p>
-                      <p className="text-xs text-[#8AB0C0] mt-1">{a.appointmentDate} at {String(a.slotTime ?? '').slice(0, 5)}</p>
+                      <p className="text-xs text-doctor-muted mt-1">{a.hospitalName ?? ''}{a.type ? ` • ${a.type}` : ''}</p>
+                      <p className="text-xs text-doctor-muted mt-1">{a.appointmentDate} at {String(a.slotTime ?? '').slice(0, 5)}</p>
                     </div>
                     <div className="flex gap-2 flex-wrap">
                       {(a.type === 'VIDEO' || a.type === 'TELECONSULT') && a.chatRoomId && (
@@ -101,12 +101,12 @@ export default function DoctorDashboard() {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-          <button onClick={() => router.push('/doctor/patients')}><InnerCard className="text-center"><p className="text-white font-semibold">My Patients</p><p className="text-xs text-[#8AB0C0] mt-1">Patient directory</p></InnerCard></button>
-          <button onClick={() => router.push('/doctor/schedule')}><InnerCard className="text-center"><p className="text-white font-semibold">Schedule</p><p className="text-xs text-[#8AB0C0] mt-1">Availability & slots</p></InnerCard></button>
-          <button onClick={() => router.push('/doctor/reports')}><InnerCard className="text-center"><p className="text-white font-semibold">Reports</p><p className="text-xs text-[#8AB0C0] mt-1">Performance & trends</p></InnerCard></button>
-          <button onClick={() => router.push('/doctor/diagnosis')}><InnerCard className="text-center"><p className="text-white font-semibold">AI Diagnosis</p><p className="text-xs text-[#8AB0C0] mt-1">Notes & draft Rx</p></InnerCard></button>
-          <button onClick={() => router.push('/doctor/ecg')}><InnerCard className="text-center"><p className="text-white font-semibold">ECG Monitor</p><p className="text-xs text-[#8AB0C0] mt-1">Vitals overview</p></InnerCard></button>
-          <button onClick={() => router.push('/doctor/notifications')}><InnerCard className="text-center"><p className="text-white font-semibold">Alerts</p><p className="text-xs text-[#8AB0C0] mt-1">Notifications</p></InnerCard></button>
+          <button onClick={() => router.push('/doctor/patients')}><InnerCard className="text-center"><p className="text-white font-semibold">My Patients</p><p className="text-xs text-doctor-muted mt-1">Patient directory</p></InnerCard></button>
+          <button onClick={() => router.push('/doctor/schedule')}><InnerCard className="text-center"><p className="text-white font-semibold">Schedule</p><p className="text-xs text-doctor-muted mt-1">Availability & slots</p></InnerCard></button>
+          <button onClick={() => router.push('/doctor/reports')}><InnerCard className="text-center"><p className="text-white font-semibold">Reports</p><p className="text-xs text-doctor-muted mt-1">Performance & trends</p></InnerCard></button>
+          <button onClick={() => router.push('/doctor/diagnosis')}><InnerCard className="text-center"><p className="text-white font-semibold">AI Diagnosis</p><p className="text-xs text-doctor-muted mt-1">Notes & draft Rx</p></InnerCard></button>
+          <button onClick={() => router.push('/doctor/ecg')}><InnerCard className="text-center"><p className="text-white font-semibold">ECG Monitor</p><p className="text-xs text-doctor-muted mt-1">Vitals overview</p></InnerCard></button>
+          <button onClick={() => router.push('/notifications')}><InnerCard className="text-center"><p className="text-white font-semibold">Alerts</p><p className="text-xs text-doctor-muted mt-1">Notifications</p></InnerCard></button>
         </div>
       </div>
     </AppLayout>

@@ -62,9 +62,9 @@ export default function PatientPaymentsPage() {
       <div className="space-y-5">
         <SectionTitle>Invoices</SectionTitle>
         {loading ? (
-          <p className="text-sm text-[#5B7A88]">Loading invoices...</p>
+          <p className="text-sm text-doctor-dim">Loading invoices...</p>
         ) : rows.length === 0 ? (
-          <div className="rounded-3xl bg-white border border-[#D6ECF1] p-6 text-center text-sm text-[#5B7A88]">No appointments yet.</div>
+          <div className="rounded-3xl bg-white border border-doctor-border-soft p-6 text-center text-sm text-doctor-dim">No appointments yet.</div>
         ) : (
           <div className="space-y-3">
             {rows.map(({ appt, invoice, error }) => (
@@ -72,21 +72,21 @@ export default function PatientPaymentsPage() {
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <p className="text-white font-semibold inline-flex items-center gap-2"><Receipt size={16} className="text-[#4DD9AC]" /> {invoice?.invoiceNumber ?? `Appointment #${appt.id}`}</p>
+                      <p className="text-white font-semibold inline-flex items-center gap-2"><Receipt size={16} className="text-doctor-mint" /> {invoice?.invoiceNumber ?? `Appointment #${appt.id}`}</p>
                       {invoice?.paymentStatus && <Pill color={statusColor(invoice.paymentStatus)}>{invoice.paymentStatus}</Pill>}
                     </div>
-                    <p className="text-xs text-[#8AB0C0] mt-1">Dr. {appt.doctorName ?? '—'} • {appt.appointmentDate}</p>
+                    <p className="text-xs text-doctor-muted mt-1">Dr. {appt.doctorName ?? '—'} • {appt.appointmentDate}</p>
                     {invoice && (
                       <p className="text-sm text-white font-bold mt-2">
                         ₹{String(invoice.totalAmount ?? '0')}
                         {(invoice.discount || invoice.tax) && (
-                          <span className="text-xs font-normal text-[#8AB0C0] ml-2">
+                          <span className="text-xs font-normal text-doctor-muted ml-2">
                             (discount ₹{invoice.discount ?? 0}, tax ₹{invoice.tax ?? 0})
                           </span>
                         )}
                       </p>
                     )}
-                    {!invoice && <p className="text-xs text-[#8AB0C0] mt-2">{error === 'No invoice' ? 'Invoice not generated yet.' : ''}</p>}
+                    {!invoice && <p className="text-xs text-doctor-muted mt-2">{error === 'No invoice' ? 'Invoice not generated yet.' : ''}</p>}
                   </div>
                   {invoice?.billingId && (
                     <ActionButton variant="ghost" onClick={() => downloadInvoicePdf(invoice.billingId!)}>

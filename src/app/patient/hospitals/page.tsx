@@ -50,11 +50,11 @@ export default function PatientHospitalsPage() {
         </form>
 
         {loading ? (
-          <p className="text-sm text-[#5B7A88]">Loading hospitals...</p>
+          <p className="text-sm text-doctor-dim">Loading hospitals...</p>
         ) : error ? (
-          <div className="rounded-3xl bg-white border border-[#F09595]/40 p-5 text-sm text-[#C25A5A]">{error}</div>
+          <div className="rounded-3xl bg-white border border-doctor-danger-soft/40 p-5 text-sm text-doctor-red">{error}</div>
         ) : hospitals.length === 0 ? (
-          <div className="rounded-3xl bg-white border border-[#D6ECF1] p-6 text-center text-sm text-[#5B7A88]">
+          <div className="rounded-3xl bg-white border border-doctor-border-soft p-6 text-center text-sm text-doctor-dim">
             No hospitals found. Try a different city.
           </div>
         ) : (
@@ -63,7 +63,7 @@ export default function PatientHospitalsPage() {
               <button key={h.id} onClick={() => router.push(`/patient/hospitals/${h.id}`)} className="text-left">
                 <DarkCard tone="patient" className="h-full">
                   <div className="flex items-start gap-3">
-                    <div className="w-12 h-12 rounded-2xl bg-[#4DD9AC]/15 flex items-center justify-center text-[#4DD9AC] shrink-0">
+                    <div className="w-12 h-12 rounded-2xl bg-doctor-mint/15 flex items-center justify-center text-doctor-mint shrink-0">
                       <Building2 size={22} />
                     </div>
                     <div className="min-w-0 flex-1">
@@ -71,11 +71,11 @@ export default function PatientHospitalsPage() {
                         <p className="text-white font-semibold truncate">{h.name}</p>
                         <Pill color={h.status === 'APPROVED' ? FL.mint : FL.gold}>{h.status ?? ''}</Pill>
                       </div>
-                      <p className="text-xs text-[#8AB0C0] mt-1 flex items-center gap-1">
+                      <p className="text-xs text-doctor-muted mt-1 flex items-center gap-1">
                         <MapPin size={12} /> {[h.address, h.city, h.state, h.country].filter(Boolean).join(', ') || 'Address not listed'}
                       </p>
-                      {h.facilityType && <p className="text-xs text-[#8AB0C0] mt-1">{h.facilityType}</p>}
-                      {h.phone && <p className="text-xs text-[#8AB0C0] mt-1">Phone: {h.phone}</p>}
+                      {h.facilityType && <p className="text-xs text-doctor-muted mt-1">{h.facilityType}</p>}
+                      {h.phone && <p className="text-xs text-doctor-muted mt-1">Phone: {h.phone}</p>}
                       <div className="mt-3">
                         <ActionButton variant="ghost">View doctors</ActionButton>
                       </div>

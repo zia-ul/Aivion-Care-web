@@ -14,7 +14,7 @@ interface StatCardProps {
 export function StatCard({ label, value, icon: Icon, href, onClick, className }: StatCardProps) {
   const content = (
     <>
-      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-accent/10 text-accent transition group-hover:bg-accent/15" aria-hidden="true">
+      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-accent/10 text-accent transition group-hover:bg-accent-fill/15" aria-hidden="true">
         <Icon size={21} strokeWidth={2} />
       </span>
       <span className="min-w-0">

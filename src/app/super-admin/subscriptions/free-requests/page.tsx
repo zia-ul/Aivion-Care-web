@@ -408,7 +408,7 @@ export default function FreeSubscriptionRequestsPage() {
                   </div>
                   <div className="flex gap-3 justify-end">
                     <Button variant="outline" onClick={() => setShowModal(false)}>Cancel</Button>
-                    <Button onClick={handleReview} loading={reviewing} className={reviewData.approved ? '' : 'bg-danger hover:bg-danger/90'}>
+                    <Button onClick={handleReview} loading={reviewing} className={reviewData.approved ? '' : 'bg-danger hover:bg-danger-fill/90'}>
                       {reviewing ? 'Processing...' : reviewData.approved ? 'Approve' : 'Reject'}
                     </Button>
                   </div>

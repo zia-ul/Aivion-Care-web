@@ -14,10 +14,13 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     const baseClasses = 'inline-flex min-h-11 select-none items-center justify-center gap-2 rounded-input font-bold transition duration-200 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/70 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-10 disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:active:scale-100';
 
     const variantClasses = {
-      primary: 'bg-accent text-surface-10 hover:bg-accent/90 active:bg-accent/80',
-      danger: 'bg-danger text-surface-10 hover:bg-danger/90 active:bg-danger/80',
-      success: 'bg-success text-surface-10 hover:bg-success/90 active:bg-success/80',
-      info: 'bg-info text-white hover:bg-info/90 active:bg-info/80',
+      // Filled variants use the *-fill tokens: the plain `accent`/`success`
+      // colours stay light in the dark theme for text and icons, so a button
+      // needs its own deeper shade to carry a legible white label.
+      primary: 'bg-accent-fill text-white hover:bg-accent-fill/90 active:bg-accent-fill/80',
+      danger: 'bg-danger-fill text-white hover:bg-danger-fill/90 active:bg-danger-fill/80',
+      success: 'bg-success-fill text-white hover:bg-success-fill/90 active:bg-success-fill/80',
+      info: 'bg-info-fill text-white hover:bg-info-fill/90 active:bg-info-fill/80',
       outline: 'border border-tonal-30 bg-surface-20/60 text-primary-light hover:border-accent/60 hover:bg-surface-30/70',
       ghost: 'text-primary-light hover:bg-surface-20 hover:text-accent',
     };

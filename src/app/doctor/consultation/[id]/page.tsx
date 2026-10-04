@@ -1,23 +1,26 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, use } from 'react';
 import { useRouter } from 'next/navigation';
 import AppLayout from '@/components/layout/AppLayout';
 import { chatApi, consultationApi } from '@/lib/api/endpoints';
 import { DarkCard, Pill, ActionButton, FL, inputClass, Field } from '@/components/ui/FlutterTheme';
 import { 
   User, Stethoscope, Activity, MessageCircle, Plus, Trash2, FileText, Download, Send, 
-  Sparkles, Pill as PillIcon, Check, Mic, Square, Upload, Link2, RefreshCw 
+  Sparkles, Pill as PillIcon, Check, Mic, Square, Upload, Link2, RefreshCw, Globe, Brain 
 } from 'lucide-react';
 import { VoiceRecorder } from '@/components/doctor/VoiceRecorder';
+import ConsultationCallPanel from '@/components/doctor/ConsultationCallPanel';
 import { VitalsEditor } from '@/components/doctor/VitalsEditor';
 import { MedicationEditor } from '@/components/doctor/MedicationEditor';
 import { InvestigationEditor } from '@/components/doctor/InvestigationEditor';
 import { AISuggestionsPanel } from '@/components/doctor/AISuggestionsPanel';
 import { PrescriptionPreview } from '@/components/doctor/PrescriptionPreview';
+import { SoapSummary } from '@/components/doctor/SoapSummary';
 import { 
   ConsultationResponse, 
   ConsultationReviewResponse, 
+  ConsultationAiDraftResponse,
   VitalData, 
   InvestigationItem, 
   MedicationDetail, 
@@ -36,6 +39,7 @@ import {
 } from '@/components/doctor/LayoutComponents';
 import { 
   syncVitalsFromConsultation, 
+  syncVitalsFromDraft,
   mapMedicinesFromConsultation, 
   mapInvestigationsFromConsultation,
   extractVitalsForApi,
@@ -45,9 +49,10 @@ import {
 } from '@/lib/consultationUtils';
 import toast from 'react-hot-toast';
 
-export default function DoctorConsultationPage({ params }: { params: { id: string } }) {
+export default function DoctorConsultationPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
-  const appointmentId = Number(params.id);
+  const resolvedParams = use(params);
+  const appointmentId = Number(resolvedParams.id);
   const [chatRoomId, setChatRoomId] = useState<number | null>(null);
 
   // Clinical fields
@@ -64,6 +69,8 @@ export default function DoctorConsultationPage({ params }: { params: { id: strin
     lifestyleAdvice: '',
     followUp: '',
   });
+  const [summary, setSummary] = useState('');
+
   const up = (field: string) => (e: any) => setF((prev) => ({ ...prev, [field]: e.target.value }));
 
   // Vitals
@@ -136,6 +143,73 @@ export default function DoctorConsultationPage({ params }: { params: { id: strin
       });
     }
   }, [consultation]);
+
+  // Sync AI draft fields from review (auto-fill from transcription)
+  useEffect(() => {
+    const draft = review?.draft;
+    if (draft && !loading && !reviewLoading) {
+      // Sync clinical fields from AI draft
+      setF({
+        chiefComplaints: draft.symptoms || f.chiefComplaints,
+        pastHistory: draft.pastHistory || f.pastHistory,
+        physicalExamination: draft.physicalExamination || f.physicalExamination,
+        diagnosisNotes: draft.diagnosis || f.diagnosisNotes,
+        investigationAdvised: draft.advice || f.investigationAdvised,
+        clinicalNotes: draft.clinicalNotes || f.clinicalNotes,
+        advice: draft.advice || f.advice,
+        allergy: draft.allergy || f.allergy,
+        severity: draft.severity || f.severity,
+        lifestyleAdvice: draft.lifestyleAdvice || f.lifestyleAdvice,
+        followUp: draft.followUp || f.followUp,
+      });
+
+      // Sync vitals from AI draft
+      if (draft.vitals && Object.keys(draft.vitals).some(k => draft.vitals[k as keyof typeof draft.vitals] != null)) {
+        const vitalsFromDraft = syncVitalsFromDraft(draft.vitals);
+        if (vitalsFromDraft.some(v => v.value)) {
+          setVitals(vitalsFromDraft);
+        }
+      }
+
+      // Sync medications from AI draft
+      if (draft.medications && draft.medications.length > 0) {
+        const medsFromDraft = draft.medications.map((m, i) => ({
+          sno: i + 1,
+          medicineName: m.medicineName,
+          dosage: m.dosage,
+          amountPerUse: m.amountPerUse,
+          frequency: m.frequencyPerDay,
+          frequencyPerDay: m.frequencyPerDay,
+          timing: m.timing,
+          duration: m.duration,
+          durationDays: m.durationDays,
+          instructions: m.instructions,
+          notes: m.notes,
+          route: (m as any).route || 'Oral',
+          aiSuggestionId: m.aiSuggestionId,
+          conditionKeyword: m.conditionKeyword,
+        }));
+        setMedications(medsFromDraft);
+      }
+
+      // Sync investigations from AI draft
+      if (draft.investigations && draft.investigations.length > 0) {
+        const invsFromDraft = draft.investigations.map((inv, i) => ({
+          sno: i + 1,
+          investigationName: inv.investigationName,
+          priority: inv.priority || 'NORMAL',
+        }));
+        setInvestigations(invsFromDraft);
+      }
+
+      // Update transcript and summary
+      if (draft.transcript) setTranscript(draft.transcript);
+      if (draft.transcriptSummary) setSummary(draft.transcriptSummary);
+      
+      // Show success toast if this is a new draft
+      toast.success('AI draft generated and fields auto-filled');
+    }
+  }, [review, loading, reviewLoading]);
 
   // Load chat room
   useEffect(() => {
@@ -292,17 +366,31 @@ export default function DoctorConsultationPage({ params }: { params: { id: strin
     }
   }, [suggestions, selectedSuggestionIds, medications, setMedications, setSelectedSuggestionIds]);
 
-  if (loading) return <AppLayout role="DOCTOR" title="Consultation" subtitle="Loading..."><p className="text-sm text-[#5B7A88]">Loading...</p></AppLayout>;
-  if (!consultation) return <AppLayout role="DOCTOR" title="Consultation" subtitle="Not found"><p className="text-sm text-[#5B7A88]">Appointment not found</p></AppLayout>;
+  if (loading) return <AppLayout role="DOCTOR" title="Consultation" subtitle="Loading..."><p className="text-sm text-doctor-dim">Loading...</p></AppLayout>;
+  if (!consultation) return <AppLayout role="DOCTOR" title="Consultation" subtitle="Not found"><p className="text-sm text-doctor-dim">Appointment not found</p></AppLayout>;
 
-  const reviewTranscriptText = review?.transcript?.trim() || '';
+  // The raw transcript is deliberately not shown here - it is already editable
+  // in the "Transcript / Dictation" field below, and repeating speech-to-text
+  // under the AI draft only adds noise next to the structured SOAP summary.
   const reviewSummaryText = review?.transcriptSummary?.trim() || '';
+  const reviewSoapSections = review?.soapSections ?? [];
   const reviewProviderText = review?.summaryProvider?.trim() || '';
-  const reviewTranscriptAvailable = review?.liveTranscriptAvailable || false;
 
   return (
     <AppLayout role="DOCTOR" title="Consultation" subtitle={`Appointment #${appointmentId}`}>
       <div className="space-y-5">
+        {/* Call + recording */}
+        <ConsultationCallPanel
+          appointmentId={appointmentId}
+          onRecordingReady={(blob) => {
+            if (!blob) return;
+            const file = new File([blob], `consultation-${appointmentId}-call.webm`, {
+              type: blob.type || 'audio/webm',
+            });
+            handlePickAndGenerate(file);
+          }}
+        />
+
         {/* Hero */}
         <SectionCard
           icon={User}
@@ -321,7 +409,7 @@ export default function DoctorConsultationPage({ params }: { params: { id: strin
           }
         >
           <div className="flex flex-wrap items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-[#3F8FE0]/15 flex items-center justify-center text-[#3F8FE0] shrink-0">
+            <div className="w-12 h-12 rounded-2xl bg-doctor-blue/15 flex items-center justify-center text-doctor-blue shrink-0">
               <User size={22} />
             </div>
           </div>
@@ -364,6 +452,7 @@ export default function DoctorConsultationPage({ params }: { params: { id: strin
           title="AI Notes & Transcription"
         >
           <VoiceRecorder
+            appointmentId={appointmentId}
             onRecordingComplete={(file) => {
               if (file) {
                 handlePickAndGenerate(file);
@@ -388,22 +477,23 @@ export default function DoctorConsultationPage({ params }: { params: { id: strin
           </div>
 
           {!recordingSupported && (
-            <p className="mt-2 text-xs text-[#F2C66D]">Live microphone recording is unavailable in this browser. Upload an audio file instead.</p>
+            <p className="mt-2 text-xs text-warning-light">Live microphone recording is unavailable in this browser. Upload an audio file instead.</p>
           )}
 
-          {reviewError && <p className="mt-2 text-xs text-[#F47D8A]">{reviewError}</p>}
-          {(reviewLoading || uploading) && <p className="mt-2 text-xs text-[#8AB0C0]">{uploading ? 'Uploading and generating AI draft...' : 'Loading review draft...'}</p>}
+          {reviewError && <p className="mt-2 text-xs text-danger-light">{reviewError}</p>}
+          {(reviewLoading || uploading) && <p className="mt-2 text-xs text-doctor-muted">{uploading ? 'Uploading and generating AI draft...' : 'Loading review draft...'}</p>}
 
-          {(reviewSummaryText || reviewProviderText || reviewTranscriptText || reviewTranscriptAvailable) && (
+          {(reviewSummaryText || reviewSoapSections.length > 0 || reviewProviderText) && (
             <InnerTile className="mt-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#8AB0C0]">AI Review Draft</p>
-              {reviewSummaryText && <p className="mt-2 text-sm leading-6 text-white">{reviewSummaryText}</p>}
-              {reviewProviderText && <p className="mt-1 text-xs text-[#8AB0C0]">Summary provider: {reviewProviderText}</p>}
-              {reviewTranscriptText && (
-                <p className="mt-2 text-xs leading-5 text-[#8AB0C0] line-clamp-4">{reviewTranscriptText}</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-doctor-muted">AI Review Draft</p>
+              {reviewSoapSections.length > 0 ? (
+                <SoapSummary sections={reviewSoapSections} className="mt-2" showAllSections />
+              ) : (
+                reviewSummaryText && <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-primary-light">{reviewSummaryText}</p>
               )}
+              {reviewProviderText && <p className="mt-1 text-xs text-doctor-muted">Summary provider: {reviewProviderText}</p>}
               {review?.analysisPending === true && (
-                <p className="mt-1 text-xs text-[#F2C66D]">AI analysis is still processing in the background.</p>
+                <p className="mt-1 text-xs text-warning-light">AI analysis is still processing in the background.</p>
               )}
             </InnerTile>
           )}

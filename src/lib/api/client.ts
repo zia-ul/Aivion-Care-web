@@ -24,6 +24,13 @@ apiClient.interceptors.request.use(
     if (accessToken && config.headers) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
+    // FormData must be sent as multipart/form-data with the browser-generated
+    // boundary. The axios instance defaults to application/json, which makes
+    // Spring reject the request (500/415) because the @RequestPart is missing.
+    if (typeof FormData !== 'undefined' && config.data instanceof FormData && config.headers) {
+      delete config.headers['Content-Type'];
+      delete config.headers['content-type'];
+    }
     return config;
   },
   (error) => Promise.reject(error)
@@ -57,6 +64,8 @@ apiClient.interceptors.response.use(
         if (typeof window !== 'undefined') {
           localStorage.removeItem('accessToken');
           localStorage.removeItem('refreshToken');
+          const { useAuthStore } = await import('@/lib/stores/auth');
+          useAuthStore.getState().clearAuth();
           window.location.href = '/login';
         }
         return Promise.reject(error);
@@ -72,6 +81,15 @@ apiClient.interceptors.response.use(
         if (typeof window !== 'undefined') {
           localStorage.setItem('accessToken', newAccess);
           localStorage.setItem('refreshToken', newRefresh);
+          const { useAuthStore } = await import('@/lib/stores/auth');
+          const currentUser = useAuthStore.getState().user;
+          if (currentUser) {
+            useAuthStore.getState().setAuth({
+              user: currentUser,
+              accessToken: newAccess,
+              refreshToken: newRefresh,
+            });
+          }
         }
         processQueue(null, newAccess);
         if (originalRequest.headers) {
@@ -83,6 +101,8 @@ apiClient.interceptors.response.use(
         if (typeof window !== 'undefined') {
           localStorage.removeItem('accessToken');
           localStorage.removeItem('refreshToken');
+          const { useAuthStore } = await import('@/lib/stores/auth');
+          useAuthStore.getState().clearAuth();
           window.location.href = '/login';
         }
         return Promise.reject(error);

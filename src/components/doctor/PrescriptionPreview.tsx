@@ -1,27 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import {
-  Download,
-  Printer,
-  FileText,
-  Stethoscope,
-  Building2,
-  Mail,
-  Phone,
-  MapPin,
-  Calendar,
-  User,
-  Award,
-  Shield,
-  Pill,
-  FileText as FileTextIcon,
-  HeartPulse,
-  Thermometer,
-  Droplet,
-  Weight,
-  Activity,
-} from 'lucide-react';
+import { Download, Printer, FileText } from 'lucide-react';
 import {
   ConsultationResponse,
   MedicineRow,
@@ -29,20 +9,79 @@ import {
   VitalData,
   PatientData,
 } from '@/types/consultation';
+import { usePrescriptionAssetImage, doctorInitials } from './usePrescriptionAssetImage';
 
-const getVitalIcon = (label: string) => {
-  switch (label) {
-    case 'Weight': return <Weight className="h-3 w-3" />;
-    case 'BMI': return <Activity className="h-3 w-3" />;
-    case 'B.P.': return <HeartPulse className="h-3 w-3" />;
-    case 'Pulse': return <HeartPulse className="h-3 w-3" />;
-    case 'SpO2': return <Droplet className="h-3 w-3" />;
-    case 'Temp': return <Thermometer className="h-3 w-3" />;
-    case 'Respiration Rate': return <Activity className="h-3 w-3" />;
-    case 'Blood Glucose': return <Droplet className="h-3 w-3" />;
-    default: return <Activity className="h-3 w-3" />;
+/* ------------------------------------------------------------------------ */
+/* Helpers mirroring the Android template mapper                             */
+/* ------------------------------------------------------------------------ */
+
+const nonBlank = (value?: string | null): string => (value ?? '').trim();
+
+const firstNonBlank = (values: Array<string | null | undefined>, fallback = ''): string => {
+  for (const value of values) {
+    const trimmed = nonBlank(value);
+    if (trimmed) return trimmed;
   }
+  return fallback;
 };
+
+const formatNumber = (value?: number | null): string => {
+  if (value == null) return '';
+  if (Number.isInteger(value)) return String(value);
+  return Number.isInteger(Number(value.toFixed(1))) ? value.toFixed(0) : value.toFixed(1);
+};
+
+const buildSchedule = (m: { schedule?: string; frequencyPerDay?: string | number; timing?: string }): string => {
+  const parts: string[] = [];
+  if (nonBlank(m.schedule)) parts.push(nonBlank(m.schedule));
+  if (nonBlank(String(m.frequencyPerDay ?? ''))) parts.push(`Freq: ${String(m.frequencyPerDay).trim()}`);
+  if (nonBlank(m.timing)) parts.push(`Timing: ${nonBlank(m.timing)}`);
+  return parts.join(' · ');
+};
+
+/* Small building blocks matching the Android preview widgets. */
+
+function SectionTitle({ text }: { text: string }) {
+  return (
+    <h3 className="mb-1 text-[12px] font-bold uppercase tracking-[0.3px] text-gray-900 underline">
+      {text}
+    </h3>
+  );
+}
+
+function InfoRow({ label, value, bold = false, danger = false }: {
+  label: string; value: string; bold?: boolean; danger?: boolean;
+}) {
+  return (
+    <div className="flex items-start gap-1 py-[1.5px] text-[11px] leading-[1.25]">
+      <span className="w-[82px] shrink-0 font-bold text-gray-600">{label}</span>
+      <span className="font-bold text-gray-600">:{' '}</span>
+      <span className={`flex-1 ${bold ? 'font-bold' : 'font-normal'} ${danger ? 'font-bold text-[#C0392B]' : 'text-gray-900'}`}>
+        {value}
+      </span>
+    </div>
+  );
+}
+
+function SectionBlock({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="mb-1.5">
+      <SectionTitle text={title} />
+      {children}
+    </div>
+  );
+}
+
+function AssetImage({ rawUrl, width = 42, height = 42, alt, fallback }: {
+  rawUrl?: string | null; width?: number; height?: number; alt: string;
+  fallback: React.ReactNode;
+}) {
+  const { src, failed } = usePrescriptionAssetImage(rawUrl);
+  if (failed || !src) return <>{fallback}</>;
+  return (
+    <img src={src} alt={alt} width={width} height={height} className="object-contain" style={{ width, height }} />
+  );
+}
 
 interface PrescriptionPreviewProps {
   consultation: ConsultationResponse;
@@ -65,7 +104,7 @@ export function PrescriptionPreview({
     doctor: consultation.doctorName,
     department: consultation.departmentName,
     location: consultation.patientLocation,
-    dateTime: new Date(consultation.consultationDate || consultation.createdAt).toLocaleString('en-IN', {
+    dateTime: new Date(consultation.finalizedAt || consultation.consultationDate || consultation.createdAt).toLocaleString('en-IN', {
       day: '2-digit',
       month: 'short',
       year: 'numeric',
@@ -79,39 +118,70 @@ export function PrescriptionPreview({
   }), [consultation]);
 
   const medicines = useMemo((): MedicineRow[] => {
-    return (consultation.medicines || []).map((m: any, i: number) => ({
-      sno: i + 1,
-      name: m.medicineName,
-      dosage: m.dosage,
-      schedule: m.schedule || m.frequencyPerDay ? `${m.frequencyPerDay}x/day ${m.timing ? `(${m.timing})` : ''}` : m.frequency,
-      instruction: m.instructions || m.notes || 'Take as directed',
-      route: m.route || 'Oral',
-      duration: m.duration || (m.durationDays ? `${m.durationDays} days` : 'As needed'),
-    }));
+    return (consultation.medicines || [])
+      .filter((m: { medicineName?: string; dosage?: string; amountPerUse?: string; frequency?: string; frequencyPerDay?: string | number; timing?: string; duration?: string; instructions?: string; notes?: string }) =>
+        nonBlank(m.medicineName) || nonBlank(m.dosage) || nonBlank(m.amountPerUse)
+        || nonBlank(m.frequency) || nonBlank(String(m.frequencyPerDay ?? ''))
+        || nonBlank(m.timing) || nonBlank(m.duration)
+        || nonBlank(m.instructions) || nonBlank(m.notes))
+      .map((m: { medicineName?: string; dosage?: string; amountPerUse?: string; frequency?: string; frequencyPerDay?: string | number; timing?: string; duration?: string; durationDays?: number; instructions?: string; notes?: string; schedule?: string; route?: string }, i: number) => ({
+        sno: i + 1,
+        name: firstNonBlank([m.medicineName]),
+        dosage: firstNonBlank([m.dosage, m.amountPerUse]),
+        schedule: buildSchedule(m),
+        instruction: firstNonBlank([m.instructions, m.notes]),
+        route: firstNonBlank([m.route], 'Oral'),
+        duration: firstNonBlank([m.duration, m.durationDays != null ? `${m.durationDays} days` : '']),
+      }));
   }, [consultation.medicines]);
 
   const investigations = useMemo((): InvestigationItem[] => {
-    return (consultation.investigations || []).map((inv: any, i: number) => ({
+    return (consultation.investigations || []).map((inv: { sno?: number; investigationName?: string; priority?: 'HIGH' | 'NORMAL' | 'LOW' }, i: number) => ({
       sno: inv.sno || i + 1,
-      investigationName: inv.investigationName,
-      priority: inv.priority,
+      investigationName: firstNonBlank([inv.investigationName]),
+      priority: (firstNonBlank([inv.priority as string], 'NORMAL') as 'HIGH' | 'NORMAL' | 'LOW'),
     }));
   }, [consultation.investigations]);
 
-  const vitals = useMemo((): VitalData[] => {
-    const v = consultation;
+  const vitals = useMemo((): VitalData[] => {    const v = consultation;
     const vitalList: VitalData[] = [
       { label: 'Weight', value: v.weightKg?.toString() || '', unit: 'kg' },
       { label: 'BMI', value: v.bmi?.toString() || '', unit: 'kg/m²' },
       { label: 'B.P.', value: v.bpSystolic && v.bpDiastolic ? `${v.bpSystolic}/${v.bpDiastolic}` : '', unit: 'mmHg' },
       { label: 'Pulse', value: v.heartRate?.toString() || '', unit: 'bpm' },
-      { label: 'SpO2', value: v.spo2?.toString() || '', unit: '%' },
-      { label: 'Temp', value: v.bodyTemp?.toString() || '', unit: '°F' },
-      { label: 'Respiration Rate', value: v.respRate?.toString() || '', unit: '/min' },
-      { label: 'Blood Glucose', value: v.bloodGlucose?.toString() || '', unit: 'mg/dL' },
+      { label: 'SpO2', value: formatNumber(v.spo2) ? `${formatNumber(v.spo2)} %` : '', unit: '' },
+      { label: 'Temp', value: formatNumber(v.bodyTemp) ? `${formatNumber(v.bodyTemp)} F` : '', unit: '' },
+      { label: 'RR', value: v.respRate ? `${v.respRate} /min` : '', unit: '' },
+      {
+        label: 'Glucose',
+        value: v.bloodGlucose != null ? `${formatNumber(v.bloodGlucose)} mg/dL` : '',
+        unit: '',
+      },
     ];
     return vitalList.filter((vital) => vital.value);
   }, [consultation]);
+
+  /* Header identity with the same fallback chains as the Android mapper. */
+  const doctorName = firstNonBlank([consultation.doctorName], 'Doctor');
+  const doctorSpecialization = firstNonBlank([
+    (consultation as unknown as { doctorSpecialization?: string }).doctorSpecialization,
+    consultation.departmentName,
+    consultation.speciality,
+  ]);
+  const doctorPhone = firstNonBlank([consultation.doctorPhone, consultation.hospitalPhone]);
+  const doctorAddress = firstNonBlank([consultation.doctorAddress, consultation.hospitalAddress]);
+  const doctorRegNumber = firstNonBlank([consultation.doctorRegNumber, consultation.hospitalRegNumber]);
+  const hospitalName = firstNonBlank([consultation.hospitalName], 'Hospital');
+  const logoUrl = firstNonBlank([consultation.doctorLogoUrl, consultation.hospitalLogoUrl]) || undefined;
+  const signatureUrl = firstNonBlank([consultation.doctorSignatureUrl, consultation.doctorStampUrl]) || undefined;
+
+  const advice = firstNonBlank([consultation.advice, consultation.lifestyleAdvice, consultation.followUp], 'Follow up as advised');
+  const allergy = nonBlank(consultation.allergy) ? nonBlank(consultation.allergy) : 'None reported';
+  const complaints = firstNonBlank([consultation.chiefComplaints], 'Not specified');
+  const pastHistory = firstNonBlank([consultation.pastHistory], 'Not specified');
+  const physicalExam = firstNonBlank([consultation.physicalExamination], 'Not specified');
+  const clinicalNotes = firstNonBlank([consultation.clinicalNotes], 'Not specified');
+  const diagnosisNotes = firstNonBlank([consultation.diagnosisNotes, consultation.diagnosis || ''], 'Not specified');
 
   const printPreview = () => {
     if (onPrint) onPrint();
@@ -124,294 +194,245 @@ export function PrescriptionPreview({
   };
 
   return (
-    <div className={`bg-white text-gray-900 p-6 md:p-8 ${className}`} style={{ fontFamily: 'system-ui, sans-serif' }}>
-      {/* Header */}
-      <div className="mb-6">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
-          <div className="flex items-center gap-3">
-            <div className="w-14 h-14 rounded-xl bg-green-600 flex items-center justify-center text-white">
-              <Stethoscope className="h-7 w-7" />
+    <div className={`bg-white text-gray-900 p-0 ${className}`} style={{ fontFamily: 'Arial, system-ui, sans-serif', maxWidth: 794 }}>
+      {/* Header (Android PrescriptionHeader) */}
+      <div className="border-b-[2.5px] border-[#005A8E] px-[14px] pt-2 pb-1.5">
+        <div className="flex items-start gap-3">
+          <div className="flex-[6]">
+            <div className="flex items-center gap-2.5">
+              <AssetImage
+                rawUrl={logoUrl}
+                width={42}
+                height={42}
+                alt="Hospital logo"
+                fallback={(
+                  <div className="flex h-12 w-[72px] flex-col items-center justify-center rounded-md bg-[#005A8E] text-white">
+                    <span className="text-[15px] font-bold leading-none">{doctorInitials(doctorName)}</span>
+                    <span className="mt-0.5 text-[7px] font-bold">MAX</span>
+                  </div>
+                )}
+              />
+              <div className="min-w-0">
+                <h1 className="text-[16px] font-bold tracking-[0.5px] text-[#005A8E]">{hospitalName}</h1>
+                <p className="text-[9px] tracking-[0.3px] text-gray-500">Super Speciality Hospital</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">{consultation.hospitalName || 'Hospital'}</h1>
-              <p className="text-gray-600">{consultation.hospitalAddress || ''}</p>
-<p className="text-gray-600 text-sm">
-                <>
-                  {consultation.hospitalPhone && <><Phone className="h-3 w-3 inline mr-1" />{consultation.hospitalPhone}</>}
-                  {consultation.hospitalPhone && consultation.hospitalEmail && <span className="mx-2">•</span>}
-                  {consultation.hospitalEmail && <><Mail className="h-3 w-3 inline mr-1" />{consultation.hospitalEmail}</>}
-                </>
-              </p>
-              {consultation.hospitalRegNumber && (
-                <p className="text-xs text-gray-500 mt-1">Reg: {consultation.hospitalRegNumber}</p>
-              )}
+            <div className="mt-1.5 flex items-start gap-2">
+              <div className="h-7 w-7 shrink-0 rounded-full bg-[#E8F2F9] flex items-center justify-center text-[13px] font-bold text-[#005A8E]">℞</div>
+              <div>
+                <p className="text-[13px] font-bold text-gray-900">Dr. {doctorName}</p>
+                {consultation.doctorQualification && (
+                  <p className="text-[10.5px] font-bold text-[#005A8E]">{consultation.doctorQualification}</p>
+                )}
+                {doctorSpecialization && <p className="text-[10px] text-gray-900">{doctorSpecialization}</p>}
+                <p className="text-[9px] font-bold text-[#C8960C]">Senior Consultant</p>
+              </div>
             </div>
           </div>
-          {consultation.hospitalLogoUrl && (
-            <img src={consultation.hospitalLogoUrl} alt="Hospital Logo" className="h-16 w-auto rounded-lg" />
-          )}
-        </div>
-
-        <div className="border-t-2 border-green-600 mb-4" />
-      </div>
-
-      {/* Prescription Title */}
-      <div className="text-center mb-6">
-        <h2 className="text-xl font-bold text-gray-900 uppercase tracking-wide">Prescription</h2>
-        <p className="text-gray-600 mt-1">Patient Consultation Record</p>
-      </div>
-
-      {/* Patient & Doctor Info Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6 text-sm">
-        <div className="bg-green-50 rounded-lg p-3">
-          <p className="text-xs text-green-700 font-semibold uppercase">Patient</p>
-          <p className="font-medium text-gray-900">{patient.name}</p>
-          <p className="text-gray-600">{patient.age} yrs • {patient.sex}</p>
-        </div>
-        <div className="bg-blue-50 rounded-lg p-3">
-          <p className="text-xs text-blue-700 font-semibold uppercase">Doctor</p>
-          <p className="font-medium text-gray-900">{consultation.doctorName}</p>
-          <p className="text-gray-600">{consultation.doctorSpecialization}</p>
-        </div>
-        <div className="bg-purple-50 rounded-lg p-3">
-          <p className="text-xs text-purple-700 font-semibold uppercase">Date</p>
-          <p className="font-medium text-gray-900">{patient.dateTime}</p>
-          <p className="text-gray-600">{patient.callInfo}</p>
-        </div>
-        <div className="bg-orange-50 rounded-lg p-3">
-          <p className="text-xs text-orange-700 font-semibold uppercase">Invoice</p>
-          <p className="font-medium text-gray-900">{patient.invoiceNo}</p>
-          <p className="text-gray-600">Max ID: {patient.maxId || '—'}</p>
+          <div className="flex-[4] text-right">
+            <p className="text-[13px] font-bold text-gray-900">{doctorName}</p>
+            {consultation.doctorQualification && (
+              <p className="text-[10.5px] font-bold text-[#005A8E]">{consultation.doctorQualification}</p>
+            )}
+            {doctorSpecialization && <p className="text-[10px] text-gray-900">{doctorSpecialization}</p>}
+            <p className="text-[9px] font-bold text-[#C8960C]">Senior Consultant</p>
+            <p className="mt-1 text-[10px] text-gray-600">{doctorAddress || consultation.hospitalAddress}</p>
+            <p className="text-[10px] text-gray-600">Phone: {doctorPhone}</p>
+            <p className="text-[10px] text-gray-600">Hospital: {hospitalName} | No: {consultation.hospitalRegNumber}</p>
+          </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6 text-sm">
-        <div>
-          <p className="text-xs text-gray-500 uppercase">Department</p>
-          <p className="font-medium">{patient.department}</p>
-        </div>
-        <div>
-          <p className="text-xs text-gray-500 uppercase">Referred By</p>
-          <p className="font-medium">{patient.referredBy || '—'}</p>
-        </div>
-        <div>
-          <p className="text-xs text-gray-500 uppercase">Speciality</p>
-          <p className="font-medium">{patient.speciality}</p>
-        </div>
-        <div>
-          <p className="text-xs text-gray-500 uppercase">Location</p>
-          <p className="font-medium">{patient.location}</p>
+      {/* Blue strip */}
+      <div className="bg-[#005A8E] py-[3px] text-center text-[10px] font-bold uppercase tracking-[1px] text-white">
+        Outpatient Prescription / Clinical Summary
+      </div>
+
+      {/* Patient info grid */}
+      <div className="border-b border-gray-300 px-[14px] py-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-3">
+          <div>
+            <InfoRow label="Patient Name" value={patient.name} bold />
+            <InfoRow label="Age / Sex" value={`${patient.age} Years / ${patient.sex}`} />
+            <InfoRow label="Max ID" value={patient.maxId} />
+            <InfoRow label="Consultant" value={patient.doctor} />
+            <InfoRow label="Department" value={patient.department} />
+          </div>
+          <div>
+            <InfoRow label="Location" value={patient.location} />
+            <InfoRow label="Date & Time" value={patient.dateTime} />
+            <InfoRow label="Invoice No." value={patient.invoiceNo} />
+            <InfoRow label="Referred By" value={patient.referredBy} />
+            <InfoRow label="Speciality" value={patient.speciality} />
+            <InfoRow label="Call Info" value={patient.callInfo} />
+          </div>
         </div>
       </div>
 
-      {/* Doctor Details */}
-      <div className="border-t border-gray-200 pt-4 mb-6">
-        <div className="flex flex-wrap gap-4 text-sm text-gray-700">
-          <div className="flex items-center gap-1"><Award className="h-4 w-4" />{consultation.doctorQualification}</div>
-          <div className="flex items-center gap-1"><Shield className="h-4 w-4" />Reg: {consultation.doctorRegNumber}</div>
-          <div className="flex items-center gap-1"><Phone className="h-4 w-4" />{consultation.doctorPhone}</div>
-          <div className="flex items-center gap-1"><MapPin className="h-4 w-4" />{consultation.doctorAddress}</div>
-        </div>
-      </div>
 
-      {/* Vitals */}
+      {/* Vitals bar */}
       {vitals.length > 0 && (
-        <div className="mb-6">
-          <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
-            <HeartPulse className="h-5 w-5 text-green-600" /> Vital Signs
-          </h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="mx-[14px] mt-2 rounded-[3px] border border-[#005A8E] bg-[#F5FAFF] px-2 py-1.5">
+          <div className="flex flex-wrap gap-x-2 gap-y-1.5">
             {vitals.map((vital) => (
-              <div key={vital.label} className="bg-gray-50 rounded-lg p-3">
-                <div className="flex items-center gap-1.5 text-xs text-gray-500">
-                  {getVitalIcon(vital.label)}
-                  {vital.label}
-                </div>
-                <p className="text-lg font-bold text-gray-900">{vital.value} <span className="text-sm font-normal text-gray-500">{vital.unit}</span></p>
-              </div>
+              <span key={vital.label} className="inline-block w-[84px] text-[10px] leading-[1.3] text-gray-900">
+                <span className="font-bold">{vital.label}:</span> {vital.value}
+              </span>
             ))}
           </div>
         </div>
       )}
 
-      {/* Chief Complaints */}
-      {(consultation.chiefComplaints || consultation.symptoms) && (
-        <div className="mb-6">
-          <h3 className="text-lg font-bold text-gray-900 mb-2 flex items-center gap-2">
-            <FileTextIcon className="h-5 w-5 text-blue-600" /> Chief Complaints
-          </h3>
-          <div className="bg-blue-50 rounded-lg p-4 border border-blue-100">
-            <p className="text-gray-800 whitespace-pre-wrap">{consultation.chiefComplaints || consultation.symptoms}</p>
-          </div>
+      {/* Clinical sections: Allergy + Chief Complaints, Past History + Physical, Clinical Notes, Diagnosis */}
+      <div className="px-[14px] pt-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-3">
+          <SectionBlock title="Allergy">
+            <p className={`text-[12px] ${allergy !== 'None reported' ? 'font-bold text-[#C0392B]' : 'text-gray-900'}`}>
+              {allergy}
+            </p>
+          </SectionBlock>
+          <SectionBlock title="Chief Complaints">
+            <p className="text-[12px] text-gray-900">{complaints}</p>
+          </SectionBlock>
         </div>
-      )}
-
-      {/* Diagnosis */}
-      {(consultation.diagnosisNotes || consultation.diagnosis) && (
-        <div className="mb-6">
-          <h3 className="text-lg font-bold text-gray-900 mb-2 flex items-center gap-2">
-            <Shield className="h-5 w-5 text-red-600" /> Diagnosis
-          </h3>
-          <div className="bg-red-50 rounded-lg p-4 border border-red-100">
-            <p className="text-gray-800 whitespace-pre-wrap font-medium">{consultation.diagnosisNotes || consultation.diagnosis}</p>
-          </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-3">
+          <SectionBlock title="Past History">
+            <p className="text-[12px] text-gray-900">{pastHistory}</p>
+          </SectionBlock>
+          <SectionBlock title="Physical Examination">
+            <p className="text-[12px] text-gray-900">{physicalExam}</p>
+          </SectionBlock>
         </div>
-      )}
-
-      {/* Investigations */}
-      {investigations.length > 0 && (
-        <div className="mb-6">
-          <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
-            <FileTextIcon className="h-5 w-5 text-purple-600" /> Investigations Advised
-          </h3>
-          <div className="space-y-2">
-            {investigations.map((inv) => (
-              <div key={inv.sno} className="flex items-center justify-between bg-gray-50 rounded-lg p-3 border border-gray-100">
-                <div className="flex items-center gap-3">
-                  <span className="w-8 text-center text-gray-400 font-medium">{inv.sno}.</span>
-                  <span className="font-medium text-gray-900">{inv.investigationName}</span>
-                </div>
-                <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
-                  inv.priority === 'HIGH' ? 'bg-red-100 text-red-700' :
-                  inv.priority === 'LOW' ? 'bg-green-100 text-green-700' :
-                  'bg-yellow-100 text-yellow-700'
-                }`}>
-                  {inv.priority}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Medicines */}
-      {medicines.length > 0 && (
-        <div className="mb-6">
-          <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
-            <Pill className="h-5 w-5 text-orange-600" /> Medicines Prescribed
-          </h3>
-          <div className="space-y-3">
-            {medicines.map((med) => (
-              <div key={med.sno} className="bg-white border border-gray-200 rounded-xl p-4">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
-                  <div className="flex items-center gap-3">
-                    <span className="w-8 h-8 rounded-full bg-orange-100 text-orange-700 flex items-center justify-center font-bold text-sm">{med.sno}</span>
-                    <div>
-                      <p className="font-bold text-gray-900 text-lg">{med.name}</p>
-                      <p className="text-sm text-gray-600">{med.dosage}</p>
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap gap-2 text-xs">
-                    <span className="rounded-full bg-orange-100 text-orange-700 px-2 py-0.5">{med.schedule}</span>
-                    <span className="rounded-full bg-blue-100 text-blue-700 px-2 py-0.5">{med.route}</span>
-                    <span className="rounded-full bg-green-100 text-green-700 px-2 py-0.5">{med.duration}</span>
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
-                  <div className="bg-gray-50 rounded-lg p-3">
-                    <p className="text-xs text-gray-500 uppercase">Instruction</p>
-                    <p className="font-medium text-gray-900">{med.instruction}</p>
-                  </div>
-                  <div className="bg-gray-50 rounded-lg p-3">
-                    <p className="text-xs text-gray-500 uppercase">Route</p>
-                    <p className="font-medium text-gray-900">{med.route}</p>
-                  </div>
-                  <div className="bg-gray-50 rounded-lg p-3">
-                    <p className="text-xs text-gray-500 uppercase">Duration</p>
-                    <p className="font-medium text-gray-900">{med.duration}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Clinical Sections */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        {(consultation.pastHistory || consultation.pastHistory) && (
-          <div className="bg-gray-50 rounded-lg p-4">
-            <h4 className="text-sm font-semibold text-gray-700 mb-2">Past History</h4>
-            <p className="text-sm text-gray-800 whitespace-pre-wrap">{consultation.pastHistory}</p>
-          </div>
-        )}
-        {(consultation.physicalExamination || consultation.physicalExamination) && (
-          <div className="bg-gray-50 rounded-lg p-4">
-            <h4 className="text-sm font-semibold text-gray-700 mb-2">Physical Examination</h4>
-            <p className="text-sm text-gray-800 whitespace-pre-wrap">{consultation.physicalExamination}</p>
-          </div>
-        )}
-        {(consultation.advice || consultation.advice) && (
-          <div className="md:col-span-2 bg-green-50 rounded-lg p-4 border border-green-100">
-            <h4 className="text-sm font-semibold text-green-700 mb-2 flex items-center gap-1">
-              <Shield className="h-4 w-4" /> Advice
-            </h4>
-            <p className="text-sm text-gray-800 whitespace-pre-wrap">{consultation.advice}</p>
-          </div>
-        )}
-        {(consultation.lifestyleAdvice || consultation.lifestyleAdvice) && (
-          <div className="bg-blue-50 rounded-lg p-4 border border-blue-100">
-            <h4 className="text-sm font-semibold text-blue-700 mb-2">Lifestyle Advice</h4>
-            <p className="text-sm text-gray-800 whitespace-pre-wrap">{consultation.lifestyleAdvice}</p>
-          </div>
-        )}
-        {(consultation.followUp || consultation.followUp) && (
-          <div className="bg-purple-50 rounded-lg p-4 border border-purple-100">
-            <h4 className="text-sm font-semibold text-purple-700 mb-2 flex items-center gap-1">
-              <Calendar className="h-4 w-4" /> Follow-up
-            </h4>
-            <p className="text-sm text-gray-800">{consultation.followUp}</p>
-          </div>
-        )}
-        {(consultation.allergy || consultation.allergy) && (
-          <div className="bg-red-50 rounded-lg p-4 border border-red-100">
-            <h4 className="text-sm font-semibold text-red-700 mb-2 flex items-center gap-1">
-              <Shield className="h-4 w-4" /> Allergies
-            </h4>
-            <p className="text-sm text-gray-800">{consultation.allergy}</p>
-          </div>
-        )}
-        {(consultation.clinicalNotes || consultation.clinicalNotes) && (
-          <div className="md:col-span-2 bg-gray-50 rounded-lg p-4">
-            <h4 className="text-sm font-semibold text-gray-700 mb-2">Clinical Notes</h4>
-            <p className="text-sm text-gray-800 whitespace-pre-wrap">{consultation.clinicalNotes}</p>
-          </div>
-        )}
+        <SectionBlock title="Clinical Notes / Old Reports">
+          <p className="text-[12px] text-gray-900">{clinicalNotes}</p>
+        </SectionBlock>
+        <SectionBlock title="Diagnosis Notes">
+          <p className="text-[12px] text-gray-900">{diagnosisNotes}</p>
+        </SectionBlock>
       </div>
 
-      {/* Footer - Doctor Signature & Stamp */}
-      <div className="border-t-2 border-gray-300 pt-6">
-        <div className="flex flex-col md:flex-row md:justify-between gap-6">
-          <div className="flex-1">
-            <p className="text-sm font-medium text-gray-900 mt-1">Doctor&apos;s Signature</p>
-            <div className="h-20 border-b border-gray-400 flex items-end justify-center">
-              {consultation.doctorSignatureUrl && (
-                <img src={consultation.doctorSignatureUrl} alt="Signature" className="h-full max-w-xs" />
-              )}
-            </div>
-            <p className="text-sm font-medium text-gray-900 mt-1">{consultation.doctorName}</p>
-            <p className="text-xs text-gray-500">{consultation.doctorQualification}</p>
-            <p className="text-xs text-gray-500">Reg: {consultation.doctorRegNumber}</p>
-          </div>
 
+      {/*
+        Android order: Allergy+Complaints, Past+Physical, Clinical, Diagnosis,
+        divider, Investigations table, Medicine table, Advice box.
+        (Replaces the previous web-only card sections below.)
+      */}
+      <div className="px-[14px] pb-1">
+        <hr className="h-px border-0 bg-gray-300 my-2" />
+
+        <SectionBlock title="Investigation Advised">
+          {investigations.length === 0 ? (
+            <p className="text-[11px] text-gray-500">No investigations advised.</p>
+          ) : (
+            <table className="w-full border-collapse border border-gray-300 text-[10px]">
+              <thead>
+                <tr className="bg-[#005A8E] text-white">
+                  <th className="px-1.5 py-1 text-center font-bold w-[34px]">S.No</th>
+                  <th className="px-1.5 py-1 text-left font-bold">Investigation</th>
+                  <th className="px-1.5 py-1 text-left font-bold w-24">Priority</th>
+                </tr>
+              </thead>
+              <tbody>
+                {investigations.map((inv) => (
+                  <tr key={inv.sno} className="border-t border-gray-300">
+                    <td className="px-1.5 py-1 text-center text-gray-500">{inv.sno}</td>
+                    <td className="px-1.5 py-1 text-gray-900">{inv.investigationName}</td>
+                    <td className={`px-1.5 py-1 font-bold ${
+                      inv.priority === 'HIGH' ? 'text-[#C0392B]' :
+                      inv.priority === 'LOW' ? 'text-gray-500' : 'text-[#2980B9]'
+                    }`}>
+                      {inv.priority}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </SectionBlock>
+
+        <SectionBlock title="Medicine Advised">
+          {medicines.length === 0 ? (
+            <p className="text-[11px] text-gray-500">No medicines advised.</p>
+          ) : (
+            <table className="w-full border-collapse border border-gray-300 text-[10px]">
+              <thead>
+                <tr className="bg-[#005A8E] text-white">
+                  <th className="px-1.5 py-1 text-center font-bold w-[34px]">S.No</th>
+                  <th className="px-1.5 py-1 text-left font-bold">Medicine</th>
+                  <th className="px-1.5 py-1 text-left font-bold w-[82px]">Schedule</th>
+                  <th className="px-1.5 py-1 text-left font-bold">Instruction</th>
+                  <th className="px-1.5 py-1 text-center font-bold w-12">Route</th>
+                  <th className="px-1.5 py-1 text-center font-bold w-[38px]">Days</th>
+                </tr>
+              </thead>
+              <tbody>
+                {medicines.map((med) => (
+                  <tr key={med.sno} className="border-t border-gray-300 align-top">
+                    <td className="px-1.5 py-1 text-center text-gray-500">{med.sno}</td>
+                    <td className="px-1.5 py-1">
+                      <p className="font-bold text-[10.5px] text-gray-900">{med.name}</p>
+                      <p className="text-[9.5px] text-gray-500">{med.dosage}</p>
+                    </td>
+                    <td className="px-1.5 py-1 text-gray-900">{med.schedule}</td>
+                    <td className="px-1.5 py-1 text-gray-900">{med.instruction}</td>
+                    <td className="px-1.5 py-1 text-center text-gray-900">{med.route}</td>
+                    <td className="px-1.5 py-1 text-center text-gray-900">{med.duration}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </SectionBlock>
+
+        <div className="mb-2.5 rounded-[3px] border border-gray-300 bg-[#FFFDF5] p-[7px]">
+          <SectionTitle text="Advice / Follow-up Instructions" />
+          <p className="text-[11px] text-gray-900">{advice}</p>
+        </div>
+      </div>
+
+
+      {/*
+        Android legacy sections (Past History, Physical Examination, Advice,
+        Lifestyle Advice, Follow-up, Allergy, Clinical Notes) are rendered in
+        the canonical Android layout above; this duplicate card grid is removed
+        so the preview matches the Android order/section set exactly.
+      */}
+
+      {/* Footer - Doctor Signature & Stamp (Android PrescriptionFooter) */}
+      <div className="border-t-[2.5px] border-[#005A8E] px-[14px] pt-2 pb-1.5">
+        <div className="flex items-center gap-3">
           <div className="flex-1">
-            <p className="text-sm text-gray-500 mb-2">Hospital Stamp</p>
-            <div className="h-20 border-2 border-gray-400 rounded-full flex items-center justify-center">
-              {consultation.hospitalLogoUrl ? (
-                <img src={consultation.hospitalLogoUrl} alt="Stamp" className="h-full w-auto p-2" />
+            <p className="text-[11px] font-bold text-gray-900">
+              {hospitalName}{consultation.hospitalAddress ? ` - ${consultation.hospitalAddress.split(',')[0].trim()}` : ''}
+            </p>
+            <p className="text-[10px] text-gray-500">{consultation.hospitalAddress}</p>
+            <p className="text-[10px] text-gray-500">Tel: {doctorPhone} | Emergency: {doctorPhone}</p>
+            <p className="text-[10px] text-gray-500">Hospital No.: {consultation.hospitalRegNumber}</p>
+            <p className="text-[10px] text-gray-500">Email: {consultation.hospitalEmail}</p>
+          </div>
+          <div className="w-32 text-center">
+            <div className="mx-auto flex h-[60px] w-[60px] items-center justify-center">
+              {signatureUrl ? (
+                <AssetImage
+                  rawUrl={signatureUrl}
+                  width={60}
+                  height={60}
+                  alt="Doctor signature or stamp"
+                  fallback={<span className="text-[9px] text-gray-500">STAMP</span>}
+                />
               ) : (
-                <span className="text-gray-400">Hospital Stamp</span>
+                <span className="flex h-[62px] w-[62px] items-center justify-center rounded-[10px] border border-gray-300 text-[9px] text-gray-500">STAMP</span>
               )}
             </div>
+            <p className="mt-1 text-[11px] font-bold text-gray-900">{doctorName}</p>
+            <p className="text-[10px] text-gray-500">{consultation.doctorQualification}</p>
+            <p className="text-[10px] text-gray-500">Reg. No.: {doctorRegNumber}</p>
           </div>
         </div>
+      </div>
 
-        {/* Disclaimer */}
-        <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200 text-xs text-gray-600">
-          <p className="font-semibold mb-1">Disclaimer:</p>
-          <p>This prescription is generated electronically and is valid without physical signature as per IT Act 2000. 
-          Medicines should be taken strictly as advised. Consult your doctor for any adverse effects.</p>
-        </div>
+      <div className="border-t border-[#C5DDEF] bg-[#F5FAFF] px-2 py-1 text-center text-[9.5px] tracking-[0.2px] text-[#005A8E]">
+        For appointments & queries: {doctorPhone} | This prescription is valid for 30 days from date of issue | {hospitalName} - committed to your health
       </div>
 
       {/* Action Buttons (Screen Only) */}

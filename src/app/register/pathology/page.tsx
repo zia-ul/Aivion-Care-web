@@ -47,7 +47,7 @@ export default function RegisterPathologyPage() {
       <div className="w-full max-w-lg">
         <Card>
           <div className="flex justify-end">
-            <Link href="/login" className="rounded-input border border-accent/50 px-4 py-2 text-sm font-bold text-accent transition hover:bg-accent hover:text-tonal-0">Sign in</Link>
+            <Link href="/login" className="rounded-input border border-accent/50 px-4 py-2 text-sm font-bold text-accent transition hover:bg-accent-fill hover:text-white">Sign in</Link>
           </div>
           <div className="text-center mb-6">
             <h1 className="text-headline font-extrabold text-accent mb-1">Pathology / Lab Registration</h1>

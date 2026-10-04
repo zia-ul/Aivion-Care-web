@@ -11,7 +11,7 @@ import {
   ArrowRight, LogOut, RefreshCw, Building2, Stethoscope, FlaskConical, UserRound
 } from 'lucide-react';
 
-type Role = 'doctor' | 'hospital' | 'pathology';
+type Role = 'doctor' | 'pathology';
 
 interface VerificationProfile {
   id: number;
@@ -47,13 +47,6 @@ const DOCUMENT_CONFIGS: Record<Role, DocumentItem[]> = {
     { key: 'rentAgreement', label: 'Rent Agreement', required: false, uploaded: false },
     { key: 'clinicLogo', label: 'Clinic Logo / Stamp', required: false, uploaded: false },
   ],
-  hospital: [
-    { key: 'businessCertificate', label: 'Business Registration Certificate', required: true, uploaded: false },
-    { key: 'medicalLicense', label: 'Medical License', required: true, uploaded: false },
-    { key: 'headIdProof', label: 'Head ID Proof', required: true, uploaded: false },
-    { key: 'headPhoto', label: 'Head Photo', required: true, uploaded: false },
-    { key: 'hospitalLogo', label: 'Hospital Logo', required: false, uploaded: false },
-  ],
   pathology: [
     { key: 'aadhaarCard', label: 'Aadhaar Card', required: true, uploaded: false },
     { key: 'panCard', label: 'PAN Card', required: true, uploaded: false },
@@ -75,13 +68,11 @@ const DOCUMENT_CONFIGS: Record<Role, DocumentItem[]> = {
 
 const ROLE_ICONS: Record<Role, React.ReactNode> = {
   doctor: <Stethoscope className="h-5 w-5" />,
-  hospital: <Building2 className="h-5 w-5" />,
   pathology: <FlaskConical className="h-5 w-5" />,
 };
 
 const ROLE_LABELS: Record<Role, string> = {
   doctor: 'Doctor',
-  hospital: 'Hospital / Clinic',
   pathology: 'Pathology / Lab',
 };
 
@@ -106,9 +97,6 @@ export default function VerificationPage() {
         if (role === 'doctor') {
           const res = await doctorApi.getMyProfile();
           data = res.data;
-        } else if (role === 'hospital') {
-          const res = await hospitalApi.getMyProfile();
-          data = res.data;
         } else if (role === 'pathology') {
           const res = await pathologyApi.getMyProfile();
           data = res.data;
@@ -122,7 +110,7 @@ export default function VerificationPage() {
             mimeType: data[`${doc.key}MimeType`],
           }));
           setProfile({
-            id: data.id || data.userId || data.doctorId || data.hospitalId || data.pathologyProfileId || 0,
+            id: data.id || data.userId || data.doctorId || data.pathologyProfileId || 0,
             role,
             approvalStatus: data.approvalStatus || data.status || 'DRAFT',
             rejectionReason: data.rejectionReason,
@@ -150,8 +138,6 @@ export default function VerificationPage() {
       let res: any;
       if (role === 'doctor') {
         res = await doctorApi.uploadVerificationDocument(documentKey, file);
-      } else if (role === 'hospital') {
-        res = await hospitalApi.uploadDocument(documentKey, file);
       } else if (role === 'pathology') {
         res = await pathologyApi.uploadDocument(documentKey, file);
       }
@@ -175,8 +161,6 @@ export default function VerificationPage() {
     try {
       if (role === 'doctor') {
         await doctorApi.submitForApproval();
-      } else if (role === 'hospital') {
-        await hospitalApi.submitForApproval();
       } else if (role === 'pathology') {
         await pathologyApi.submitForApproval();
       }
@@ -235,7 +219,6 @@ export default function VerificationPage() {
           <div className="flex items-center gap-2">
             <Select value={role} onChange={e => setRole(e.target.value as Role)} options={[
               { value: 'doctor', label: 'Doctor' },
-              { value: 'hospital', label: 'Hospital / Clinic' },
               { value: 'pathology', label: 'Pathology / Lab' },
             ]} className="w-48" />
           </div>
@@ -285,7 +268,7 @@ export default function VerificationPage() {
                         <button
                           onClick={() => document.getElementById(`upload-${doc.key}`)?.click()}
                           disabled={uploading === doc.key}
-                          className="flex-shrink-0 rounded-lg border border-accent/50 px-3 py-1.5 text-sm font-semibold text-accent hover:bg-accent/10 disabled:opacity-50"
+                          className="flex-shrink-0 rounded-lg border border-accent/50 px-3 py-1.5 text-sm font-semibold text-accent hover:bg-accent-fill/10 disabled:opacity-50"
                         >
                           {uploading === doc.key ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
                         </button>

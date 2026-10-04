@@ -18,11 +18,37 @@ export default function AppLayout({ children, role, title, subtitle }: { childre
 
   useEffect(() => {
     if (!actualRole) return;
-    if (role === 'DOCTOR' && actualRole !== 'DOCTOR' && actualRole !== 'SUPER_ADMIN' && actualRole !== 'HOSPITAL_HEAD') {
+    // Doctor role: allow DOCTOR, SUPER_ADMIN, HOSPITAL_HEAD
+    if (role === 'DOCTOR' && !['DOCTOR', 'SUPER_ADMIN', 'HOSPITAL_HEAD'].includes(actualRole)) {
       router.replace(actualRole === 'PATIENT' ? '/patient/dashboard' : '/login');
     }
-    if (role === 'PATIENT' && actualRole !== 'PATIENT' && actualRole !== 'SUPER_ADMIN') {
-      router.replace(actualRole === 'DOCTOR' ? '/doctor/dashboard' : '/login');
+    // Patient role: allow PATIENT, SUPER_ADMIN
+    if (role === 'PATIENT' && !['PATIENT', 'SUPER_ADMIN'].includes(actualRole)) {
+      router.replace(['DOCTOR', 'HOSPITAL_HEAD'].includes(actualRole) ? '/doctor/dashboard' : '/login');
+    }
+    // Hospital Head role: allow HOSPITAL_HEAD, SUPER_ADMIN
+    if (role === 'HOSPITAL_HEAD' && !['HOSPITAL_HEAD', 'SUPER_ADMIN'].includes(actualRole)) {
+      router.replace('/login');
+    }
+    // Pharmacist role: allow PHARMACY, SUPER_ADMIN
+    if (role === 'PHARMACY' && !['PHARMACY', 'SUPER_ADMIN'].includes(actualRole)) {
+      router.replace('/login');
+    }
+    // Pathology role: allow PATHOLOGY, SUPER_ADMIN
+    if (role === 'PATHOLOGY' && !['PATHOLOGY', 'SUPER_ADMIN'].includes(actualRole)) {
+      router.replace('/login');
+    }
+    // Lab Assistant role: allow LAB_ASSISTANT, SUPER_ADMIN
+    if (role === 'LAB_ASSISTANT' && !['LAB_ASSISTANT', 'SUPER_ADMIN'].includes(actualRole)) {
+      router.replace('/login');
+    }
+    // Receptionist role: allow RECEPTIONIST, SUPER_ADMIN
+    if (role === 'RECEPTIONIST' && !['RECEPTIONIST', 'SUPER_ADMIN'].includes(actualRole)) {
+      router.replace('/login');
+    }
+    // Super Admin role: only SUPER_ADMIN
+    if (role === 'SUPER_ADMIN' && actualRole !== 'SUPER_ADMIN') {
+      router.replace('/login');
     }
     // Redirect unapproved doctors to approval-pending
     if (role === 'DOCTOR' && actualRole === 'DOCTOR' && user?.doctorApproved !== true) {
@@ -45,7 +71,7 @@ export default function AppLayout({ children, role, title, subtitle }: { childre
 
   return (
     <div className="relative min-h-screen bg-gradient-bg text-primary-light">
-      <a href="#main-content" className="sr-only absolute left-4 top-4 z-[60] rounded-lg bg-accent px-4 py-2 text-sm font-bold text-surface-10 focus:not-sr-only">Skip to content</a>
+      <a href="#main-content" className="sr-only absolute left-4 top-4 z-[60] rounded-lg bg-accent-fill px-4 py-2 text-sm font-bold text-white focus:not-sr-only">Skip to content</a>
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_85%_0%,rgba(34,211,197,0.07),transparent_28%)]" aria-hidden="true" />
       <div className="flex min-h-screen">
         <div className="fixed inset-y-0 left-0 z-40 hidden md:block">

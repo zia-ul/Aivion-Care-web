@@ -119,3 +119,55 @@ export interface DoctorAccess {
 export interface UpdateDoctorAppointmentAccessRequest {
   appointmentAccessWithoutSubscription: boolean;
 }
+
+// --- Free Subscription Request ---
+
+export type FreeSubscriptionRequestStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'EXPIRED';
+
+export interface FreeSubscriptionRequestResponse {
+  id: number;
+  doctorId: number;
+  doctorName: string;
+  clinicName: string;
+  clinicAddress: string;
+  specialization: string;
+  experienceYears: number;
+  medicalLicenseNumber: string;
+  medicalLicenseDocUrl?: string;
+  degreeCertificateUrl?: string;
+  governmentIdUrl?: string;
+  annualPatientVolume?: number;
+  consultationFee?: number;
+  reasonForFreeSubscription: string;
+  additionalNotes?: string;
+  status: FreeSubscriptionRequestStatus;
+  adminReviewNotes?: string;
+  reviewedBy?: string;
+  reviewedAt?: string;
+  approvedUntil?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateFreeSubscriptionRequest {
+  annualPatientVolume?: number;
+  consultationFee?: number;
+  reasonForFreeSubscription: string;
+  additionalNotes?: string;
+}
+
+export interface ReviewFreeSubscriptionRequest {
+  approved: boolean;
+  adminReviewNotes?: string;
+  approvedUntil?: string;
+}
+
+export interface PaginatedResponse<T> {
+  content: T[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  first: boolean;
+  last: boolean;
+}

@@ -1,9 +1,10 @@
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
+import Link from 'next/link';
 import AppLayout from '@/components/layout/AppLayout';
 import { superAdminApi } from '@/lib/api/endpoints';
-import { Building2, UserCheck, BarChart3 } from 'lucide-react';
+import { Building2, UserCheck, BarChart3, ExternalLink } from 'lucide-react';
 import { StatCard, StatusBadge } from '@/components/ui';
 
 export default function SuperAdminHospitals() {
@@ -69,14 +70,18 @@ export default function SuperAdminHospitals() {
                 <tbody className="divide-y divide-tonal-20/30">
                   {hospitals.map(({ id, name, city, email, status }) => (
                     <tr key={id}>
-                      <td className="py-3 text-body text-primary-light">{name}</td>
+                      <td className="py-3 text-body text-primary-light">
+                        <Link href={`/super-admin/hospitals/${id}`} className="hover:text-accent transition-colors flex items-center gap-1">
+                          {name} <ExternalLink size={12} className="text-primary-light/40" />
+                        </Link>
+                      </td>
                       <td className="py-3 text-body text-primary-light/70">{city || '-'}</td>
                       <td className="py-3 text-body text-primary-light/70">{email}</td>
                       <td className="py-3"><StatusBadge status={status} /></td>
                       <td className="py-3">
                         <div className="flex gap-2">
-                          {status !== 'APPROVED' && <button onClick={() => handleStatusChange(id, 'APPROVED')} className="px-3 py-1 bg-success/10 text-success-light rounded-lg text-body font-medium hover:bg-success/20">Approve</button>}
-                          {status !== 'REJECTED' && <button onClick={() => handleStatusChange(id, 'REJECTED')} className="px-3 py-1 bg-danger/10 text-danger-light rounded-lg text-body font-medium hover:bg-danger/20">Reject</button>}
+                          {status !== 'APPROVED' && <button onClick={() => handleStatusChange(id, 'APPROVED')} className="px-3 py-1 bg-success/10 text-success-light rounded-lg text-body font-medium hover:bg-success-fill/20">Approve</button>}
+                          {status !== 'REJECTED' && <button onClick={() => handleStatusChange(id, 'REJECTED')} className="px-3 py-1 bg-danger/10 text-danger-light rounded-lg text-body font-medium hover:bg-danger-fill/20">Reject</button>}
                         </div>
                       </td>
                     </tr>

@@ -1,0 +1,35 @@
+{
+  "name": "Aivion Care - Healthcare OS",
+  "short_name": "Aivion Care",
+  "description": "Connected healthcare platform with medication reminders",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0D202B",
+  "theme_color": "#22D3C5",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icons/icon-512x512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["health", "medical", "productivity"],
+  "shortcuts": [
+    {
+      "name": "Medication Reminders",
+      "short_name": "Meds",
+      "description": "View and manage medication reminders",
+      "url": "/patient/reminders",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Appointments",
+      "short_name": "Appts",
+      "description": "View upcoming appointments",
+      "url": "/patient/appointments",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    }
+  ]
+}

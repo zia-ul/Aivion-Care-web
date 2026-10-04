@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Activity, LayoutDashboard, Calendar, MessageCircle, Bell, User, Users, Building2, UserCheck, BarChart3, Radio, X, FileText, Pill, Wallet, CalendarDays, Sparkles, CreditCard, ShieldCheck, type LucideIcon } from 'lucide-react';
+import { Activity, LayoutDashboard, Calendar, MessageCircle, Bell, User, Users, Building2, UserCheck, BarChart3, Radio, X, FileText, Pill, Wallet, CalendarDays, Sparkles, CreditCard, ShieldCheck, Shield, MapPin, Stethoscope, Building, Microscope, TestTube, ClipboardList, ShieldPlus, type LucideIcon } from 'lucide-react';
 import { usePathmap } from '@/lib/use-pathmap';
 
 type NavItem = { href: string; label: string; icon: LucideIcon };
@@ -9,6 +9,8 @@ type NavItem = { href: string; label: string; icon: LucideIcon };
 const patientNavItems: NavItem[] = [
   { href: '/patient/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/patient/hospitals', label: 'Hospitals', icon: Building2 },
+  { href: '/patient/pharmacies', label: 'Pharmacies', icon: Pill },
+  { href: '/patient/pathology-labs', label: 'Pathology labs', icon: Activity },
   { href: '/patient/appointments', label: 'Appointments', icon: Calendar },
   { href: '/patient/records', label: 'Medical records', icon: FileText },
   { href: '/patient/reminders', label: 'Medicines', icon: Pill },
@@ -32,18 +34,96 @@ const doctorNavItems: NavItem[] = [
   { href: '/profile', label: 'Profile', icon: User },
 ];
 
+const hospitalHeadNavItems: NavItem[] = [
+  { href: '/hospital-head/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/hospital-head/doctors', label: 'Doctors', icon: UserCheck },
+  { href: '/hospital-head/lab-assistants', label: 'Lab Assistants', icon: Microscope },
+  { href: '/hospital-head/pharmacy', label: 'Pharmacy', icon: Building },
+  { href: '/hospital-head/receptionists', label: 'Receptionists', icon: Users },
+  { href: '/hospital-head/departments', label: 'Departments', icon: Building2 },
+  { href: '/hospital-head/staff-approval', label: 'Staff Approval', icon: ShieldPlus },
+  { href: '/hospital-head/profile', label: 'Hospital Profile', icon: Building2 },
+  { href: '/hospital-head/status', label: 'Hospital Status', icon: Activity },
+  { href: '/hospital-head/generate-login', label: 'Generate Login', icon: ShieldPlus },
+  { href: '/notifications', label: 'Notifications', icon: Bell },
+  { href: '/profile', label: 'Profile', icon: User },
+];
+
+const pharmacistNavItems: NavItem[] = [
+  { href: '/pharmacist/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/pharmacist/inventory', label: 'Inventory', icon: Pill },
+  { href: '/pharmacist/orders', label: 'Orders', icon: ClipboardList },
+  { href: '/pharmacist/prescriptions', label: 'Prescriptions', icon: Pill },
+  { href: '/pharmacist/billing', label: 'Billing', icon: CreditCard },
+  { href: '/notifications', label: 'Notifications', icon: Bell },
+  { href: '/profile', label: 'Profile', icon: User },
+];
+
+const pathologyNavItems: NavItem[] = [
+  { href: '/pathology/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/pathology/workflow', label: 'Workflow', icon: TestTube },
+  { href: '/pathology/labs', label: 'Labs', icon: Microscope },
+  { href: '/notifications', label: 'Notifications', icon: Bell },
+  { href: '/profile', label: 'Profile', icon: User },
+];
+
+const labAssistantNavItems: NavItem[] = [
+  { href: '/lab-assistant/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/lab-assistant/tests', label: 'Hospital Tests', icon: TestTube },
+  { href: '/lab-assistant/bookings', label: 'Bookings', icon: Calendar },
+  { href: '/lab-assistant/upload-report', label: 'Upload Report', icon: FileText },
+  { href: '/notifications', label: 'Notifications', icon: Bell },
+  { href: '/profile', label: 'Profile', icon: User },
+];
+
+const receptionistNavItems: NavItem[] = [
+  { href: '/receptionist/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/receptionist/appointments', label: 'Appointments', icon: Calendar },
+  { href: '/receptionist/schedule', label: 'Daily Schedule', icon: CalendarDays },
+  { href: '/receptionist/surgeries', label: 'Surgeries', icon: Stethoscope },
+  { href: '/notifications', label: 'Notifications', icon: Bell },
+  { href: '/profile', label: 'Profile', icon: User },
+];
+
 const adminNavItems: NavItem[] = [
   { href: '/super-admin/hospitals', label: 'Hospitals', icon: Building2 },
   { href: '/super-admin/doctors/verification', label: 'Doctors', icon: UserCheck },
   { href: '/super-admin/analytics', label: 'Analytics', icon: BarChart3 },
   { href: '/super-admin/broadcast', label: 'Broadcast', icon: Radio },
   { href: '/super-admin/subscriptions', label: 'Subscriptions', icon: CreditCard },
+  { href: '/super-admin/subscriptions/free-requests', label: 'Free Requests', icon: Shield },
+  { href: '/notifications', label: 'Notifications', icon: Bell },
   { href: '/profile', label: 'Profile', icon: User },
 ];
 
 export default function Sidebar({ role, onClose }: { role: string; onClose?: () => void }) {
   const pathname = usePathmap();
-  const items = role === 'DOCTOR' ? doctorNavItems : role === 'SUPER_ADMIN' ? adminNavItems : patientNavItems;
+  let items: NavItem[];
+  switch (role) {
+    case 'DOCTOR':
+      items = doctorNavItems;
+      break;
+    case 'HOSPITAL_HEAD':
+      items = hospitalHeadNavItems;
+      break;
+    case 'PHARMACY':
+      items = pharmacistNavItems;
+      break;
+    case 'PATHOLOGY':
+      items = pathologyNavItems;
+      break;
+    case 'LAB_ASSISTANT':
+      items = labAssistantNavItems;
+      break;
+    case 'RECEPTIONIST':
+      items = receptionistNavItems;
+      break;
+    case 'SUPER_ADMIN':
+      items = adminNavItems;
+      break;
+    default:
+      items = patientNavItems;
+  }
   const roleLabel = role.replace(/_/g, ' ').toLowerCase();
 
   return (

@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import AppLayout from '@/components/layout/AppLayout';
 import { subscriptionApi } from '@/lib/api/endpoints';
 import { SubscriptionPlan, Subscription } from '@/types/subscription';
+import { Shield, HelpCircle } from 'lucide-react';
+import Link from 'next/link';
 
 declare global {
   interface Window { Razorpay?: new (options: Record<string, unknown>) => { open: () => void }; }
@@ -56,9 +58,27 @@ export default function DoctorSubscriptionPage() {
         {subscription?.planName && <p className="mt-1 text-primary-light/70">{subscription.planName} · ends {subscription.endDate || '—'}</p>}
         {message && <p className="mt-3 text-sm text-accent">{message}</p>}
       </div>
+      
+      {/* Free Subscription Request Section */}
+      <div className="rounded-card border border-tonal-20/50 bg-surface-20/80 p-5">
+        <div className="flex items-start gap-3">
+          <div className="w-10 h-10 rounded-xl bg-accent/15 flex items-center justify-center text-accent shrink-0"><Shield size={18} /></div>
+          <div className="flex-1">
+            <h3 className="font-semibold text-primary-light">Need Free Subscription?</h3>
+            <p className="text-sm text-primary-light/60 mt-1">If you cannot afford a paid plan, request free appointment access from the admin team.</p>
+          </div>
+          <Link 
+            href="/doctor/free-subscription-request"
+            className="rounded-lg bg-accent-fill px-4 py-2 font-semibold text-white hover:bg-accent-fill/90 transition-colors shrink-0"
+          >
+            Request Free Access
+          </Link>
+        </div>
+      </div>
+
       <div className="grid gap-4 md:grid-cols-3">{plans.map((plan) => <div key={plan.planType} className="rounded-card border border-tonal-20/50 bg-surface-20/80 p-5">
         <h2 className="font-bold text-primary-light">{plan.planName}</h2><p className="my-2 text-primary-light/70">₹{plan.amount} · {plan.validityDays} days</p>
-        <button onClick={() => pay(plan.planType)} className="rounded-lg bg-accent px-4 py-2 font-semibold text-surface-10">Pay with Razorpay</button>
+        <button onClick={() => pay(plan.planType)} className="rounded-lg bg-accent-fill px-4 py-2 font-semibold text-white">Pay with Razorpay</button>
       </div>)}</div>
     </div>
   </AppLayout>;

@@ -19,6 +19,7 @@ class WebSocketService {
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
   private isManualDisconnect = false;
   private statusListeners = new Set<(connected: boolean) => void>();
+  private authListeners = new Set<(reason: string) => void>();
 
   connect(accessToken: string, onConnect?: () => void, onDisconnect?: () => void) {
     if (this.client?.connected) return;
@@ -43,7 +44,20 @@ class WebSocketService {
         onDisconnect?.();
       },
       onStompError: (frame) => {
-        console.error('STOMP error:', frame.headers['message']);
+        const reason = frame.headers['message'] || 'Unknown STOMP error';
+
+        // An ERROR frame during the CONNECT handshake means the server refused
+        // this token (missing, expired, revoked or wrong type). Reconnecting with
+        // the same token can never succeed, so stop the retry loop instead of
+        // letting stompjs redial forever and spam the console.
+        if (!this.client?.connected) {
+          this.client?.deactivate();
+          this.statusListeners.forEach((listener) => listener(false));
+          this.authListeners.forEach((listener) => listener(reason));
+          return;
+        }
+
+        console.error('STOMP error:', reason);
       },
       onWebSocketError: (event) => {
         console.error('WebSocket error:', event);
@@ -51,6 +65,16 @@ class WebSocketService {
     });
 
     this.client.activate();
+  }
+
+  /**
+   * Notified when the server rejects the handshake, so the caller can refresh or
+   * drop the session instead of waiting for a reconnect that will never succeed.
+   * Returns an unsubscribe function.
+   */
+  onAuthError(listener: (reason: string) => void): () => void {
+    this.authListeners.add(listener);
+    return () => this.authListeners.delete(listener);
   }
 
   onStatusChange(listener: (connected: boolean) => void): () => void {

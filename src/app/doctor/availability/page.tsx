@@ -120,7 +120,7 @@ export default function DoctorAvailability() {
                     <p className="font-semibold text-primary-light">{slot.weekday}</p>
                     <p className="text-support text-primary-light/60">{slot.startTime} - {slot.endTime} | {slot.slotDurationMinutes} min slots | {slot.consultationMode}</p>
                   </div>
-                  <button onClick={() => handleDelete(slot.id)} className="p-2 bg-danger/10 rounded-lg hover:bg-danger/20">
+                  <button onClick={() => handleDelete(slot.id)} className="p-2 bg-danger/10 rounded-lg hover:bg-danger-fill/20">
                     <Trash2 size={16} className="text-danger-light" />
                   </button>
                 </div>

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Bell } from 'lucide-react';
 import { useAuthStore } from '@/lib/stores/auth';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
 export default function Header({ title, subtitle }: { title: string; subtitle?: string }) {
   const { user } = useAuthStore();
@@ -17,15 +18,19 @@ export default function Header({ title, subtitle }: { title: string; subtitle?: 
           {subtitle && <p className="mt-0.5 truncate text-support text-primary-light/55">{subtitle}</p>}
         </div>
 
-        <Link href="/profile" className="group flex items-center gap-2 rounded-full border border-tonal-20/70 bg-surface-20/70 p-1.5 pr-2 transition hover:border-accent/40 hover:bg-surface-30/70" aria-label="Open profile">
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent/15 text-sm font-extrabold text-accent" aria-hidden="true">
-            {user?.fullName?.charAt(0)?.toUpperCase() || 'U'}
-          </span>
-          <span className="hidden min-w-0 text-left md:block">
-            <span className="block max-w-36 truncate text-sm font-semibold text-primary-light">{user?.fullName || 'Account'}</span>
-            <span className="block text-[10px] font-semibold uppercase tracking-wider text-primary-light/45">{role}</span>
-          </span>
-        </Link>
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+
+          <Link href="/profile" className="group flex items-center gap-2 rounded-full border border-tonal-20/70 bg-surface-20/70 p-1.5 pr-2 transition hover:border-accent/40 hover:bg-surface-30/70" aria-label="Open profile">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent/15 text-sm font-extrabold text-accent" aria-hidden="true">
+              {user?.fullName?.charAt(0)?.toUpperCase() || 'U'}
+            </span>
+            <span className="hidden min-w-0 text-left md:block">
+              <span className="block max-w-36 truncate text-sm font-semibold text-primary-light">{user?.fullName || 'Account'}</span>
+              <span className="block text-[10px] font-semibold uppercase tracking-wider text-primary-light/45">{role}</span>
+            </span>
+          </Link>
+        </div>
       </div>
     </header>
   );

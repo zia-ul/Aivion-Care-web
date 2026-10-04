@@ -62,11 +62,11 @@ export default function PatientRecordsPage() {
         </SectionTitle>
 
         {loading ? (
-          <p className="text-sm text-[#5B7A88]">Loading records...</p>
+          <p className="text-sm text-doctor-dim">Loading records...</p>
         ) : error ? (
-          <div className="rounded-3xl bg-white border border-[#F09595]/40 p-5 text-sm text-[#C25A5A]">{error}</div>
+          <div className="rounded-3xl bg-white border border-doctor-danger-soft/40 p-5 text-sm text-doctor-red">{error}</div>
         ) : items.length === 0 ? (
-          <div className="rounded-3xl bg-white border border-[#D6ECF1] p-6 text-center text-sm text-[#5B7A88]">
+          <div className="rounded-3xl bg-white border border-doctor-border-soft p-6 text-center text-sm text-doctor-dim">
             No finalized consultations yet. Records appear here after your doctor finalizes a prescription.
           </div>
         ) : (
@@ -82,10 +82,10 @@ export default function PatientRecordsPage() {
                         {item.speciality && <Pill color={FL.lavender}>{item.speciality}</Pill>}
                         {item.prescriptionSent && <Pill color={FL.mint}>Prescription sent</Pill>}
                       </div>
-                      <p className="text-xs text-[#8AB0C0] mt-1">Consultation #{cid}{item.appointmentId ? ` • Appointment #${item.appointmentId}` : ''}</p>
-                      {item.diagnosis && <p className="text-xs text-[#8AB0C0] mt-1.5 line-clamp-2">Diagnosis: {item.diagnosis}</p>}
+                      <p className="text-xs text-doctor-muted mt-1">Consultation #{cid}{item.appointmentId ? ` • Appointment #${item.appointmentId}` : ''}</p>
+                      {item.diagnosis && <p className="text-xs text-doctor-muted mt-1.5 line-clamp-2">Diagnosis: {item.diagnosis}</p>}
                       {(item.consultationDate || item.finalizedAt) && (
-                        <p className="text-xs text-[#8AB0C0] mt-1.5">{item.consultationDate ?? String(item.finalizedAt ?? '').slice(0, 10)}</p>
+                        <p className="text-xs text-doctor-muted mt-1.5">{item.consultationDate ?? String(item.finalizedAt ?? '').slice(0, 10)}</p>
                       )}
                     </div>
                     <ActionButton

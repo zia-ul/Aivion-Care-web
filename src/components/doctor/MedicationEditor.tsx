@@ -14,6 +14,13 @@ interface MedicationEditorProps {
   disabled?: boolean;
 }
 
+/**
+ * Bound inputs must never receive `undefined`: React switches the element from
+ * controlled to uncontrolled and warns. Suggestion payloads and older drafts can
+ * omit fields, so coerce everything to a string at the edge.
+ */
+const text = (value: unknown): string => (value == null ? '' : String(value));
+
 export function MedicationEditor({
   medications,
   onChange,
@@ -80,7 +87,7 @@ export function MedicationEditor({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-bold text-white flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-[#F3C979]" />
+          <Sparkles className="h-5 w-5 text-doctor-gold" />
           Medicines ({medications.length})
         </h3>
         {suggestions.length > 0 && onAddSuggestions && (
@@ -88,7 +95,7 @@ export function MedicationEditor({
             type="button"
             onClick={() => onAddSuggestions(suggestions.map((s) => s.aiSuggestionId!).filter(Boolean))}
             disabled={disabled}
-            className="flex items-center gap-1.5 text-sm text-[#F3C979] hover:underline"
+            className="flex items-center gap-1.5 text-sm text-doctor-gold hover:underline"
           >
             <Sparkles className="h-4 w-4" />
             Add {suggestions.length} AI suggestions
@@ -100,15 +107,15 @@ export function MedicationEditor({
         {medications.map((med, idx) => (
           <div
             key={idx}
-            className={`rounded-2xl bg-[#2A3D50] p-4 transition-all ${
-              expandedIndexes.has(idx) ? 'bg-[#2A3D50]' : 'bg-[#1A2A3A]'
+            className={`rounded-2xl bg-doctor-raised p-4 transition-all ${
+              expandedIndexes.has(idx) ? 'bg-doctor-raised' : 'bg-doctor-panel'
             }`}
           >
             <div className="flex items-start justify-between gap-3 mb-3">
               <div className="flex-1 min-w-0">
                 <Field label="Medicine name">
                   <input
-                    value={med.medicineName}
+                    value={text(med.medicineName)}
                     onChange={(e) => handleMedChange(idx, 'medicineName', e.target.value)}
                     disabled={disabled}
                     className={inputClass}
@@ -121,7 +128,7 @@ export function MedicationEditor({
                   type="button"
                   onClick={() => toggleExpand(idx)}
                   disabled={disabled}
-                  className="p-1.5 rounded-lg bg-[#3F8FE0]/10 text-[#3F8FE0] hover:bg-[#3F8FE0]/20"
+                  className="p-1.5 rounded-lg bg-doctor-blue/10 text-doctor-blue hover:bg-doctor-blue/20"
                   aria-label={expandedIndexes.has(idx) ? 'Collapse' : 'Expand'}
                 >
                   {expandedIndexes.has(idx) ? '−' : '+'} Details
@@ -130,7 +137,7 @@ export function MedicationEditor({
                   type="button"
                   onClick={() => handleRemove(idx)}
                   disabled={disabled || medications.length <= 1}
-                  className="p-1.5 rounded-lg bg-[#C25A5A]/10 text-[#C25A5A] hover:bg-[#C25A5A]/20 disabled:opacity-50"
+                  className="p-1.5 rounded-lg bg-doctor-red/10 text-doctor-red hover:bg-doctor-red/20 disabled:opacity-50"
                   aria-label="Remove medicine"
                 >
                   <Trash2 className="h-4 w-4" />
@@ -142,7 +149,7 @@ export function MedicationEditor({
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
               <Field label="Dosage">
                 <input
-                  value={med.dosage}
+                  value={text(med.dosage)}
                   onChange={(e) => handleMedChange(idx, 'dosage', e.target.value)}
                   disabled={disabled}
                   className={inputClass}
@@ -152,7 +159,7 @@ export function MedicationEditor({
 
               <Field label="Frequency">
                 <select
-                  value={med.frequency}
+                  value={text(med.frequency)}
                   onChange={(e) => handleMedChange(idx, 'frequency', e.target.value)}
                   disabled={disabled}
                   className={inputClass}
@@ -167,7 +174,7 @@ export function MedicationEditor({
               <Field label="Freq/Day">
                 <input
                   type="number"
-                  value={med.frequencyPerDay}
+                  value={text(med.frequencyPerDay)}
                   onChange={(e) => handleMedChange(idx, 'frequencyPerDay', e.target.value)}
                   disabled={disabled}
                   className={inputClass}
@@ -178,7 +185,7 @@ export function MedicationEditor({
 
               <Field label="Timing">
                 <select
-                  value={med.timing}
+                  value={text(med.timing)}
                   onChange={(e) => handleMedChange(idx, 'timing', e.target.value)}
                   disabled={disabled}
                   className={inputClass}
@@ -193,11 +200,11 @@ export function MedicationEditor({
 
             {/* Extended Fields - Collapsible */}
             {expandedIndexes.has(idx) && (
-              <div className="space-y-3 border-t border-[#3F8FE0]/10 pt-3 animate-slide-down">
+              <div className="space-y-3 border-t border-doctor-blue/10 pt-3 animate-slide-down">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                   <Field label="Amount/Use">
                     <input
-                      value={med.amountPerUse}
+                      value={text(med.amountPerUse)}
                       onChange={(e) => handleMedChange(idx, 'amountPerUse', e.target.value)}
                       disabled={disabled}
                       className={inputClass}
@@ -207,7 +214,7 @@ export function MedicationEditor({
 
                   <Field label="Duration">
                     <input
-                      value={med.duration}
+                      value={text(med.duration)}
                       onChange={(e) => handleMedChange(idx, 'duration', e.target.value)}
                       disabled={disabled}
                       className={inputClass}
@@ -217,7 +224,7 @@ export function MedicationEditor({
 
                   <Field label="Route">
                     <select
-                      value={med.route || 'Oral'}
+                      value={text(med.route) || 'Oral'}
                       onChange={(e) => handleMedChange(idx, 'route', e.target.value)}
                       disabled={disabled}
                       className={inputClass}
@@ -244,7 +251,7 @@ export function MedicationEditor({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <Field label="Instructions">
                     <textarea
-                      value={med.instructions}
+                      value={text(med.instructions)}
                       onChange={(e) => handleMedChange(idx, 'instructions', e.target.value)}
                       disabled={disabled}
                       className={`${inputClass} min-h-[80px]`}
@@ -255,7 +262,7 @@ export function MedicationEditor({
 
                   <Field label="Notes">
                     <textarea
-                      value={med.notes}
+                      value={text(med.notes)}
                       onChange={(e) => handleMedChange(idx, 'notes', e.target.value)}
                       disabled={disabled}
                       className={`${inputClass} min-h-[80px]`}
@@ -266,7 +273,7 @@ export function MedicationEditor({
                 </div>
 
                 {med.aiSuggestionId && (
-                  <div className="rounded-lg bg-[#F3C979]/10 border border-[#F3C979]/30 p-2 text-xs text-[#F3C979]">
+                  <div className="rounded-lg bg-doctor-gold/10 border border-doctor-gold/30 p-2 text-xs text-doctor-gold">
                     AI Suggestion ID: {med.aiSuggestionId}
                   </div>
                 )}
@@ -281,7 +288,7 @@ export function MedicationEditor({
         type="button"
         onClick={handleAdd}
         disabled={disabled}
-        className="w-full flex items-center justify-center gap-2 rounded-xl border border-[#3F8FE0]/30 bg-transparent px-4 py-2.5 font-semibold text-[#3F8FE0] hover:bg-[#3F8FE0]/10 disabled:opacity-50"
+        className="w-full flex items-center justify-center gap-2 rounded-xl border border-doctor-blue/30 bg-transparent px-4 py-2.5 font-semibold text-doctor-blue hover:bg-doctor-blue/10 disabled:opacity-50"
       >
         <Plus className="h-5 w-5" />
         Add Medicine

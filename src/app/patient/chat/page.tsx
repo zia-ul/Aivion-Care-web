@@ -7,7 +7,7 @@ import { Suspense } from 'react';
 export default function PatientChatPage() {
   return (
     <AppLayout role="PATIENT" title="Chat" subtitle="Conversations with your doctor">
-      <Suspense fallback={<p className="text-sm text-[#5B7A88]">Loading...</p>}>
+      <Suspense fallback={<p className="text-sm text-doctor-dim">Loading...</p>}>
         <ChatPanel role="PATIENT" />
       </Suspense>
     </AppLayout>

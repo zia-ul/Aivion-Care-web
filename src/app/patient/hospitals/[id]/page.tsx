@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useState, use } from 'react';
+import { useRouter } from 'next/navigation';
 import AppLayout from '@/components/layout/AppLayout';
 import { doctorApi, hospitalApi } from '@/lib/api/endpoints';
 import { DarkCard, Pill, ActionButton, FL, inputClass, Field } from '@/components/ui/FlutterTheme';
@@ -10,10 +10,10 @@ import { Stethoscope, MapPin, Search, Banknote, GraduationCap } from 'lucide-rea
 interface Hospital { id: number; name: string; address?: string; city?: string; state?: string; country?: string; email?: string; phone?: string; facilityType?: string; status?: string; subscriptionPlan?: string; }
 interface Doctor { id?: number; userId?: number; name?: string; speciality?: string; qualification?: string; experienceYears?: number; consultationFee?: any; }
 
-export default function HospitalDetailPage() {
-  const params = useParams();
+export default function HospitalDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
-  const hospitalId = Number(params.id);
+  const resolvedParams = use(params);
+  const hospitalId = Number(resolvedParams.id);
   const [hospital, setHospital] = useState<Hospital | null>(null);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [services, setServices] = useState<string[]>([]);
@@ -47,20 +47,20 @@ export default function HospitalDetailPage() {
     <AppLayout role="PATIENT" title={hospital?.name ?? 'Hospital'} subtitle={[hospital?.city, hospital?.state].filter(Boolean).join(', ')}>
       <div className="space-y-5">
         {loading ? (
-          <p className="text-sm text-[#5B7A88]">Loading...</p>
+          <p className="text-sm text-doctor-dim">Loading...</p>
         ) : (
           <>
             {hospital && (
               <DarkCard tone="patient">
                 <div className="flex items-start gap-3">
-                  <div className="w-12 h-12 rounded-2xl bg-[#4DD9AC]/15 flex items-center justify-center text-[#4DD9AC] shrink-0"><MapPin size={22} /></div>
+                  <div className="w-12 h-12 rounded-2xl bg-doctor-mint/15 flex items-center justify-center text-doctor-mint shrink-0"><MapPin size={22} /></div>
                   <div>
                     <p className="text-white font-semibold text-lg">{hospital.name}</p>
-                    <p className="text-xs text-[#8AB0C0] mt-1">{[hospital.address, hospital.city, hospital.state, hospital.country].filter(Boolean).join(', ') || 'Address not listed'}</p>
-                    {hospital.phone && <p className="text-xs text-[#8AB0C0] mt-1">Phone: {hospital.phone}</p>}
-                    {hospital.email && <p className="text-xs text-[#8AB0C0] mt-1">Email: {hospital.email}</p>}
-                    {hospital.facilityType && <p className="text-xs text-[#8AB0C0] mt-1">Type: {hospital.facilityType}</p>}
-                    {hospital.status && <p className="text-xs text-[#8AB0C0] mt-1">Status: {hospital.status}</p>}
+                    <p className="text-xs text-doctor-muted mt-1">{[hospital.address, hospital.city, hospital.state, hospital.country].filter(Boolean).join(', ') || 'Address not listed'}</p>
+                    {hospital.phone && <p className="text-xs text-doctor-muted mt-1">Phone: {hospital.phone}</p>}
+                    {hospital.email && <p className="text-xs text-doctor-muted mt-1">Email: {hospital.email}</p>}
+                    {hospital.facilityType && <p className="text-xs text-doctor-muted mt-1">Type: {hospital.facilityType}</p>}
+                    {hospital.status && <p className="text-xs text-doctor-muted mt-1">Status: {hospital.status}</p>}
                   </div>
                 </div>
               </DarkCard>
@@ -68,7 +68,7 @@ export default function HospitalDetailPage() {
 
             <DarkCard tone="patient">
               <h3 className="text-lg font-bold text-white">Services</h3>
-              {services.length > 0 ? <ul className="mt-3 grid gap-2 sm:grid-cols-2">{services.map((service) => <li key={service} className="rounded-xl bg-[#2E3946] px-3 py-2 text-sm text-[#D9F0F3]">✓ {service}</li>)}</ul> : <p className="mt-2 text-sm text-[#8AB0C0]">No services listed.</p>}
+              {services.length > 0 ? <ul className="mt-3 grid gap-2 sm:grid-cols-2">{services.map((service) => <li key={service} className="rounded-xl bg-doctor-shell px-3 py-2 text-sm text-primary-light">✓ {service}</li>)}</ul> : <p className="mt-2 text-sm text-doctor-muted">No services listed.</p>}
             </DarkCard>
 
             <div className="flex gap-3 items-end">
@@ -79,19 +79,19 @@ export default function HospitalDetailPage() {
               </div>
             </div>
 
-            <h3 className="text-lg font-bold text-[#132633]">Doctors ({filtered.length})</h3>
+            <h3 className="text-lg font-bold text-doctor-ink">Doctors ({filtered.length})</h3>
             {filtered.length === 0 ? (
-              <div className="rounded-3xl bg-white border border-[#D6ECF1] p-6 text-center text-sm text-[#5B7A88]">No doctors found for this filter.</div>
+              <div className="rounded-3xl bg-white border border-doctor-border-soft p-6 text-center text-sm text-doctor-dim">No doctors found for this filter.</div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {filtered.map((d) => (
                   <DarkCard key={d.id ?? d.userId} tone="patient">
                     <div className="flex items-start gap-3">
-                      <div className="w-12 h-12 rounded-2xl bg-[#3F8FE0]/15 flex items-center justify-center text-[#3F8FE0] shrink-0"><Stethoscope size={22} /></div>
+                      <div className="w-12 h-12 rounded-2xl bg-doctor-blue/15 flex items-center justify-center text-doctor-blue shrink-0"><Stethoscope size={22} /></div>
                       <div className="min-w-0 flex-1">
                         <p className="text-white font-semibold truncate">Dr. {d.name ?? '—'}</p>
-                        <p className="text-xs text-[#8AB0C0] mt-1">{d.speciality ?? 'General'}</p>
-                        <div className="flex flex-wrap gap-3 mt-2 text-xs text-[#8AB0C0]">
+                        <p className="text-xs text-doctor-muted mt-1">{d.speciality ?? 'General'}</p>
+                        <div className="flex flex-wrap gap-3 mt-2 text-xs text-doctor-muted">
                           {d.qualification && <span className="inline-flex items-center gap-1"><GraduationCap size={12} /> {d.qualification}</span>}
                           {d.experienceYears != null && <span>{d.experienceYears} yrs exp</span>}
                           {d.consultationFee != null && (

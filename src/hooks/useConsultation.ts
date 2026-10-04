@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { consultationApi } from '@/lib/api/endpoints';
+import { readableError } from '@/lib/errors';
 import { ConsultationResponse, ConsultationReviewResponse, VitalData, InvestigationItem, MedicationDetail, ConsultationMedicationSuggestionGroupResponse, ConsultationMedicationSuggestionResponse } from '@/types/consultation';
 import { formatRecordingTime, stopRecordingTracks } from '@/lib/consultationUtils';
 
@@ -180,10 +181,10 @@ export function useConsultation({ appointmentId, onLoadComplete }: UseConsultati
       setSuggestions(allGroups);
       
       toast.success('Recording transcribed and AI draft generated');
-    } catch (err: any) {
+} catch (err: unknown) {
       stopRecordingTracks(mediaStreamRef, recordingTimerRef, mediaRecorderRef);
       setIsRecording(false);
-      toast.error(err?.response?.data?.message || err?.message || 'Failed to process recording');
+      toast.error(readableError(err, 'Failed to process the recording. Please try again.'));
     } finally {
       setUploading(false);
     }
@@ -210,8 +211,8 @@ export function useConsultation({ appointmentId, onLoadComplete }: UseConsultati
       setSuggestions(allGroups);
       
       toast.success('Recording transcribed and AI draft generated');
-    } catch (err: any) {
-      toast.error(err?.response?.data?.message || err?.message || 'Failed to process recording');
+    } catch (err: unknown) {
+      toast.error(readableError(err, 'Failed to process the recording. Please try again.'));
     } finally {
       setUploading(false);
     }

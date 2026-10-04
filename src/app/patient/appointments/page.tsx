@@ -77,12 +77,12 @@ export default function PatientAppointmentsPage() {
   return (
     <AppLayout role="PATIENT" title="My Appointments" subtitle="Upcoming and past visits">
       <div className="space-y-5">
-        <div className="inline-flex rounded-2xl bg-white border border-[#B9DCE4] p-1">
+        <div className="inline-flex rounded-2xl bg-white border border-doctor-border-input p-1">
           {(['upcoming', 'history'] as const).map((t) => (
             <button
               key={t}
               onClick={() => setTab(t)}
-              className={`px-5 py-2 rounded-xl text-sm font-semibold transition-colors ${tab === t ? 'bg-[#4DD9AC] text-[#0E2A22]' : 'text-[#5B7A88] hover:text-[#132633]'}`}
+              className={`px-5 py-2 rounded-xl text-sm font-semibold transition-colors ${tab === t ? 'bg-doctor-mint-fill text-white' : 'text-doctor-dim hover:text-doctor-ink'}`}
             >
               {t === 'upcoming' ? 'Upcoming' : 'History'}
             </button>
@@ -90,9 +90,9 @@ export default function PatientAppointmentsPage() {
         </div>
 
         {loading ? (
-          <p className="text-sm text-[#5B7A88]">Loading...</p>
+          <p className="text-sm text-doctor-dim">Loading...</p>
         ) : list.length === 0 ? (
-          <div className="rounded-3xl bg-white border border-[#D6ECF1] p-6 text-center text-sm text-[#5B7A88]">
+          <div className="rounded-3xl bg-white border border-doctor-border-soft p-6 text-center text-sm text-doctor-dim">
             {tab === 'upcoming' ? 'No upcoming appointments.' : 'No past appointments yet.'}
           </div>
         ) : (
@@ -105,8 +105,8 @@ export default function PatientAppointmentsPage() {
                       <p className="text-white font-semibold">Dr. {a.doctorName ?? '—'}</p>
                       <Pill color={statusColor(a.status)}>{a.status ?? ''}</Pill>
                     </div>
-                    <p className="text-xs text-[#8AB0C0] mt-1">{a.hospitalName ?? ''}{a.type ? ` • ${a.type}` : ''}</p>
-                    <div className="flex items-center gap-4 mt-2 text-xs text-[#8AB0C0]">
+                    <p className="text-xs text-doctor-muted mt-1">{a.hospitalName ?? ''}{a.type ? ` • ${a.type}` : ''}</p>
+                    <div className="flex items-center gap-4 mt-2 text-xs text-doctor-muted">
                       <span className="inline-flex items-center gap-1"><CalendarDays size={12} /> {a.appointmentDate}</span>
                       <span className="inline-flex items-center gap-1"><Clock size={12} /> {String(a.slotTime ?? '').slice(0, 5)}</span>
                       {a.tokenNumber && <span>Token #{a.tokenNumber}</span>}

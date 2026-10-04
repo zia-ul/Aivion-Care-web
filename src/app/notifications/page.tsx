@@ -65,7 +65,7 @@ export default function NotificationsPage() {
                       <p className="text-support text-primary-light/40 mt-2">{new Date(sentAt).toLocaleString()}</p>
                     </div>
                     {!isRead && (
-                      <button onClick={() => markAsRead(id)} className="p-2 bg-accent/10 rounded-lg hover:bg-accent/20">
+                      <button onClick={() => markAsRead(id)} className="p-2 bg-accent/10 rounded-lg hover:bg-accent-fill/20">
                         <Check size={16} className="text-accent" />
                       </button>
                     )}

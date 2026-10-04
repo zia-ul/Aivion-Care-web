@@ -3,7 +3,9 @@
 import Link from 'next/link';
 import {
   BarChart3, Building2, Calendar, FileText, LayoutDashboard,
-  MessageCircle, Radio, User, UserCheck, Users, type LucideIcon,
+  MessageCircle, Radio, User, UserCheck, Users, CalendarDays, Sparkles,
+  CreditCard, Shield, Pill, Activity, Stethoscope, Building,
+  Microscope, TestTube, ClipboardList, ShieldPlus, Bell, type LucideIcon,
 } from 'lucide-react';
 import { usePathmap } from '@/lib/use-pathmap';
 
@@ -25,6 +27,50 @@ const doctorNavItems: NavItem[] = [
   { href: '/profile', label: 'Profile', icon: User },
 ];
 
+const hospitalHeadNavItems: NavItem[] = [
+  { href: '/hospital-head/dashboard', label: 'Home', icon: LayoutDashboard },
+  { href: '/hospital-head/doctors', label: 'Doctors', icon: UserCheck },
+  { href: '/hospital-head/staff-approval', label: 'Approval', icon: ShieldPlus },
+  { href: '/hospital-head/profile', label: 'Profile', icon: Building2 },
+  { href: '/notifications', label: 'Alerts', icon: Bell },
+  { href: '/profile', label: 'Profile', icon: User },
+];
+
+const pharmacistNavItems: NavItem[] = [
+  { href: '/pharmacist/dashboard', label: 'Home', icon: LayoutDashboard },
+  { href: '/pharmacist/inventory', label: 'Inventory', icon: Pill },
+  { href: '/pharmacist/orders', label: 'Orders', icon: ClipboardList },
+  { href: '/pharmacist/prescriptions', label: 'Rx', icon: Pill },
+  { href: '/notifications', label: 'Alerts', icon: Bell },
+  { href: '/profile', label: 'Profile', icon: User },
+];
+
+const pathologyNavItems: NavItem[] = [
+  { href: '/pathology/dashboard', label: 'Home', icon: LayoutDashboard },
+  { href: '/pathology/workflow', label: 'Workflow', icon: TestTube },
+  { href: '/pathology/labs', label: 'Labs', icon: Microscope },
+  { href: '/notifications', label: 'Alerts', icon: Bell },
+  { href: '/profile', label: 'Profile', icon: User },
+];
+
+const labAssistantNavItems: NavItem[] = [
+  { href: '/lab-assistant/dashboard', label: 'Home', icon: LayoutDashboard },
+  { href: '/lab-assistant/tests', label: 'Tests', icon: TestTube },
+  { href: '/lab-assistant/bookings', label: 'Bookings', icon: Calendar },
+  { href: '/lab-assistant/upload-report', label: 'Reports', icon: FileText },
+  { href: '/notifications', label: 'Alerts', icon: Bell },
+  { href: '/profile', label: 'Profile', icon: User },
+];
+
+const receptionistNavItems: NavItem[] = [
+  { href: '/receptionist/dashboard', label: 'Home', icon: LayoutDashboard },
+  { href: '/receptionist/appointments', label: 'Appts', icon: Calendar },
+  { href: '/receptionist/schedule', label: 'Schedule', icon: CalendarDays },
+  { href: '/receptionist/surgeries', label: 'Surgeries', icon: Stethoscope },
+  { href: '/notifications', label: 'Alerts', icon: Bell },
+  { href: '/profile', label: 'Profile', icon: User },
+];
+
 const adminNavItems: NavItem[] = [
   { href: '/super-admin/hospitals', label: 'Hospitals', icon: Building2 },
   { href: '/super-admin/doctors/verification', label: 'Doctors', icon: UserCheck },
@@ -35,7 +81,32 @@ const adminNavItems: NavItem[] = [
 
 export default function BottomNav({ role }: { role: string }) {
   const pathname = usePathmap();
-  const items = role === 'DOCTOR' ? doctorNavItems : role === 'SUPER_ADMIN' ? adminNavItems : patientNavItems;
+  let items: NavItem[];
+  switch (role) {
+    case 'DOCTOR':
+      items = doctorNavItems;
+      break;
+    case 'HOSPITAL_HEAD':
+      items = hospitalHeadNavItems;
+      break;
+    case 'PHARMACY':
+      items = pharmacistNavItems;
+      break;
+    case 'PATHOLOGY':
+      items = pathologyNavItems;
+      break;
+    case 'LAB_ASSISTANT':
+      items = labAssistantNavItems;
+      break;
+    case 'RECEPTIONIST':
+      items = receptionistNavItems;
+      break;
+    case 'SUPER_ADMIN':
+      items = adminNavItems;
+      break;
+    default:
+      items = patientNavItems;
+  }
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-tonal-20/70 bg-surface-10/95 shadow-[0_-12px_32px_rgba(0,0,0,0.32)] backdrop-blur-xl md:hidden" aria-label="Primary navigation">

@@ -69,8 +69,8 @@ export default function SuperAdminDoctorVerification() {
                     {hospitalName && <p className="text-support text-primary-light/50">Hospital: {hospitalName}</p>}
                   </div>
                   <div className="flex gap-2">
-                    {approvalStatus !== 'APPROVED' && <button onClick={() => handleVerification(doctorId, true)} className="px-4 py-2 bg-success/10 text-success-light rounded-lg text-body font-medium hover:bg-success/20">Approve</button>}
-                    {approvalStatus !== 'RESUBMIT' && <button onClick={() => handleVerification(doctorId, false)} className="px-4 py-2 bg-danger/10 text-danger-light rounded-lg text-body font-medium hover:bg-danger/20">Reject</button>}
+                    {approvalStatus !== 'APPROVED' && <button onClick={() => handleVerification(doctorId, true)} className="px-4 py-2 bg-success/10 text-success-light rounded-lg text-body font-medium hover:bg-success-fill/20">Approve</button>}
+                    {approvalStatus !== 'RESUBMIT' && <button onClick={() => handleVerification(doctorId, false)} className="px-4 py-2 bg-danger/10 text-danger-light rounded-lg text-body font-medium hover:bg-danger-fill/20">Reject</button>}
                   </div>
                 </div>
               ))}

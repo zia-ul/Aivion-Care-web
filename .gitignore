@@ -10,6 +10,11 @@ node_modules/
 
 # Next.js build output
 .next/
+.next-dev/
+.next-*/
+# OpenNext / Cloudflare adapter output
+.open-next/
+.wrangler/
 out/
 build/
 dist/

@@ -1,11 +1,13 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, use } from 'react';
 import AppLayout from '@/components/layout/AppLayout';
 import { chatApi, consultationApi } from '@/lib/api/endpoints';
 import { useRouter } from 'next/navigation';
 import { Download, Video, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui';
+import { SoapSummary } from '@/components/doctor/SoapSummary';
+import { ConsultationSoapSectionResponse } from '@/types/consultation';
 
 interface Consultation {
   id: number;
@@ -22,15 +24,17 @@ interface Consultation {
   bpDiastolic?: number | null;
   spo2?: any;
   bodyTemp?: any;
+  soapSections?: ConsultationSoapSectionResponse[];
 }
 
-export default function PatientConsultationPage({ params }: { params: { id: string } }) {
+export default function PatientConsultationPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
+  const resolvedParams = use(params);
   const [consultation, setConsultation] = useState<Consultation | null>(null);
   const [loading, setLoading] = useState(true);
   const [chatRoomId, setChatRoomId] = useState<number | null>(null);
 
-  const id = Number(params.id);
+  const id = Number(resolvedParams.id);
 
   const loadConsultation = useCallback(async () => {
     try {
@@ -76,6 +80,7 @@ export default function PatientConsultationPage({ params }: { params: { id: stri
 
   const { id: cid, doctorName, appointmentId, chiefComplaints, advice, medicines, finalized, heartRate, bpSystolic, bpDiastolic, spo2, bodyTemp } = consultation;
   const vitals = { heartRate, bpSystolic, bpDiastolic, spo2, bodyTemp };
+  const soapSections = consultation.soapSections ?? [];
 
   return (
     <AppLayout role="PATIENT" title="Consultation Details" subtitle={`Dr. ${doctorName}`}>
@@ -122,6 +127,12 @@ export default function PatientConsultationPage({ params }: { params: { id: stri
                       </div>
                     ))}
                   </div>
+                </div>
+              )}
+              {soapSections.length > 0 && (
+                <div>
+                  <h4 className="text-heading font-bold text-primary-light mb-2">Clinical Summary (SOAP)</h4>
+                  <SoapSummary sections={soapSections} />
                 </div>
               )}
             </div>
