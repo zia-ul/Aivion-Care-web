@@ -17,7 +17,7 @@ import {
   FileText, Folder, FolderPlus, Upload, Search, Star, Download, Trash2,
   Bell, Clock, CheckCircle, XCircle, RefreshCw, ChevronRight, File,
   FlaskConical, Scan, Stethoscope, Shield, Contact, Syringe, History,
-  Receipt, Share2, Award, AlertTriangle, Image as ImageIcon,
+  Receipt, Share2, Award, AlertTriangle, Image as ImageIcon, Pill as PillIcon,
 } from 'lucide-react';
 
 const CATEGORIES = [
@@ -49,12 +49,13 @@ const REMINDER_TYPES = [
 
 const ICONS: Record<string, React.ComponentType<{ size?: number | string; className?: string }>> = {
   FlaskConical, Scan, Stethoscope, FileText, Shield, Contact, Syringe, History,
-  Receipt, Share2, Award, AlertTriangle, File, Pill, Image: ImageIcon,
+  Receipt, Share2, Award, AlertTriangle, File, Pill: PillIcon, Image: ImageIcon,
   IdCard: Contact,
 };
 
-function categoryMeta(value?: string) {
-  return CATEGORIES.find(c => c.value === value) ?? CATEGORIES[CATEGORIES.length - 1];
+function categoryMeta(value?: string | { value?: string }) {
+  const val = typeof value === 'object' && value ? value.value : value;
+  return CATEGORIES.find(c => c.value === val) ?? CATEGORIES[CATEGORIES.length - 1];
 }
 
 function iconFor(name?: string) {
