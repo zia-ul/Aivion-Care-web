@@ -4,8 +4,9 @@ import { useState, type FormEvent } from 'react';
 import { ArrowRight, Building2, CalendarDays, Mail, MapPin, Phone, Send, Target } from 'lucide-react';
 import { SectionHeader } from '@/components/landing/common';
 import PageShell from '@/components/landing/PageShell';
+import { CONTACT_CHANNELS, CONTACT_EMAILS, mailto } from '@/lib/contact-emails';
+
 const contactPoints = [
-  { label: 'Email', value: 'support@aiconfidencecure.com', Icon: Mail, href: 'mailto:support@aiconfidencecure.com' },
   { label: 'Phone', value: '+91 84493 91441', Icon: Phone, href: 'tel:+918449391441' },
   { label: 'Office', value: 'AMU Innovation Foundation, 1st Floor Near Minto Circle School, Minto Circle Road, Aligarh, UP 202001, India', Icon: Building2, href: null },
 ] as const;
@@ -64,13 +65,43 @@ export default function ContactPage() {
           ))}
         </div>
 
+        {/* Direct mailboxes, so a visitor can pick the right team instead of
+            guessing which inbox handles their question. */}
+        <div className="mt-8">
+          <h2 className="text-heading font-bold text-primary-light">Choose the right team</h2>
+          <p className="mt-2 text-sm text-primary-light/60">
+            Each address reaches the team responsible for that kind of enquiry.
+          </p>
+          <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+            {CONTACT_CHANNELS.map((channel) => (
+              <li key={channel.address}>
+                <a
+                  href={mailto(channel.address)}
+                  className="flex h-full items-start gap-4 rounded-2xl border border-sky-500/15 bg-surface-20/60 p-5 backdrop-blur transition hover:-translate-y-0.5 hover:border-accent/50"
+                >
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-sky-500/15 text-sky-400">
+                    <Mail size={19} aria-hidden="true" />
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-support font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                      {channel.label}
+                    </span>
+                    <span className="mt-1 block break-words text-sm font-medium text-sky-400">{channel.address}</span>
+                    <span className="mt-1 block text-sm leading-6 text-primary-light/60">{channel.purpose}</span>
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+
         <div className="mt-8 grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
           <div className="space-y-4">
             <h2 className="text-heading font-bold text-primary-light">Office Details</h2>
             <div className="rounded-2xl border border-sky-500/15 bg-surface-20/60 p-5 backdrop-blur">
               <p className="flex items-start gap-3 text-sm leading-6 text-primary-light/70">
                 <MapPin size={17} className="mt-0.5 shrink-0 text-sky-400" aria-hidden="true" />
-                {contactPoints[2].value}
+                {contactPoints[1].value}
               </p>
               <p className="mt-3 flex items-start gap-3 text-sm leading-6 text-primary-light/70">
                 <CalendarDays size={17} className="mt-0.5 shrink-0 text-sky-400" aria-hidden="true" />
@@ -132,7 +163,7 @@ export default function ContactPage() {
                 <p className="mt-4 rounded-2xl bg-success/10 p-3 text-sm text-success-light" role="status">Your inquiry was sent. We will get back to you soon.</p>
               )}
               {status === 'error' && (
-                <p className="mt-4 rounded-2xl bg-danger/10 p-3 text-sm text-danger-light" role="alert">{errorMessage || 'We could not send your message. Please try again or email support@aiconfidencecure.com.'}</p>
+                <p className="mt-4 rounded-2xl bg-danger/10 p-3 text-sm text-danger-light" role="alert">{errorMessage || `We could not send your message. Please try again or email ${CONTACT_EMAILS.info}.`}</p>
               )}
             </form>
           </div>
@@ -143,9 +174,14 @@ export default function ContactPage() {
           <p className="mx-auto mt-4 max-w-2xl leading-7 text-primary-light/60">
             The team is open to conversations about product pilots, ecosystem partnerships, startup support, and internship collaboration.
           </p>
-          <a href="mailto:support@aiconfidencecure.com" className="mt-7 inline-flex items-center gap-2 rounded-2xl bg-sky-500 px-6 py-3.5 font-bold text-sky-950 shadow-lg shadow-sky-500/20 transition hover:-translate-y-0.5 hover:bg-sky-400">
-            Send Inquiry <ArrowRight size={17} />
-          </a>
+          <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <a href={mailto(CONTACT_EMAILS.sales)} className="inline-flex items-center gap-2 rounded-2xl bg-sky-500 px-6 py-3.5 font-bold text-sky-950 shadow-lg shadow-sky-500/20 transition hover:-translate-y-0.5 hover:bg-sky-400">
+              Partner with us <ArrowRight size={17} />
+            </a>
+            <a href={mailto(CONTACT_EMAILS.hr)} className="inline-flex items-center gap-2 rounded-2xl border border-sky-500/20 bg-background/60 px-6 py-3.5 font-semibold text-foreground transition hover:bg-sky-500/10">
+              Join the team <ArrowRight size={17} />
+            </a>
+          </div>
         </div>
       </main>
     </PageShell>

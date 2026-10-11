@@ -6,7 +6,7 @@ import AppLayout from '@/components/layout/AppLayout';
 import { appointmentApi, notificationApi } from '@/lib/api/endpoints';
 import { useAuthStore } from '@/lib/stores/auth';
 import { DarkCard, InnerCard, SectionTitle, Pill, ActionButton, FL } from '@/components/ui/FlutterTheme';
-import { Building2, CalendarDays, FileText, Pill as PillIcon, MessageCircle, Wallet, Bell, Stethoscope, Clock } from 'lucide-react';
+import { Building2, CalendarDays, FileText, Pill as PillIcon, MessageCircle, Wallet, Bell, Stethoscope, Clock, FolderOpen } from 'lucide-react';
 
 interface Appt { id: number; doctorName?: string; hospitalName?: string; appointmentDate?: string; slotTime?: string; status?: string; type?: string; }
 
@@ -14,6 +14,7 @@ const TILES = [
   { href: '/patient/hospitals', title: 'Find Hospitals', subtitle: 'Book appointments faster', icon: Building2, color: FL.mint },
   { href: '/patient/appointments', title: 'My Appointments', subtitle: 'Upcoming & past visits', icon: CalendarDays, color: FL.blue },
   { href: '/patient/records', title: 'Medical Records', subtitle: 'Prescriptions & history', icon: FileText, color: FL.lavender },
+  { href: '/patient/documents', title: 'My Documents', subtitle: 'Reports, scans & files', icon: FolderOpen, color: FL.cyan },
   { href: '/patient/reminders', title: 'Medicines', subtitle: 'Reminders & adherence', icon: PillIcon, color: FL.gold },
   { href: '/patient/chat', title: 'Chat', subtitle: 'Talk to your doctor', icon: MessageCircle, color: FL.cyan },
   { href: '/patient/payments', title: 'Payments', subtitle: 'Invoices & billing', icon: Wallet, color: FL.pink },
@@ -56,7 +57,7 @@ export default function PatientDashboard() {
             <DarkCard tone="patient" className="flex items-center gap-3">
               <div className="w-11 h-11 rounded-2xl bg-doctor-mint/20 flex items-center justify-center text-doctor-mint"><Bell size={20} /></div>
               <div className="flex-1">
-                <p className="text-white font-semibold">{unread} new notification{unread > 1 ? 's' : ''}</p>
+                <p className="text-primary-light font-semibold">{unread} new notification{unread > 1 ? 's' : ''}</p>
                 <p className="text-xs text-doctor-muted">Tap to view your latest alerts</p>
               </div>
             </DarkCard>
@@ -72,7 +73,7 @@ export default function PatientDashboard() {
                     <Icon size={20} />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-white font-semibold leading-tight">{title}</p>
+                    <p className="text-primary-light font-semibold leading-tight">{title}</p>
                     <p className="text-xs text-doctor-muted mt-1">{subtitle}</p>
                   </div>
                 </div>
@@ -88,7 +89,7 @@ export default function PatientDashboard() {
           {loading ? (
             <p className="text-sm text-doctor-dim">Loading...</p>
           ) : upcoming.length === 0 ? (
-            <div className="rounded-3xl bg-white border border-doctor-border-soft p-5 text-center text-sm text-doctor-dim">
+            <div className="rounded-3xl bg-surface-20 border border-doctor-border-soft p-5 text-center text-sm text-doctor-dim">
               No upcoming appointments. Book one from Find Hospitals.
             </div>
           ) : (
@@ -100,7 +101,7 @@ export default function PatientDashboard() {
 
         {/* Health snapshot dark card (Flutter parity) */}
         <DarkCard tone="patient">
-          <h3 className="text-xl font-bold text-white">Health snapshot</h3>
+          <h3 className="text-xl font-bold text-primary-light">Health snapshot</h3>
           <p className="text-sm text-doctor-muted mt-1.5">{user?.fullName}, keep your records and billing ready before your next visit.</p>
           <div className="grid grid-cols-2 gap-3 mt-5">
             <InnerCard tone="patient">
@@ -108,7 +109,7 @@ export default function PatientDashboard() {
                 <div className="w-10 h-10 rounded-xl bg-doctor-mint/15 flex items-center justify-center text-doctor-mint"><Stethoscope size={18} /></div>
                 <div>
                   <p className="text-xs text-doctor-muted">Profile</p>
-                  <p className="text-white font-semibold">Patient</p>
+                  <p className="text-primary-light font-semibold">Patient</p>
                 </div>
               </div>
             </InnerCard>
@@ -117,7 +118,7 @@ export default function PatientDashboard() {
                 <div className="w-10 h-10 rounded-xl bg-doctor-mint/15 flex items-center justify-center text-doctor-mint"><Clock size={18} /></div>
                 <div>
                   <p className="text-xs text-doctor-muted">Status</p>
-                  <p className="text-white font-semibold">Active</p>
+                  <p className="text-primary-light font-semibold">Active</p>
                 </div>
               </div>
             </InnerCard>
@@ -140,7 +141,7 @@ function AppointmentRow({ appt }: { appt: Appt }) {
       <DarkCard tone="patient">
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-white font-semibold truncate">Dr. {appt.doctorName ?? '—'}</p>
+            <p className="text-primary-light font-semibold truncate">Dr. {appt.doctorName ?? '—'}</p>
             <p className="text-xs text-doctor-muted mt-0.5">{appt.hospitalName ?? ''}</p>
             <div className="flex items-center gap-3 mt-2 text-xs text-doctor-muted">
               <span>{appt.appointmentDate}</span>

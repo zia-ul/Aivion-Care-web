@@ -1,8 +1,13 @@
-const CACHE_NAME = 'medication-reminders-v1';
+// Bump when static assets change: the fetch handler is cache-first, so a stale
+// name keeps serving the previous build (which silently broke new sound files).
+const CACHE_NAME = 'medication-reminders-v2';
 const STATIC_ASSETS = [
   '/',
   '/patient/reminders',
   '/icons/icon-512x512.svg',
+  '/sounds/message-notification.wav',
+  '/sounds/reminder-notification.wav',
+  '/sounds/call-ring.wav',
 ];
 
 self.addEventListener('install', (event) => {
@@ -56,7 +61,7 @@ self.addEventListener('push', (event) => {
   if (!event.data) return;
 
   const data = event.data.json();
-  const options: NotificationOptions = {
+  const options = {
     body: data.body,
     icon: data.icon || '/icons/icon-512x512.svg',
     badge: data.badge || '/icons/icon-512x512.svg',
@@ -142,7 +147,7 @@ self.addEventListener('message', (event) => {
   if (event.data?.type === 'SCHEDULE_REMINDER') {
     const { reminderId, medicineName, doseTimes, startDate } = event.data;
 
-    doseTimes.forEach((doseTime: string) => {
+    doseTimes.forEach((doseTime) => {
       const [hours, minutes] = doseTime.split(':').map(Number);
       const scheduledDate = new Date(startDate);
       scheduledDate.setHours(hours, minutes, 0, 0);

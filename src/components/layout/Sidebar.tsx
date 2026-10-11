@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Activity, LayoutDashboard, Calendar, MessageCircle, Bell, User, Users, Building2, UserCheck, BarChart3, Radio, X, FileText, Pill, Wallet, CalendarDays, Sparkles, CreditCard, ShieldCheck, Shield, MapPin, Stethoscope, Building, Microscope, TestTube, ClipboardList, ShieldPlus, type LucideIcon } from 'lucide-react';
 import { usePathmap } from '@/lib/use-pathmap';
+import { useChatUnreadStore } from '@/lib/stores/chat-unread';
 
 type NavItem = { href: string; label: string; icon: LucideIcon };
 
@@ -98,6 +99,15 @@ const adminNavItems: NavItem[] = [
 
 export default function Sidebar({ role, onClose }: { role: string; onClose?: () => void }) {
   const pathname = usePathmap();
+  // Re-renders the nav when a message arrives so the badge appears.
+  const unreadByRoom = useChatUnreadStore((state) => state.unreadByRoom);
+
+  /** Unread messages shown on a nav entry; only chat destinations carry a badge. */
+  const badgeFor = (href: string) => {
+    if (!href.includes('/chat')) return 0;
+    return Object.values(unreadByRoom).reduce((total, count) => total + count, 0);
+  };
+
   let items: NavItem[];
   switch (role) {
     case 'DOCTOR':
@@ -149,6 +159,7 @@ export default function Sidebar({ role, onClose }: { role: string; onClose?: () 
         {items.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
           const Icon = item.icon;
+          const badge = badgeFor(item.href);
           return (
             <Link
               key={item.href}
@@ -160,6 +171,14 @@ export default function Sidebar({ role, onClose }: { role: string; onClose?: () 
               {isActive && <span className="absolute -left-3 h-7 w-1 rounded-r-full bg-accent shadow-[0_0_12px_rgba(34,211,197,0.65)]" />}
               <Icon size={19} strokeWidth={isActive ? 2.4 : 1.9} className="shrink-0" aria-hidden="true" />
               <span className="truncate">{item.label}</span>
+              {badge > 0 && (
+                <span
+                  className="ml-auto inline-flex h-5 min-w-[1.25rem] shrink-0 items-center justify-center rounded-full bg-accent-fill px-1.5 text-[11px] font-bold text-white"
+                  aria-label={`${badge} unread ${badge === 1 ? 'message' : 'messages'}`}
+                >
+                  {badge > 99 ? '99+' : badge}
+                </span>
+              )}
             </Link>
           );
         })}

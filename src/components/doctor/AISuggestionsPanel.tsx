@@ -52,7 +52,7 @@ export function AISuggestionsPanel({
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-bold text-white flex items-center gap-2">
+        <h3 className="text-lg font-bold text-primary-light flex items-center gap-2">
           <Sparkles className="h-5 w-5 text-doctor-lavender" />
           AI Medication Suggestions
           <span className="rounded-full bg-doctor-lavender/20 px-2 py-0.5 text-xs font-semibold text-doctor-lavender">
@@ -124,7 +124,7 @@ export function AISuggestionsPanel({
 
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1">
-                              <span className="font-medium text-white">{suggestion.medicineName}</span>
+                              <span className="font-medium text-primary-light">{suggestion.medicineName}</span>
                               <span className="text-xs text-doctor-muted">{suggestion.dosage}</span>
                               <span className="rounded-full bg-doctor-blue/20 px-1.5 py-0.5 text-xs text-doctor-blue">
                                 {suggestion.frequencyPerDay}x/day

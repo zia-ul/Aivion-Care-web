@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { authApi } from '@/lib/api/endpoints';
 import toast from 'react-hot-toast';
 import { Card, Button, Input, Select } from '@/components/ui';
-import { BadgeCheck, Building2, CircleDollarSign, Eye, EyeOff, Mail, Phone, ShieldCheck, Stethoscope, UserRound } from 'lucide-react';
+import { BadgeCheck, Building2, CircleDollarSign, Eye, EyeOff, Mail, Phone, ShieldCheck, Stethoscope, UserRound, Globe } from 'lucide-react';
 
 interface HospitalOption {
   id: number;
@@ -14,8 +14,55 @@ interface HospitalOption {
   city?: string;
 }
 
+interface CountryCodeOption {
+  code: string;
+  label: string;
+  dialCode: string;
+}
+
+const COUNTRY_CODES: CountryCodeOption[] = [
+  { code: 'IN', label: 'India', dialCode: '+91' },
+  { code: 'US', label: 'United States', dialCode: '+1' },
+  { code: 'GB', label: 'United Kingdom', dialCode: '+44' },
+  { code: 'CA', label: 'Canada', dialCode: '+1' },
+  { code: 'AU', label: 'Australia', dialCode: '+61' },
+  { code: 'AE', label: 'United Arab Emirates', dialCode: '+971' },
+  { code: 'SA', label: 'Saudi Arabia', dialCode: '+966' },
+  { code: 'SG', label: 'Singapore', dialCode: '+65' },
+  { code: 'MY', label: 'Malaysia', dialCode: '+60' },
+  { code: 'ZA', label: 'South Africa', dialCode: '+27' },
+  { code: 'NG', label: 'Nigeria', dialCode: '+234' },
+  { code: 'KE', label: 'Kenya', dialCode: '+254' },
+  { code: 'GH', label: 'Ghana', dialCode: '+233' },
+  { code: 'EG', label: 'Egypt', dialCode: '+20' },
+  { code: 'DE', label: 'Germany', dialCode: '+49' },
+  { code: 'FR', label: 'France', dialCode: '+33' },
+  { code: 'IT', label: 'Italy', dialCode: '+33' },
+  { code: 'ES', label: 'Spain', dialCode: '+34' },
+  { code: 'JP', label: 'Japan', dialCode: '+81' },
+  { code: 'CN', label: 'China', dialCode: '+86' },
+  { code: 'BR', label: 'Brazil', dialCode: '+55' },
+  { code: 'MX', label: 'Mexico', dialCode: '+52' },
+  { code: 'OTHER', label: 'Other', dialCode: '+' },
+];
+
 export default function RegisterDoctorPage() {
-  const [form, setForm] = useState({ fullName: '', email: '', phone: '', password: '', confirmPassword: '', speciality: '', licenseNumber: '', qualification: '', experienceYears: '', consultationFee: '', clinicName: '', hospitalId: '', privacyPolicyAccepted: false });
+  const [form, setForm] = useState({
+    fullName: '',
+    email: '',
+    phoneCountryCode: '+91',
+    phone: '',
+    password: '',
+    confirmPassword: '',
+    speciality: '',
+    licenseNumber: '',
+    qualification: '',
+    experienceYears: '',
+    consultationFee: '',
+    clinicName: '',
+    hospitalId: '',
+    privacyPolicyAccepted: false
+  });
   const [loading, setLoading] = useState(false);
   const [loadingHospitals, setLoadingHospitals] = useState(false);
   const [hospitals, setHospitals] = useState<HospitalOption[]>([]);
@@ -87,7 +134,25 @@ export default function RegisterDoctorPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Input icon={<UserRound size={17} />} label="Full Name" placeholder="Enter your full name" required value={form.fullName} onChange={(e) => update('fullName', e.target.value)} />
               <Input icon={<Mail size={17} />} label="Email" type="email" placeholder="you@example.com" required value={form.email} onChange={(e) => update('email', e.target.value)} />
-              <Input icon={<Phone size={17} />} label="Phone" placeholder="Enter your phone number" required value={form.phone} onChange={(e) => update('phone', e.target.value)} />
+              <div className="sm:grid-cols-2">
+                <div className="flex gap-2">
+                  <Select
+                    label="Country Code"
+                    value={form.phoneCountryCode}
+                    onChange={(e) => update('phoneCountryCode', e.target.value)}
+                    options={COUNTRY_CODES.map(c => ({ value: c.dialCode, label: `${c.dialCode} ${c.label}` }))}
+                    className="w-full"
+                  />
+                  <Input
+                    icon={<Phone size={17} />}
+                    label="Phone"
+                    placeholder="Enter your phone number"
+                    required
+                    value={form.phone}
+                    onChange={(e) => update('phone', e.target.value)}
+                  />
+                </div>
+              </div>
               <Input icon={<Stethoscope size={17} />} label="Speciality" placeholder="e.g. Cardiology" required value={form.speciality} onChange={(e) => update('speciality', e.target.value)} />
               <Input icon={<BadgeCheck size={17} />} label="License Number" placeholder="Medical license number" required value={form.licenseNumber} onChange={(e) => update('licenseNumber', e.target.value)} />
               <Input icon={<BadgeCheck size={17} />} label="Qualification" placeholder="e.g. MBBS, MD" value={form.qualification} onChange={(e) => update('qualification', e.target.value)} />

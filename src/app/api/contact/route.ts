@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { CONTACT_EMAILS, ContactEmailKey } from '@/lib/contact-emails';
 
 interface ContactPayload {
   name?: unknown;
@@ -9,6 +10,24 @@ interface ContactPayload {
 
 function text(value: unknown): string {
   return typeof value === 'string' ? value.trim() : '';
+}
+
+/**
+ * Routes an enquiry to the team that can act on it, based on the subject the
+ * visitor chose. Anything unrecognised goes to support, which is the safest
+ * default for a healthcare product.
+ */
+const SUBJECT_ROUTING: ReadonlyArray<{ mailbox: ContactEmailKey; pattern: RegExp }> = [
+  { mailbox: 'hr', pattern: /\b(career|job|jobs|hiring|hire|intern|internship|recruit|application|resume|cv|apply)\b/i },
+  { mailbox: 'sales', pattern: /\b(sales|price|pricing|quote|cost|buy|purchase|demo|partnership|partner|collaborat|onboard|enterprise|licen[cs]e|procure)\b/i },
+  { mailbox: 'info', pattern: /\b(info|general|press|media|privacy|legal|terms|compliance|about|company)\b/i },
+];
+
+function routeToMailbox(subject: string): ContactEmailKey {
+  for (const { mailbox, pattern } of SUBJECT_ROUTING) {
+    if (pattern.test(subject)) return mailbox;
+  }
+  return 'support';
 }
 
 export async function POST(request: Request) {
@@ -31,11 +50,13 @@ export async function POST(request: Request) {
 
   const apiKey = process.env.RESEND_API_KEY;
   const sender = process.env.CONTACT_FROM_EMAIL;
-  const supportEmail = process.env.SUPPORT_EMAIL || 'support@aiconfidencecure.com';
 
   if (!apiKey || !sender) {
     return NextResponse.json({ message: 'Email delivery is not configured yet.' }, { status: 503 });
   }
+
+  const mailbox = routeToMailbox(subject);
+  const recipient = process.env[`CONTACT_EMAIL_${mailbox.toUpperCase()}`] || CONTACT_EMAILS[mailbox];
 
   try {
     const response = await fetch('https://api.resend.com/emails', {
@@ -46,10 +67,10 @@ export async function POST(request: Request) {
       },
       body: JSON.stringify({
         from: sender,
-        to: [supportEmail],
+        to: [recipient],
         reply_to: email,
-        subject: `Website contact: ${subject}`,
-        text: `Name: ${name}\nEmail: ${email}\nSubject: ${subject}\n\n${message}`,
+        subject: `[${mailbox}] Website contact: ${subject}`,
+        text: `Name: ${name}\nEmail: ${email}\nSubject: ${subject}\nRouted to: ${recipient}\n\n${message}`,
       }),
     });
 

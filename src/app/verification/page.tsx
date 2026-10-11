@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { doctorApi, hospitalApi, pathologyApi } from '@/lib/api/endpoints';
+import { CONTACT_EMAILS } from '@/lib/contact-emails';
 import toast from 'react-hot-toast';
 import { Card, Button, Input, Select, Textarea } from '@/components/ui';
 import {
@@ -316,7 +317,7 @@ export default function VerificationPage() {
 
         <Card>
           <div className="p-5 text-center">
-            <p className="text-body text-primary-light/70 mb-4">Need help? Contact support at support@aiconfidencecure.com</p>
+            <p className="text-body text-primary-light/70 mb-4">Need help? Contact support at {CONTACT_EMAILS.support}</p>
             <Link href="/login"><Button variant="outline"><LogOut className="mr-2 h-4 w-4" />Sign Out</Button></Link>
           </div>
         </Card>

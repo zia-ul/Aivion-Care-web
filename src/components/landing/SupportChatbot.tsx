@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { ArrowRight, Bot, Send, X } from 'lucide-react';
+import { CONTACT_EMAILS } from '@/lib/contact-emails';
 
 interface Message {
   role: 'user' | 'bot';
@@ -13,13 +14,16 @@ const quickReplies = [
   'How does video consultation work?',
   'Is my health data secure?',
   'How do I contact support?',
+  'Who do I contact?',
 ];
 
 const botResponses: Record<string, string> = {
   'book an appointment': 'You can browse specialists, check real availability, and book a consultation in minutes through the patient portal. Same-day slots are available for urgent needs.',
   'how does video consultation work?': 'Video consultations connect patients and doctors through secure digital sessions with screen sharing, recording, and transcription support. You can start one from your appointments or directly from the patient portal.',
   'is my health data secure?': 'Aivion Care uses role-based access, secure authentication, encrypted sessions, and controlled data access. We never sell personal or health data.',
-  'how do i contact support?': 'Reach our support team at support@aiconfidencecure.com or call +91 84493 91441. You can also start a conversation with our 24/7 chatbot right here.',
+  'how do i contact support?': `Reach our support team at ${CONTACT_EMAILS.support} or call +91 84493 91441. You can also start a conversation with our 24/7 chatbot right here.`,
+  'who do i contact?': `General questions go to ${CONTACT_EMAILS.info}, careers and internships to ${CONTACT_EMAILS.hr}, partnerships and pricing to ${CONTACT_EMAILS.sales}, and anything about your account or appointments to ${CONTACT_EMAILS.support}.`,
+  'how do i apply for a job?': `Send your CV to ${CONTACT_EMAILS.hr} with the role in the subject line, or use the Apply now link on our careers page.`,
 };
 
 function getBotReply(input: string): string {
@@ -27,7 +31,7 @@ function getBotReply(input: string): string {
   for (const [key, value] of Object.entries(botResponses)) {
     if (normalized.includes(key)) return value;
   }
-  return "I'm not sure about that. Try asking about appointments, video consultations, data security, or contact support. For complex issues, email us at support@aiconfidencecure.com.";
+  return `I'm not sure about that. Try asking about appointments, video consultations, data security, or who to contact. Product issues: ${CONTACT_EMAILS.support}. General questions: ${CONTACT_EMAILS.info}.`;
 }
 
 export default function SupportChatbot() {

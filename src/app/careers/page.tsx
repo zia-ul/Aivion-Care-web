@@ -1,6 +1,7 @@
 import { ArrowRight, Calendar, Clock, HeartPulse, Stethoscope, UserRoundCheck, Users } from 'lucide-react';
 import { SectionHeader } from '@/components/landing/common';
 import PageShell from '@/components/landing/PageShell';
+import { CONTACT_EMAILS, mailto } from '@/lib/contact-emails';
 const openings = [
   { title: 'AI Product Development Intern', duration: '4 months', focus: 'Hands-on product exposure across AI product development, full-stack engineering, and database design.', Icon: HeartPulse },
   { title: 'Full-Stack Engineering Intern', duration: '4 months', focus: 'Build real product features, ship code, and learn by doing in an early-stage team.', Icon: Users },
@@ -25,7 +26,10 @@ export default function CareersPage() {
                 <span className="inline-flex items-center gap-1.5"><Clock size={14} aria-hidden="true" /> {duration}</span>
               </div>
               <p className="mt-4 text-sm leading-6 text-primary-light/55">{focus}</p>
-              <a href="/contact" className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-sky-400 hover:text-sky-300">
+              <a
+                href={`mailto:${CONTACT_EMAILS.hr}?subject=${encodeURIComponent(`Application: ${title}`)}`}
+                className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-sky-400 hover:text-sky-300"
+              >
                 Apply now <ArrowRight size={15} />
               </a>
             </article>
@@ -36,9 +40,17 @@ export default function CareersPage() {
             <div>
               <h3 className="text-heading font-bold text-primary-light">We build for preventive care</h3>
               <p className="mt-2 text-sm text-primary-light/60">Every feature is oriented toward earlier visibility, better coordination, and more affordable access.</p>
+              <p className="mt-3 text-sm text-primary-light/60">
+                Send your CV to{' '}
+                <a href={mailto(CONTACT_EMAILS.hr)} className="font-semibold text-sky-400 hover:text-sky-300">
+                  {CONTACT_EMAILS.hr}
+                </a>{' '}
+                or use the form on the{' '}
+                <a href="/contact" className="font-semibold text-sky-400 hover:text-sky-300">contact page</a>.
+              </p>
             </div>
-            <a href="/contact" className="inline-flex items-center gap-2 rounded-2xl bg-sky-500 px-5 py-3 text-sm font-bold text-sky-950 shadow-lg shadow-sky-500/20 transition hover:-translate-y-0.5 hover:bg-sky-400">
-              View internship openings <ArrowRight size={16} />
+            <a href={mailto(CONTACT_EMAILS.hr)} className="inline-flex items-center gap-2 rounded-2xl bg-sky-500 px-5 py-3 text-sm font-bold text-sky-950 shadow-lg shadow-sky-500/20 transition hover:-translate-y-0.5 hover:bg-sky-400">
+              Email your CV <ArrowRight size={16} />
             </a>
           </div>
         </div>

@@ -7,6 +7,8 @@ import { initThemeStore, useThemeStore } from '@/lib/stores/theme';
 import { wsService } from '@/lib/websocket/client';
 import { Toaster } from 'react-hot-toast';
 import { IncomingCallListener } from '@/components/chat/IncomingCallListener';
+import { ChatNotificationListener } from '@/components/chat/ChatNotificationListener';
+import { NewMessageToast } from '@/components/chat/NewMessageToast';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient({
@@ -97,6 +99,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <QueryClientProvider client={queryClient}>
       {children}
       <IncomingCallListener />
+      <ChatNotificationListener />
+      <NewMessageToast />
       <Toaster
         position="top-right"
         gutter={10}

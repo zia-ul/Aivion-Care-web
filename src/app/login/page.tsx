@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { authApi } from '@/lib/api/endpoints';
-import { getRoleHomePath } from '@/lib/helpers';
+import { getRoleHomePath, getRoleHomePathWithGate } from '@/lib/helpers';
 import { useAuthStore } from '@/lib/stores/auth';
 import toast from 'react-hot-toast';
 import { Card, Button, Input } from '@/components/ui';
@@ -39,12 +39,8 @@ export default function LoginPage() {
         refreshToken: data.refreshToken,
       });
 
-      const role = data.user.role;
-      if (role === 'DOCTOR' && data.user.doctorApproved !== true) {
-        router.push('/approval-pending');
-      } else {
-        router.push(getRoleHomePath(role));
-      }
+      const targetPath = getRoleHomePathWithGate(data.user);
+      router.push(targetPath);
     } catch (error: any) {
       const msg =
         error?.response?.data?.message ||

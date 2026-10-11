@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Instagram, Linkedin, Mail, MapPin, Phone } from 'lucide-react';
+import { CONTACT_EMAILS, mailto } from '@/lib/contact-emails';
 
 const quickLinks = [
   ['Home', '/'],
@@ -13,7 +14,8 @@ const quickLinks = [
 ];
 
 const productLinks = [
-  ['Aivion Care', '/products/aivion-care'],
+  ['Aivion Care Web', '/login'],
+  ['Download Android App (APK)', process.env.NEXT_PUBLIC_ANDROID_APK_DRIVE_URL || 'https://drive.google.com/drive/folders/1aivion-care-apk-download'],
   ['Qurbani', '/products/qurbani'],
   ['Quran', '/products/quran'],
   ['All Products', '/products'],
@@ -72,12 +74,18 @@ export default function LandingFooter() {
       </div>
 
       <div className="border-t border-tonal-20/70">
-        <div className="mx-auto grid max-w-[1400px] gap-6 px-5 py-8 sm:px-8 md:grid-cols-3 lg:px-10">
+        <div className="mx-auto grid max-w-[1400px] gap-6 px-5 py-8 sm:px-8 md:grid-cols-2 lg:grid-cols-4 lg:px-10">
+<FooterContact
+            Icon={Mail}
+            label="General"
+            value={CONTACT_EMAILS.info}
+            href={mailto(CONTACT_EMAILS.info)}
+          />
           <FooterContact
             Icon={Mail}
-            label="Email"
-            value="support@aiconfidencecure.com"
-            href="mailto:support@aiconfidencecure.com"
+            label="Support"
+            value={CONTACT_EMAILS.support}
+            href={mailto(CONTACT_EMAILS.support)}
           />
           <FooterContact
             Icon={Phone}

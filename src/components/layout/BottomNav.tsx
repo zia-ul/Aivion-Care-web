@@ -8,6 +8,7 @@ import {
   Microscope, TestTube, ClipboardList, ShieldPlus, Bell, type LucideIcon,
 } from 'lucide-react';
 import { usePathmap } from '@/lib/use-pathmap';
+import { useChatUnreadStore } from '@/lib/stores/chat-unread';
 
 type NavItem = { href: string; label: string; icon: LucideIcon };
 
@@ -81,6 +82,15 @@ const adminNavItems: NavItem[] = [
 
 export default function BottomNav({ role }: { role: string }) {
   const pathname = usePathmap();
+  // Re-renders the bar when a message arrives so the badge appears.
+  const unreadByRoom = useChatUnreadStore((state) => state.unreadByRoom);
+
+  /** Unread messages shown on a nav entry; only chat destinations carry a badge. */
+  const badgeFor = (href: string) => {
+    if (!href.includes('/chat')) return 0;
+    return Object.values(unreadByRoom).reduce((total, count) => total + count, 0);
+  };
+
   let items: NavItem[];
   switch (role) {
     case 'DOCTOR':
@@ -114,6 +124,7 @@ export default function BottomNav({ role }: { role: string }) {
         {items.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
           const Icon = item.icon;
+          const badge = badgeFor(item.href);
           return (
             <Link
               key={item.href}
@@ -125,6 +136,14 @@ export default function BottomNav({ role }: { role: string }) {
             >
               {isActive && <span className="absolute top-0 h-0.5 w-7 rounded-full bg-accent shadow-[0_0_12px_rgba(34,211,197,0.75)]" />}
               <Icon size={20} strokeWidth={isActive ? 2.5 : 1.9} aria-hidden="true" />
+              {badge > 0 && (
+                <span
+                  className="absolute right-1.5 top-0.5 inline-flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-accent-fill px-1 text-[9px] font-bold text-white"
+                  aria-label={`${badge} unread ${badge === 1 ? 'message' : 'messages'}`}
+                >
+                  {badge > 9 ? '9+' : badge}
+                </span>
+              )}
               <span className="max-w-full truncate text-[10px] font-semibold leading-none">{item.label}</span>
             </Link>
           );

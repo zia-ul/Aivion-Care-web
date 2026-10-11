@@ -12,6 +12,20 @@ export interface User {
   pharmacyId?: number;
   doctorApprovalStatus?: string;
   doctorApproved?: boolean;
+  pharmacistApprovalStatus?: string;
+  pharmacistApproved?: boolean;
+  pharmacyApprovalStatus?: string;
+  pharmacyApproved?: boolean;
+  hospitalStatus?: string;
+  hospitalDisabledReason?: string;
+  documentsSubmitted?: boolean;
+  pathologyProfileId?: number;
+  pathologyLabId?: number;
+  pathologistId?: number;
+  pathologyApprovalStatus?: string;
+  pathologyApproved?: boolean;
+  pathologistApprovalStatus?: string;
+  pathologistApproved?: boolean;
 }
 
 export interface AuthResponse {

@@ -92,7 +92,7 @@ export default function PatientAppointmentsPage() {
         {loading ? (
           <p className="text-sm text-doctor-dim">Loading...</p>
         ) : list.length === 0 ? (
-          <div className="rounded-3xl bg-white border border-doctor-border-soft p-6 text-center text-sm text-doctor-dim">
+          <div className="rounded-3xl bg-surface-20 border border-doctor-border-soft p-6 text-center text-sm text-doctor-dim">
             {tab === 'upcoming' ? 'No upcoming appointments.' : 'No past appointments yet.'}
           </div>
         ) : (
@@ -102,7 +102,7 @@ export default function PatientAppointmentsPage() {
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <p className="text-white font-semibold">Dr. {a.doctorName ?? '—'}</p>
+                      <p className="text-primary-light font-semibold">Dr. {a.doctorName ?? '—'}</p>
                       <Pill color={statusColor(a.status)}>{a.status ?? ''}</Pill>
                     </div>
                     <p className="text-xs text-doctor-muted mt-1">{a.hospitalName ?? ''}{a.type ? ` • ${a.type}` : ''}</p>

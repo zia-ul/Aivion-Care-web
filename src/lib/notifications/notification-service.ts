@@ -1,5 +1,7 @@
 'use client';
 
+import { playSound } from '@/lib/audio/sounds';
+
 type NotificationPayload = {
   title: string;
   body: string;
@@ -137,6 +139,9 @@ class NotificationService {
   }
 
   private showMedicationNotification(reminderId: number, medicineName: string, doseTime: string): void {
+    // Audible cue as well as the OS notification: a service-worker
+    // notification's sound is controlled by the OS and is often suppressed.
+    playSound('reminder');
     this.showLocalNotification({
       title: 'Medication Reminder',
       body: `Time to take ${medicineName}`,

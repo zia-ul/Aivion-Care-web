@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, Activity, CalendarDays, HeartPulse, Lightbulb, Pill, Thermometer, Waves } from 'lucide-react';
+import { ArrowRight, Activity, CalendarDays, HeartPulse, Lightbulb, Pill, Thermometer, Waves, Smartphone } from 'lucide-react';
 
 export default function HeroSection() {
   return (
@@ -23,6 +23,14 @@ export default function HeroSection() {
               <Link href="/login" className="inline-flex items-center justify-center gap-2 rounded-input bg-accent-fill px-5 py-3 font-bold text-white hover:bg-accent-fill/90 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-sky-500/20">
                 Login <ArrowRight size={18} />
               </Link>
+              <a
+                href={process.env.NEXT_PUBLIC_ANDROID_APK_DRIVE_URL || "https://drive.google.com/drive/folders/1aivion-care-apk-download"}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center justify-center gap-2 rounded-input border border-emerald-500/30 bg-emerald-500/10 px-5 py-3 font-semibold text-emerald-400 hover:bg-emerald-500/20 transition-all hover:-translate-y-0.5"
+              >
+                <Smartphone size={18} /> Download Android App
+              </a>
               <a href="https://www.aiconfidencecure.com/" target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 rounded-input border border-sky-500/20 bg-sky-500/5 px-5 py-3 font-semibold text-sky-400 hover:bg-sky-500/10 transition-all hover:-translate-y-0.5">
                 Visit company site <ArrowRight size={18} />
               </a>

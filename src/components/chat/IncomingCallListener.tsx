@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import { appointmentApi } from '@/lib/api/endpoints';
 import { webrtcWsService } from '@/lib/websocket/webrtc-client';
 import { useAuthStore } from '@/lib/stores/auth';
+import { useSounds } from '@/lib/audio/sounds';
 
 interface IncomingCall {
   consultationId: number;
@@ -25,6 +26,7 @@ export function IncomingCallListener() {
   const [incoming, setIncoming] = useState<IncomingCall | null>(null);
   const selfIdRef = useRef<number | undefined>(user?.id);
   const cleanupRef = useRef<(() => void)[]>([]);
+  const { startRing, stopRing } = useSounds();
 
   useEffect(() => { selfIdRef.current = user?.id; }, [user?.id]);
 
@@ -58,6 +60,9 @@ export function IncomingCallListener() {
               fromRole: message.senderRole ?? 'DOCTOR',
               video: message.data?.video !== false,
             });
+            // Ring on arrival, and stop as soon as the overlay appears so the
+            // sound is never left running behind the accept/reject UI.
+            startRing();
             toast('Incoming video call', { icon: '📞' });
           });
 
@@ -76,17 +81,19 @@ export function IncomingCallListener() {
         try { off(); } catch { /* already gone */ }
       });
       cleanupRef.current = [];
+      stopRing();
     };
-  }, [accessToken]);
+  }, [accessToken, startRing, stopRing]);
 
   const accept = useCallback(() => {
     if (!incoming) return;
     const { consultationId } = incoming;
+    stopRing();
     setIncoming(null);
     // `incoming=1` tells the page to accept immediately instead of waiting for
     // the doctor to press the button a second time.
     router.push(`/video/consultation?id=${consultationId}&incoming=1`);
-  }, [incoming, router]);
+  }, [incoming, router, stopRing]);
 
   const reject = useCallback(() => {
     if (!incoming) return;
@@ -97,8 +104,9 @@ export function IncomingCallListener() {
       consultationId: incoming.consultationId,
       data: {},
     });
+    stopRing();
     setIncoming(null);
-  }, [incoming, user?.role]);
+  }, [incoming, user?.role, stopRing]);
 
   if (!incoming) return null;
 

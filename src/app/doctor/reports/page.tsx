@@ -43,7 +43,7 @@ export default function DoctorReportsPage() {
           </div>
         )}
         <DarkCard>
-          <h2 className="flex items-center gap-2 text-lg font-bold text-white"><BarChart3 size={19} className="text-doctor-mint" /> Care overview</h2>
+          <h2 className="flex items-center gap-2 text-lg font-bold text-primary-light"><BarChart3 size={19} className="text-doctor-mint" /> Care overview</h2>
           <p className="mt-2 text-sm leading-6 text-doctor-muted">Use these indicators to review patient volume, appointments, recovery progress, and cases that need follow-up. Detailed trends are sourced from the doctor dashboard API.</p>
         </DarkCard>
       </div>

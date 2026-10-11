@@ -56,6 +56,15 @@ import {
   PathologyReportDraftRequest,
   PathologyDashboardStatsResponse,
 } from '@/types/pathology';
+import { ClinicalAssessmentRequest, ClinicalAssessmentResponse } from '@/types/clinical-assessment';
+import {
+  PatientDocumentResponse,
+  PatientDocumentUploadRequest,
+  PatientDocumentFolderResponse,
+  PatientDocumentFolderRequest,
+  DocumentReminderDTO,
+  DocumentStatsResponse,
+} from '@/types/patient-documents';
 
 export const authApi = {
   login: (data: { loginId: string; password: string }) =>
@@ -93,6 +102,7 @@ export const doctorApi = {
   getMyProfile: () => apiClient.get('/api/v1/doctors/me/profile'),
   updateMyProfile: (data: any) => apiClient.put('/api/v1/doctors/me/profile', data),
   submitForApproval: () => apiClient.post('/api/v1/doctors/me/profile/submit', {}),
+  getApprovalStatus: () => apiClient.get('/api/v1/doctors/me/approval-status'),
   uploadVerificationDocument: (documentType: string, file: File) => {
     const formData = new FormData();
     formData.append('file', file);
@@ -398,4 +408,57 @@ export const labApi = {
   book: (data: any) => apiClient.post('/api/v1/labs/bookings', data),
   uploadReport: (id: number, data: { reportUrl: string }) =>
     apiClient.post(`/api/v1/labs/bookings/${id}/upload-report`, data),
+};
+
+export const clinicalAssessmentApi = {
+  create: (patientId: number, data: ClinicalAssessmentRequest) =>
+    apiClient.post<ClinicalAssessmentResponse>(`/api/v1/patients/${patientId}/clinical-assessments`, data),
+  getHistory: (patientId: number) =>
+    apiClient.get<ClinicalAssessmentResponse[]>(`/api/v1/patients/${patientId}/clinical-assessments`),
+  getById: (patientId: number, assessmentId: number) =>
+    apiClient.get<ClinicalAssessmentResponse>(`/api/v1/patients/${patientId}/clinical-assessments/${assessmentId}`),
+};
+
+export const patientDocumentApi = {
+  upload: (file: File, request: PatientDocumentUploadRequest) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('request', new Blob([JSON.stringify(request)], { type: 'application/json' }));
+    return apiClient.post<PatientDocumentResponse>('/api/v1/patients/me/documents', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
+  getAll: (params?: {
+    category?: string;
+    folderId?: number;
+    favorite?: boolean;
+    search?: string;
+    page?: number;
+    size?: number;
+  }) => apiClient.get<PatientDocumentResponse[]>('/api/v1/patients/me/documents', { params }),
+  getStats: () => apiClient.get<DocumentStatsResponse>('/api/v1/patients/me/documents/stats'),
+  search: (q: string, page = 0, size = 20) =>
+    apiClient.get<PatientDocumentResponse[]>(`/api/v1/patients/me/documents/search`, { params: { q, page, size } }),
+  getById: (documentId: number) => apiClient.get<PatientDocumentResponse>(`/api/v1/patients/me/documents/${documentId}`),
+  download: (documentId: number) => apiClient.get(`/api/v1/patients/me/documents/${documentId}/download`, { responseType: 'blob' }),
+  update: (documentId: number, request: PatientDocumentUploadRequest) =>
+    apiClient.put<PatientDocumentResponse>(`/api/v1/patients/me/documents/${documentId}`, request),
+  delete: (documentId: number) => apiClient.delete(`/api/v1/patients/me/documents/${documentId}`),
+  toggleFavorite: (documentId: number) =>
+    apiClient.post<PatientDocumentResponse>(`/api/v1/patients/me/documents/${documentId}/favorite`),
+
+  // Folders
+  createFolder: (request: PatientDocumentFolderRequest) =>
+    apiClient.post<PatientDocumentFolderResponse>('/api/v1/patients/me/documents/folders', request),
+  getFolders: () => apiClient.get<PatientDocumentFolderResponse[]>('/api/v1/patients/me/documents/folders'),
+  deleteFolder: (folderId: number) => apiClient.delete(`/api/v1/patients/me/documents/folders/${folderId}`),
+
+  // Reminders
+  createReminder: (documentId: number, request: DocumentReminderDTO.ReminderRequest) =>
+    apiClient.post<DocumentReminderDTO.ReminderResponse>(`/api/v1/patients/me/documents/${documentId}/reminders`, request),
+  getReminders: (documentId: number) => apiClient.get<DocumentReminderDTO.ReminderResponse[]>(`/api/v1/patients/me/documents/${documentId}/reminders`),
+  deleteReminder: (reminderId: number) => apiClient.delete(`/api/v1/patients/me/documents/reminders/${reminderId}`),
+  updateReminderStatus: (reminderId: number, status: string) =>
+    apiClient.put<DocumentReminderDTO.ReminderResponse>(`/api/v1/patients/me/documents/reminders/${reminderId}/status`, { status }),
+
 };

@@ -50,11 +50,42 @@ export default function AppLayout({ children, role, title, subtitle }: { childre
     if (role === 'SUPER_ADMIN' && actualRole !== 'SUPER_ADMIN') {
       router.replace('/login');
     }
-    // Redirect unapproved doctors to approval-pending
+    // Gate unapproved doctors to verification or approval-pending
     if (role === 'DOCTOR' && actualRole === 'DOCTOR' && user?.doctorApproved !== true) {
-      router.replace('/approval-pending');
+      router.replace(user?.doctorApprovalStatus === 'PENDING' ? '/approval-pending' : '/verification');
     }
-  }, [actualRole, role, router, user?.doctorApproved]);
+    // Gate unapproved / resubmission hospital heads
+    if (role === 'HOSPITAL_HEAD' && actualRole === 'HOSPITAL_HEAD') {
+      if (user?.documentsSubmitted === false || user?.hospitalStatus === 'RESUBMIT') {
+        router.replace('/hospital-head/status');
+      } else if (user?.hospitalStatus === 'PENDING') {
+        router.replace('/approval-pending');
+      }
+    }
+    // Gate unapproved pharmacists / pharmacy
+    if (role === 'PHARMACY' && actualRole === 'PHARMACY') {
+      if (user?.pharmacistApproved !== true || user?.pharmacyApproved !== true) {
+        router.replace('/approval-pending');
+      }
+    }
+    // Gate unapproved pathology
+    if (role === 'PATHOLOGY' && actualRole === 'PATHOLOGY') {
+      if (user?.pathologyApproved !== true) {
+        router.replace('/verification');
+      }
+    }
+  }, [
+    actualRole,
+    role,
+    router,
+    user?.doctorApproved,
+    user?.doctorApprovalStatus,
+    user?.documentsSubmitted,
+    user?.hospitalStatus,
+    user?.pharmacistApproved,
+    user?.pharmacyApproved,
+    user?.pathologyApproved,
+  ]);
 
   if (isLoading) {
     return (

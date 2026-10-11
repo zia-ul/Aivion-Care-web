@@ -11,6 +11,7 @@ import {
 import toast from 'react-hot-toast';
 import { useAuthStore } from '@/lib/stores/auth';
 import { notifyError, readableError } from '@/lib/errors';
+import { useClearRoomOnOpen } from './ChatNotificationListener';
 
 interface ChatRoom {
   id: number;
@@ -365,6 +366,9 @@ export function ChatPanel({ role }: { role: 'DOCTOR' | 'PATIENT' }) {
     () => selectedConversation?.roomIds ?? [],
     [selectedConversation]
   );
+
+  // Opening a conversation means it has been read, so drop the sidebar badge.
+  useClearRoomOnOpen(activeRoomIds[activeRoomIds.length - 1]);
 
   const activeRoomId = selectedConversation?.activeRoomId ?? null;
 

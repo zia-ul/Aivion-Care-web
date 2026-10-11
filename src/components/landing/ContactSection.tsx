@@ -1,7 +1,7 @@
 import { ArrowRight, Mail, MapPin, Phone, Send } from 'lucide-react';
+import { CONTACT_CHANNELS, CONTACT_EMAILS, mailto } from '@/lib/contact-emails';
 
 const contactPoints = [
-  { label: 'Email', value: 'support@aiconfidencecure.com', Icon: Mail, href: 'mailto:support@aiconfidencecure.com' },
   { label: 'Phone', value: '+91 84493 91441', Icon: Phone, href: 'tel:+918449391441' },
   { label: 'Address', value: 'AMU Innovation Foundation, 1st Floor Near Minto Circle School, Minto Circle Road, Aligarh, UP 202001, India', Icon: MapPin, href: null },
 ] as const;
@@ -51,6 +51,30 @@ export default function ContactSection() {
                 <Send size={18} />
               </a>
             </div>
+
+            {/* One mailbox per purpose, so enquiries reach the right team. */}
+            <div className="pt-2">
+              <p className="text-support font-semibold uppercase tracking-[0.12em] text-muted-foreground">Email us</p>
+              <ul className="mt-3 space-y-2">
+                {CONTACT_CHANNELS.map((channel) => (
+                  <li key={channel.address}>
+                    <a
+                      href={mailto(channel.address)}
+                      className="flex items-start gap-3 rounded-2xl border border-tonal-20/70 bg-surface-20/60 p-4 backdrop-blur transition hover:-translate-y-0.5 hover:border-accent/50"
+                    >
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-sky-500/15 text-sky-400">
+                        <Mail size={17} aria-hidden="true" />
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block text-sm font-semibold text-primary-light">{channel.label}</span>
+                        <span className="mt-0.5 block text-sm text-sky-400">{channel.address}</span>
+                        <span className="mt-1 block text-xs text-primary-light/55">{channel.purpose}</span>
+                      </span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
 
           <div className="rounded-2xl border border-tonal-20/70 bg-surface-20/60 p-5 sm:p-6 backdrop-blur">
@@ -58,7 +82,7 @@ export default function ContactSection() {
               <Send size={22} className="mt-0.5 shrink-0 text-sky-400" aria-hidden="true" />
               <div>
                 <h3 className="text-heading font-bold text-primary-light">Start a conversation</h3>
-                <p className="mt-2 text-sm text-primary-light/55">Whether you are a mentor, partner, intern, or early collaborator, the team is open to meaningful conversations.</p>
+                <p className="mt-2 text-sm text-primary-light/55">Whether you are a mentor, partner, intern, or early collaborator, the team is open to meaningful conversations. Pick a mailbox above, or send a message and we will route it.</p>
               </div>
             </div>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">

@@ -1,5 +1,6 @@
 import { Lock, Mail, Phone, ShieldCheck, Stethoscope, UserRoundCheck } from 'lucide-react';
 import PageShell from '@/components/landing/PageShell';
+import { CONTACT_EMAILS, mailto } from '@/lib/contact-emails';
 const sections = [
   {
     title: 'Information We Collect',
@@ -57,10 +58,13 @@ export default function PrivacyPolicyPage() {
 
         <div className="mt-10 rounded-2xl border border-sky-500/20 bg-sky-500/10 p-6 sm:p-8 backdrop-blur">
           <h2 className="text-heading font-bold text-primary-light">Contact us</h2>
-          <p className="mt-3 text-sm leading-7 text-primary-light/60">If you have questions about this privacy policy or want to exercise your rights, reach out to us.</p>
+<p className="mt-3 text-sm leading-7 text-primary-light/60">If you have questions about this privacy policy or want to exercise your rights, reach out to us. Privacy and legal requests go to {CONTACT_EMAILS.info}; for anything about your own account or records, write to {CONTACT_EMAILS.support}.</p>
           <div className="mt-5 flex flex-wrap gap-4 text-sm text-sky-400">
-            <a href="mailto:support@aiconfidencecure.com" className="inline-flex items-center gap-2">
-              <Mail size={16} /> support@aiconfidencecure.com
+            <a href={mailto(CONTACT_EMAILS.info)} className="inline-flex items-center gap-2">
+              <Mail size={16} /> {CONTACT_EMAILS.info} <span className="text-primary-light/45">(privacy &amp; legal)</span>
+            </a>
+            <a href={mailto(CONTACT_EMAILS.support)} className="inline-flex items-center gap-2">
+              <Mail size={16} /> {CONTACT_EMAILS.support} <span className="text-primary-light/45">(your account &amp; records)</span>
             </a>
             <a href="tel:+918449391441" className="inline-flex items-center gap-2">
               <Phone size={16} /> +91 84493 91441

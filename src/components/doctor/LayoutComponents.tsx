@@ -38,7 +38,7 @@ export function SectionCard({
           )}
           <div className="flex-1 min-w-0">
             {title && (
-              <h3 className="text-lg font-semibold text-white truncate">{title}</h3>
+              <h3 className="text-lg font-semibold text-primary-light truncate">{title}</h3>
             )}
             {subtitle && (
               <p className="text-xs text-doctor-muted mt-1 truncate">{subtitle}</p>
@@ -99,7 +99,7 @@ export function SubsectionPanel({ icon: Icon, title, subtitle, trailing, childre
     <div className={cn('w-full rounded-xl bg-doctor-panel/80 border border-doctor-blue/10 p-4', className)}>
       <div className="flex items-center gap-2 mb-3">
         {Icon && <Icon className="h-5 w-5 text-doctor-blue" />}
-        <span className="text-sm font-semibold text-white">
+        <span className="text-sm font-semibold text-primary-light">
           {subtitle ? `${title} (${subtitle})` : title}
         </span>
         {trailing}
@@ -143,7 +143,7 @@ export function ActionTileButton({ icon: Icon, label, helper, onClick, disabled,
       <div className="w-10 h-10 rounded-xl bg-doctor-blue/15 flex items-center justify-center text-doctor-blue mb-3">
         {Icon && <Icon className="h-5 w-5" />}
       </div>
-      <p className="font-medium text-white mb-1 line-clamp-2">{label}</p>
+      <p className="font-medium text-primary-light mb-1 line-clamp-2">{label}</p>
       {helper && <p className="text-xs text-doctor-muted line-clamp-2">{helper}</p>}
     </button>
   );
