@@ -81,6 +81,11 @@ export const authApi = {
   getMyProfile: () => apiClient.get('/api/v1/auth/me'),
   getHospitals: () => apiClient.get('/api/v1/auth/hospitals'),
   deleteProfile: () => apiClient.delete('/api/v1/auth/me'),
+  // Zero-Cost Multi-Channel OTP Verification
+  sendOtp: (data: { identifier: string; channel?: 'EMAIL' | 'MOBILE' }) =>
+    apiClient.post('/api/v1/auth/verification/send-otp', data),
+  verifyOtp: (data: { identifier: string; otp: string }) =>
+    apiClient.post('/api/v1/auth/verification/verify-otp', data),
 };
 
 export const appointmentApi = {
@@ -233,6 +238,18 @@ export const hospitalApi = {
     const formData = new FormData();
     formData.append('file', file);
     return apiClient.post(`/api/v1/hospitals/me/profile/documents/${documentType}`, formData);
+  },
+  // Staff Member Management (Nurse, Helper, Receptionist, Lab Assistant, Doctor)
+  getStaff: (hospitalId: number) =>
+    apiClient.get(`/api/v1/hospitals/${hospitalId}/staff`),
+  addStaff: (hospitalId: number, data: { fullName: string; email: string; phone: string; role: string; department?: string; employeeCode?: string }) =>
+    apiClient.post(`/api/v1/hospitals/${hospitalId}/staff`, data),
+  deactivateStaff: (hospitalId: number, staffId: number) =>
+    apiClient.delete(`/api/v1/hospitals/${hospitalId}/staff/${staffId}`),
+  uploadStaffDocument: (hospitalId: number, staffId: number, documentType: string, file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return apiClient.post(`/api/v1/hospitals/${hospitalId}/staff/${staffId}/documents/${documentType}`, formData);
   },
 };
 
