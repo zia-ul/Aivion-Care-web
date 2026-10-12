@@ -444,6 +444,35 @@ option { color: rgb(var(--primary-light)); background: rgb(var(--surface-20)); }
   50% { background-position: 100% 50%; }
 }
 
+@keyframes heartbeat {
+  0% { transform: scale(1); }
+  14% { transform: scale(1.18); }
+  28% { transform: scale(1); }
+  42% { transform: scale(1.18); }
+  70% { transform: scale(1); }
+}
+
+@keyframes ecg-flow {
+  0% { stroke-dashoffset: 1000; }
+  100% { stroke-dashoffset: 0; }
+}
+
+@keyframes ecg-dash {
+  to {
+    stroke-dashoffset: -1000;
+  }
+}
+
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(1000%); }
+}
+
+@keyframes radiant-pulse {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.04); }
+}
+
 .animate-fade-in { animation: fade-in 0.6s ease-out both; }
 .animate-fade-in-up { animation: fade-in-up 0.7s ease-out both; }
 .animate-float { animation: float 6s ease-in-out infinite; }
@@ -460,6 +489,34 @@ option { color: rgb(var(--primary-light)); background: rgb(var(--surface-20)); }
 .animation-delay-600 { animation-delay: 600ms; }
 .animation-delay-700 { animation-delay: 700ms; }
 .animation-delay-800 { animation-delay: 800ms; }
+
+.animate-heartbeat {
+  animation: heartbeat 1.25s ease-in-out infinite;
+  transform-origin: center;
+}
+
+.animate-heartbeat-fast {
+  animation: heartbeat 0.85s ease-in-out infinite;
+  transform-origin: center;
+}
+
+.animate-ecg-flow {
+  stroke-dasharray: 1000;
+  animation: ecg-flow 3.5s linear infinite;
+}
+
+.animate-ecg-dash {
+  stroke-dasharray: 20 8;
+  animation: ecg-dash 20s linear infinite;
+}
+
+.animate-radiant-pulse {
+  animation: radiant-pulse 5s ease-in-out infinite;
+}
+
+.animate-scanline {
+  animation: scanline 4s linear infinite;
+}
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

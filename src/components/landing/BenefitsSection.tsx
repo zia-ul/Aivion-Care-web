@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import {
   Accessibility,
   Clock,
@@ -7,83 +8,151 @@ import {
   Network,
   ShieldCheck,
   Stethoscope,
+  Sparkles,
   type LucideIcon,
 } from 'lucide-react';
 
 const benefits = [
   {
-    title: 'Faster access to care',
-    text: 'Book appointments, share records and consult a doctor without repeated paperwork or long waiting rooms.',
+    title: 'Faster Access to Care',
+    text: 'Book appointments, share biometric history and consult doctors without repeating paperwork or sitting in waiting rooms.',
+    punchline: 'Zero waiting. Direct specialist care.',
+    image: '/images/healthcare/doctor-consulting.jpg',
     Icon: Clock,
   },
   {
-    title: 'Continuity of records',
-    text: 'History, prescriptions, reports and consultation notes stay connected across visits and providers.',
+    title: 'Continuity of Records',
+    text: 'Prescriptions, lab reports, ECG charts, and clinical notes stay permanently synced across visits and institutions.',
+    punchline: 'One lifetime health record.',
+    image: '/images/healthcare/hospital-interior.jpg',
     Icon: Network,
   },
   {
-    title: 'Specialist reach',
-    text: 'Remote consultation connects patients to specialists regardless of where they live.',
+    title: 'Specialist Reach Anywhere',
+    text: 'Remote video consults connect patients in any tier-2/3 city directly to top-tier hospital specialists.',
+    punchline: 'World-class care delivered home.',
+    image: '/images/healthcare/doctor-examining.jpg',
     Icon: Stethoscope,
   },
   {
-    title: 'Earlier detection',
-    text: 'Monitoring and timely alerts help clinicians act before a minor concern becomes a serious one.',
+    title: 'Earlier Anomaly Detection',
+    text: 'Continuous biological tracking alerts clinicians to abnormal arrhythmias or oxygen drops before emergency hospitalization.',
+    punchline: 'Prevention before panic.',
+    image: '/images/healthcare/smart-monitoring.jpg',
     Icon: HeartPulse,
   },
   {
-    title: 'Lower cost of care',
-    text: 'Fewer repeat visits and avoidable admissions reduce the financial burden on families.',
+    title: 'Lower Cost of Treatment',
+    text: 'Early detection and fewer avoidable hospital admissions significantly reduce out-of-pocket healthcare expenses.',
+    punchline: 'Affordable, transparent healthcare.',
+    image: '/images/healthcare/modern-clinic.jpg',
     Icon: IndianRupee,
   },
   {
-    title: 'Designed for everyone',
-    text: 'An accessible interface usable by older patients and first-time smartphone users.',
+    title: 'Designed for Everyone',
+    text: 'High-contrast accessible interface easily navigable by elderly grandparents and first-time smartphone users alike.',
+    punchline: 'Simple enough for everyone.',
+    image: '/images/healthcare/doctor-patient-care.jpg',
     Icon: Accessibility,
   },
   {
-    title: 'Privacy by design',
-    text: 'Role-based access and secure sessions keep clinical information protected.',
+    title: 'Privacy & HIPAA Standards',
+    text: 'End-to-end encrypted sessions and zero selling of personal or biometric telemetry data.',
+    punchline: 'Your health data belongs only to you.',
+    image: '/images/healthcare/hospital-hallway.jpg',
     Icon: Lock,
   },
   {
-    title: 'Trusted workflows',
-    text: 'Clinicians review and confirm every AI-assisted output before it enters a patient record.',
+    title: 'Doctor-Verified AI Loops',
+    text: 'Certified clinical doctors review and confirm every AI-suggested diagnostic insight before entry into records.',
+    punchline: 'Human clinical expertise always first.',
+    image: '/images/healthcare/doctor-consulting.jpg',
     Icon: ShieldCheck,
   },
 ] as const satisfies ReadonlyArray<{
   title: string;
   text: string;
+  punchline: string;
+  image: string;
   Icon: LucideIcon;
 }>;
 
 export default function BenefitsSection() {
   return (
-    <section id="benefits" className="mx-auto max-w-[1400px] px-5 py-20 sm:px-8 lg:px-10 lg:py-28">
-      <div className="max-w-2xl">
-        <p className="text-support font-semibold uppercase tracking-[0.16em] text-sky-400">
-          Benefits
-        </p>
-        <h2 className="mt-3 text-section font-bold text-primary-light sm:text-subtitle">
-          What connected healthcare actually delivers
+    <section id="benefits" className="relative mx-auto max-w-[1400px] px-5 py-20 sm:px-8 lg:px-10 lg:py-28 overflow-hidden">
+      {/* Background Heart Rate Grid Overlay */}
+      <div className="pointer-events-none absolute inset-0 opacity-15">
+        <div 
+          className="h-full w-full"
+          style={{
+            backgroundImage: `
+              linear-gradient(to right, rgba(14, 165, 233, 0.2) 1px, transparent 1px),
+              linear-gradient(to bottom, rgba(14, 165, 233, 0.2) 1px, transparent 1px)
+            `,
+            backgroundSize: '40px 40px',
+          }}
+        />
+      </div>
+
+      <div className="max-w-2xl relative z-10">
+        <div className="inline-flex items-center gap-2 rounded-full border border-sky-400/30 bg-sky-500/10 px-3.5 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-sky-300">
+          <Sparkles size={13} className="text-teal-300" /> Clinical Impact
+        </div>
+        <h2 className="mt-4 font-display text-3xl font-extrabold tracking-tight text-white sm:text-4xl lg:text-5xl">
+          What Connected Healthcare <span className="bg-gradient-to-r from-sky-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">Actually Delivers</span>
         </h2>
-        <p className="mt-5 leading-7 text-primary-light/60">
-          Technology only matters if it changes outcomes. Here is what the platform is built to make
-          better — for every person it serves. No fine print, we promise.
+        <p className="mt-4 text-base leading-relaxed text-slate-300 sm:text-lg">
+          Technology only matters if it changes real human outcomes. Here is how Aivion Care protects patient health and simplifies daily lives.
         </p>
       </div>
 
-      <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {benefits.map(({ title, text, Icon }) => (
+      <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4 relative z-10">
+        {benefits.map(({ title, text, punchline, image, Icon }) => (
           <article
             key={title}
-            className="rounded-2xl border border-tonal-20/70 bg-surface-20/60 p-5 transition hover:-translate-y-1 hover:border-accent/50 backdrop-blur"
+            className="group relative flex flex-col justify-between overflow-hidden rounded-[26px] border border-white/10 bg-slate-950/80 p-6 shadow-xl backdrop-blur-xl transition-all duration-500 hover:-translate-y-1.5 hover:border-cyan-400/50 hover:shadow-cyan-500/10"
           >
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-sky-500/15 text-sky-400">
-              <Icon size={21} aria-hidden="true" />
+            {/* Box Background Image with radiant dark gradient overlay */}
+            <div className="absolute inset-0 -z-10 overflow-hidden">
+              <Image
+                src={image}
+                alt={title}
+                fill
+                className="object-cover opacity-20 transition-transform duration-700 group-hover:scale-110 group-hover:opacity-35"
+                sizes="(max-width: 768px) 100vw, 350px"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/85 to-slate-950/50" />
             </div>
-            <h3 className="mt-5 font-semibold text-primary-light">{title}</h3>
-            <p className="mt-2 text-sm leading-6 text-primary-light/55">{text}</p>
+
+            {/* Radiant Corner Glow */}
+            <div className="pointer-events-none absolute -top-10 -right-10 h-28 w-28 rounded-full bg-cyan-500/15 blur-2xl group-hover:bg-cyan-500/30 transition-all duration-500" />
+
+            <div>
+              <div className="flex items-center justify-between">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/[0.06] border border-white/10 shadow-inner group-hover:border-cyan-400/40">
+                  <Icon size={20} className="text-cyan-400 group-hover:scale-110 transition-transform" />
+                </div>
+
+                {/* Animated Heartbeat Indicator */}
+                <HeartPulse size={16} className="text-rose-400 animate-heartbeat" />
+              </div>
+
+              <h3 className="mt-5 font-display text-base font-bold text-white group-hover:text-cyan-200 transition-colors">
+                {title}
+              </h3>
+              <p className="mt-1 text-[11px] font-bold text-teal-300 uppercase tracking-wider">
+                {punchline}
+              </p>
+              <p className="mt-2.5 text-xs leading-relaxed text-slate-300">
+                {text}
+              </p>
+            </div>
+
+            {/* Mini ECG bottom separator */}
+            <div className="mt-5 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] font-semibold text-slate-400">
+              <span className="text-teal-300 font-mono">100% Care Sync</span>
+              <span className="text-cyan-400 group-hover:translate-x-1 transition-transform">Active →</span>
+            </div>
           </article>
         ))}
       </div>
