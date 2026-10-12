@@ -1,4 +1,5 @@
-import { ArrowRight, BrainCircuit, Calendar, Clock, FileText, Stethoscope, UserRoundCheck, Video, type LucideIcon } from 'lucide-react';
+import Image from 'next/image';
+import { ArrowRight, BrainCircuit, Calendar, Clock, FileText, Stethoscope, UserRoundCheck, Video, Sparkles, type LucideIcon } from 'lucide-react';
 import { SectionHeader } from './common';
 
 const features = [
@@ -7,59 +8,94 @@ const features = [
     description: 'See complete patient history, vitals, prescriptions and consultation notes before every consult.',
     icon: UserRoundCheck,
     href: '/doctor/patients',
+    image: '/images/healthcare/doctor-patient-care.jpg',
   },
   {
     title: 'Diagnosis & Notes',
     description: 'Record structured clinical notes, assessments and plans with AI-assisted organisation.',
     icon: FileText,
     href: '/doctor/diagnosis',
+    image: '/images/healthcare/digital-tablet-doctor.jpg',
   },
   {
     title: 'Prescription Preview',
     description: 'Draft, review and share digital prescriptions with patients and pharmacies instantly.',
     icon: Stethoscope,
     href: '/doctor/dashboard',
+    image: '/images/healthcare/doctor-consulting.jpg',
   },
   {
     title: 'Schedule Management',
     description: 'Set availability, manage breaks and holidays, and let patients book only your open slots.',
     icon: Calendar,
     href: '/doctor/schedule',
+    image: '/images/healthcare/reception-desk.jpg',
   },
   {
     title: 'Emergency Alerts',
     description: 'Flag and escalate urgent cases so high-risk patients get the attention they need fast.',
     icon: Clock,
     href: '/doctor/dashboard',
+    image: '/images/healthcare/ecg-monitor.jpg',
   },
   {
     title: 'Video Consultation',
     description: 'Run secure teleconsultations with screen sharing, recording and transcription support.',
     icon: Video,
     href: '/video/consultation',
+    image: '/images/healthcare/telemedicine-call.jpg',
   },
 ] as const;
 
 export default function DoctorFeaturesSection() {
   return (
-    <section id="doctor-features" className="bg-surface-10 py-20 sm:py-28">
-      <div className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-10">
+    <section id="doctor-features" className="relative bg-surface-10 py-20 sm:py-28 overflow-hidden">
+      {/* Background Heart Rate Grid Overlay */}
+      <div className="pointer-events-none absolute inset-0 opacity-15">
+        <div 
+          className="h-full w-full"
+          style={{
+            backgroundImage: `
+              linear-gradient(to right, rgba(14, 165, 233, 0.2) 1px, transparent 1px),
+              linear-gradient(to bottom, rgba(14, 165, 233, 0.2) 1px, transparent 1px)
+            `,
+            backgroundSize: '40px 40px',
+          }}
+        />
+      </div>
+
+      <div className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-10 relative z-10">
         <SectionHeader
           eyebrow="Doctor features"
           title="Tools that fit real clinical workflows"
           description="Built alongside clinicians, so every feature supports the work you actually do — not the other way around."
         />
-        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {features.map(({ title, description, icon: Icon, href }) => (
-            <a key={title} href={href} className="block">
-              <div className="rounded-2xl border border-tonal-20/70 bg-surface-20/60 p-6 transition hover:-translate-y-1 hover:border-accent/50 backdrop-blur sm:p-6">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-sky-500/15 text-sky-400">
-                  <Icon size={24} aria-hidden="true" />
+        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {features.map(({ title, description, icon: Icon, href, image }) => (
+            <a key={title} href={href} className="group block">
+              <div className="relative flex flex-col justify-between overflow-hidden rounded-[26px] border border-white/10 bg-slate-950/85 p-6 shadow-xl backdrop-blur-xl transition-all duration-500 hover:-translate-y-1.5 hover:border-cyan-400/50 hover:shadow-cyan-500/15 h-full">
+                {/* Background image overlay */}
+                <div className="absolute inset-0 -z-10 overflow-hidden">
+                  <Image
+                    src={image}
+                    alt={title}
+                    fill
+                    className="object-cover opacity-20 transition-transform duration-700 group-hover:scale-110 group-hover:opacity-35"
+                    sizes="(max-width: 768px) 100vw, 400px"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/85 to-slate-950/60" />
                 </div>
-                <h3 className="mt-5 text-heading font-bold text-primary-light">{title}</h3>
-                <p className="mt-2 text-sm leading-6 text-primary-light/55">{description}</p>
-                <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-sky-400 hover:text-sky-300">
-                  Open doctor portal <ArrowRight size={15} />
+
+                <div>
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-500/15 text-cyan-300 border border-sky-400/20 shadow-md">
+                    <Icon size={24} aria-hidden="true" />
+                  </div>
+                  <h3 className="mt-5 text-lg font-bold text-white group-hover:text-cyan-300 transition-colors">{title}</h3>
+                  <p className="mt-2 text-xs leading-5 text-slate-300">{description}</p>
+                </div>
+
+                <span className="mt-5 inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-cyan-400 group-hover:text-cyan-300">
+                  <span>Open doctor portal</span> <ArrowRight size={14} className="transition-transform duration-300 group-hover:translate-x-1" />
                 </span>
               </div>
             </a>

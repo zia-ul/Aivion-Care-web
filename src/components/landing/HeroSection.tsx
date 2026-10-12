@@ -70,9 +70,24 @@ const slides: Slide[] = [
     actionHref: '/login',
   },
   {
+    id: 'icu-monitoring',
+    tag: 'Smart ICU & Ward Telemetry',
+    image: '/images/healthcare/icu-ward.jpg',
+    problemBadge: 'The Problem: Critical care blind spots',
+    problemText: 'Nurses manual rounds every 2 hours leave 110 minutes of unmonitored risk where subtle vital decompensation begins.',
+    solutionBadge: 'Aivion Care Solution · Smart ICU',
+    solutionTitle: 'Autonomous Ward Telemetry Hub',
+    solutionPunchline: 'Always monitoring every bed. No blind spots, ever.',
+    description: 'Continuous bedside telemetry, wireless telemetry badges, and early warning NEWS2 risk scoring directly on ward monitors.',
+    stats: '24/7/365',
+    statsLabel: 'Continuous Bedside Vigilance',
+    actionText: 'Explore Hospital Telemetry',
+    actionHref: '/register',
+  },
+  {
     id: 'clinical-ai',
     tag: 'Physician-Copilot Intelligence',
-    image: '/images/healthcare/modern-clinic.jpg',
+    image: '/images/healthcare/digital-tablet-doctor.jpg',
     problemBadge: 'The Problem: Clinician Burnout & Errors',
     problemText: 'Doctors spend up to 45% of their working day manually typing notes, risking diagnostic fatigue and missed contraindications.',
     solutionBadge: 'Aivion Care Solution · Neural Copilot',
@@ -83,6 +98,21 @@ const slides: Slide[] = [
     statsLabel: 'Safety Cross-Reference Speed',
     actionText: 'Launch Clinical AI',
     actionHref: '/register',
+  },
+  {
+    id: 'surgery-theatre',
+    tag: 'Surgical & Post-Op Recovery',
+    image: '/images/healthcare/surgery-theatre.jpg',
+    problemBadge: 'The Problem: Post-op complications at home',
+    problemText: 'Discharged surgical patients often fail to recognise early signs of internal infection or cardiovascular strain.',
+    solutionBadge: 'Aivion Care Solution · Post-Op Loop',
+    solutionTitle: 'Digital Post-Op Discharge Shield',
+    solutionPunchline: 'Hospital-level precision that follows you all the way home.',
+    description: 'Continuous biometric monitoring and automated daily post-surgical symptom checklists sent directly to the surgical team.',
+    stats: '-65%',
+    statsLabel: 'Readmission Risk Reduction',
+    actionText: 'Surgical Post-Op Care',
+    actionHref: '/login',
   },
   {
     id: 'connected-hospital',
@@ -258,97 +288,122 @@ export default function HeroSection() {
           <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-8 p-6 sm:p-10 lg:p-12 items-center">
             
             {/* Visual Screen Box with Background Image and Live Overlay */}
-            <div className="relative group overflow-hidden rounded-[26px] border border-white/15 bg-slate-900/90 shadow-2xl h-[360px] sm:h-[440px]">
-              
-              {/* High-res Clinical Background Image */}
-              <Image
-                src={slide.image}
-                alt={slide.solutionTitle}
-                fill
-                className="object-cover opacity-60 transition-transform duration-1000 group-hover:scale-105"
-                sizes="(max-width: 1024px) 100vw, 650px"
-                priority
-              />
+            <div className="flex flex-col gap-3">
+              <div className="relative group overflow-hidden rounded-[30px] border border-cyan-400/30 bg-slate-900/95 shadow-2xl h-[380px] sm:h-[450px]">
+                
+                {/* High-res Clinical Background Image with Enhanced Visibility */}
+                <Image
+                  src={slide.image}
+                  alt={slide.solutionTitle}
+                  fill
+                  className="object-cover opacity-85 transition-transform duration-1000 group-hover:scale-105"
+                  sizes="(max-width: 1024px) 100vw, 650px"
+                  priority
+                />
 
-              {/* Radiant Dark Gradient Vignette */}
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/50 to-transparent" />
-              <div className="absolute inset-0 bg-gradient-to-r from-slate-950/80 via-transparent to-slate-950/30" />
+                {/* Subtle Vignette so text stays ultra-readable while image remains vibrant */}
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-slate-950/20" />
+                <div className="absolute inset-0 bg-gradient-to-r from-slate-950/70 via-transparent to-slate-950/20" />
 
-              {/* Heart Rate Monitor Oscilloscope Grid Overlay */}
-              <div 
-                className="pointer-events-none absolute inset-0 opacity-15"
-                style={{
-                  backgroundImage: `
-                    linear-gradient(to right, rgba(34, 211, 238, 0.3) 1px, transparent 1px),
-                    linear-gradient(to bottom, rgba(34, 211, 238, 0.3) 1px, transparent 1px)
-                  `,
-                  backgroundSize: '24px 24px',
-                }}
-              />
+                {/* Heart Rate Monitor Oscilloscope Grid Overlay */}
+                <div 
+                  className="pointer-events-none absolute inset-0 opacity-15"
+                  style={{
+                    backgroundImage: `
+                      linear-gradient(to right, rgba(34, 211, 238, 0.3) 1px, transparent 1px),
+                      linear-gradient(to bottom, rgba(34, 211, 238, 0.3) 1px, transparent 1px)
+                    `,
+                    backgroundSize: '24px 24px',
+                  }}
+                />
 
-              {/* Top Banner inside visual box */}
-              <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/30 bg-rose-500/20 px-3 py-1 text-xs font-bold text-rose-300 backdrop-blur-md">
-                  <span className="h-2 w-2 rounded-full bg-rose-400 animate-ping" /> {slide.problemBadge}
-                </span>
+                {/* Top Banner inside visual box */}
+                <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/40 bg-slate-950/80 px-3.5 py-1 text-xs font-bold text-rose-300 backdrop-blur-md shadow-lg">
+                    <span className="h-2 w-2 rounded-full bg-rose-400 animate-ping" /> {slide.problemBadge}
+                  </span>
 
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-teal-500/40 bg-teal-500/20 px-3 py-1 text-xs font-extrabold text-teal-300 backdrop-blur-md uppercase tracking-wider">
-                  <CheckCircle2 size={14} /> Solved by AI
-                </span>
-              </div>
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-teal-500/50 bg-slate-950/80 px-3.5 py-1 text-xs font-extrabold text-teal-300 backdrop-blur-md uppercase tracking-wider shadow-lg">
+                    <CheckCircle2 size={14} className="text-teal-400" /> Solved by AI
+                  </span>
+                </div>
 
-              {/* Middle Problem Box */}
-              <div className="absolute top-16 left-4 right-4 rounded-2xl border border-white/10 bg-slate-950/75 p-3.5 backdrop-blur-md">
-                <p className="text-xs sm:text-sm font-medium text-slate-200 leading-relaxed">
-                  ⚠️ {slide.problemText}
-                </p>
-              </div>
+                {/* Middle Problem Box */}
+                <div className="absolute top-16 left-4 right-4 rounded-2xl border border-white/15 bg-slate-950/85 p-3.5 backdrop-blur-md shadow-xl z-10">
+                  <p className="text-xs sm:text-sm font-semibold text-slate-100 leading-relaxed">
+                    ⚠️ {slide.problemText}
+                  </p>
+                </div>
 
-              {/* Bottom Telemetry Card: Live Waveform & Heart Pulse */}
-              <div className="absolute bottom-4 left-4 right-4 rounded-2xl border border-cyan-400/30 bg-slate-950/90 p-4 backdrop-blur-xl shadow-2xl">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="relative h-9 w-9 rounded-xl bg-sky-500/20 border border-sky-400/40 flex items-center justify-center">
-                      <Image
-                        src="/aivion-care-logo.png"
-                        alt="Logo"
-                        width={24}
-                        height={24}
-                        className="object-contain animate-heartbeat"
+                {/* Bottom Telemetry Card: Live Waveform & Heart Pulse */}
+                <div className="absolute bottom-4 left-4 right-4 rounded-2xl border border-cyan-400/40 bg-slate-950/92 p-4 backdrop-blur-xl shadow-2xl z-10">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <div className="relative h-10 w-10 rounded-xl bg-sky-500/20 border border-sky-400/40 flex items-center justify-center">
+                        <Image
+                          src="/aivion-care-logo.png"
+                          alt="Logo"
+                          width={28}
+                          height={28}
+                          className="object-contain animate-heartbeat"
+                        />
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-cyan-400">
+                          {slide.solutionBadge}
+                        </p>
+                        <p className="text-sm font-extrabold text-white">
+                          {slide.solutionTitle}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="text-right">
+                      <p className="text-lg font-black text-teal-300 font-mono">
+                        {slide.stats}
+                      </p>
+                      <p className="text-[10px] font-semibold text-slate-400">
+                        {slide.statsLabel}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Moving SVG ECG Line */}
+                  <div className="mt-2.5 h-12 w-full text-cyan-400">
+                    <svg viewBox="0 0 500 50" className="h-full w-full drop-shadow-[0_0_8px_rgba(34,211,238,0.6)]" preserveAspectRatio="none">
+                      <path 
+                        d="M0 25 h80 l10 -15 l8 32 l8 -22 l10 5 h80 l10 -15 l8 32 l8 -22 l10 5 h80 l10 -15 l8 32 l8 -22 l10 5 h140" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        strokeWidth="2.5" 
+                        className="animate-ecg-dash"
                       />
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-cyan-400">
-                        {slide.solutionBadge}
-                      </p>
-                      <p className="text-sm font-extrabold text-white">
-                        {slide.solutionTitle}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="text-right">
-                    <p className="text-lg font-black text-teal-300 font-mono">
-                      {slide.stats}
-                    </p>
-                    <p className="text-[10px] font-semibold text-slate-400">
-                      {slide.statsLabel}
-                    </p>
+                    </svg>
                   </div>
                 </div>
+              </div>
 
-                {/* Moving SVG ECG Line */}
-                <div className="mt-2.5 h-12 w-full text-cyan-400">
-                  <svg viewBox="0 0 500 50" className="h-full w-full drop-shadow-[0_0_8px_rgba(34,211,238,0.6)]" preserveAspectRatio="none">
-                    <path 
-                      d="M0 25 h80 l10 -15 l8 32 l8 -22 l10 5 h80 l10 -15 l8 32 l8 -22 l10 5 h80 l10 -15 l8 32 l8 -22 l10 5 h140" 
-                      fill="none" 
-                      stroke="currentColor" 
-                      strokeWidth="2.5" 
-                      className="animate-ecg-dash"
+              {/* Slider Thumbnails Strip */}
+              <div className="flex items-center gap-2 overflow-x-auto py-1 px-1">
+                {slides.map((s, idx) => (
+                  <button
+                    key={s.id}
+                    onClick={() => setCurrentSlide(idx)}
+                    className={`group relative h-14 w-20 shrink-0 overflow-hidden rounded-xl border transition-all duration-300 ${
+                      idx === currentSlide 
+                        ? 'border-cyan-400 ring-2 ring-cyan-400/50 scale-105' 
+                        : 'border-white/10 opacity-50 hover:opacity-100 hover:border-white/30'
+                    }`}
+                  >
+                    <Image
+                      src={s.image}
+                      alt={s.solutionTitle}
+                      fill
+                      className="object-cover"
                     />
-                  </svg>
-                </div>
+                    <div className="absolute inset-0 bg-slate-950/20" />
+                  </button>
+                ))}
               </div>
             </div>
 
