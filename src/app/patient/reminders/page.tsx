@@ -7,6 +7,7 @@ import { Card, Button } from '@/components/ui';
 import { StatusBadge as Badge } from '@/components/ui/StatusBadge';
 import { Pill, Bell, CheckCircle, XCircle, Clock, AlertTriangle, Play, Pause, Volume2, BellOff } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { patientApi } from '@/lib/api/endpoints';
 
 interface Dose {
   scheduledDate: string;
@@ -47,6 +48,63 @@ export default function PatientRemindersPage() {
 
   const [busyId, setBusyId] = useState<number | null>(null);
   const [showPermissionModal, setShowPermissionModal] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [submittingManual, setSubmittingManual] = useState(false);
+  const [manualForm, setManualForm] = useState({
+    medicineName: '',
+    dosage: '1 tablet',
+    amountPerUse: '1 tablet',
+    frequencyPerDay: 'Twice daily',
+    timing: 'After meals',
+    duration: '7 days',
+    notes: '',
+    startDate: new Date().toISOString().split('T')[0],
+    scheduleTimes: '09:00, 21:00',
+  });
+
+  const handleCreateManualReminder = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!manualForm.medicineName.trim()) {
+      toast.error('Please enter medicine name');
+      return;
+    }
+    setSubmittingManual(true);
+    try {
+      const times = manualForm.scheduleTimes
+        .split(',')
+        .map(t => t.trim())
+        .filter(t => Boolean(t));
+      await patientApi.createMedicationReminder({
+        medicineName: manualForm.medicineName.trim(),
+        dosage: manualForm.dosage,
+        amountPerUse: manualForm.amountPerUse,
+        frequencyPerDay: manualForm.frequencyPerDay,
+        timing: manualForm.timing,
+        duration: manualForm.duration,
+        notes: manualForm.notes,
+        startDate: manualForm.startDate,
+        scheduleTimes: times.length > 0 ? times : ['09:00', '21:00'],
+      });
+      toast.success('Medication reminder added successfully!');
+      setShowAddModal(false);
+      setManualForm({
+        medicineName: '',
+        dosage: '1 tablet',
+        amountPerUse: '1 tablet',
+        frequencyPerDay: 'Twice daily',
+        timing: 'After meals',
+        duration: '7 days',
+        notes: '',
+        startDate: new Date().toISOString().split('T')[0],
+        scheduleTimes: '09:00, 21:00',
+      });
+      refresh();
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || 'Failed to add reminder');
+    } finally {
+      setSubmittingManual(false);
+    }
+  };
 
   const requestPermission = async () => {
     const perm = await Notification.requestPermission();
@@ -117,6 +175,15 @@ export default function PatientRemindersPage() {
   return (
     <AppLayout role="PATIENT" title="Medicines" subtitle="Reminders & adherence tracking">
       <div className="space-y-5">
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <h2 className="text-xl font-bold text-primary-light">My Medication Schedule</h2>
+            <p className="text-sm text-primary-light/60">Prescription sync & custom reminders</p>
+          </div>
+          <Button onClick={() => setShowAddModal(true)} className="bg-gradient-to-r from-sky-500 to-teal-500 text-slate-950 font-bold">
+            <Pill className="mr-2" size={16} /> Add Reminder
+          </Button>
+        </div>
         {permission !== 'granted' && (
           <Card className="p-4 bg-accent/5 border-accent/20">
             <div className="flex items-center justify-between">
@@ -314,6 +381,132 @@ export default function PatientRemindersPage() {
                   <Bell className="mr-2" size={16} /> Allow Notifications
                 </Button>
               </div>
+            </Card>
+          </div>
+        )}
+
+        {showAddModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+            <Card className="w-full max-w-lg p-6 bg-slate-950 border border-white/15 rounded-3xl">
+              <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-5">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-10 h-10 rounded-2xl bg-sky-500/15 border border-sky-400/30 flex items-center justify-center text-cyan-400">
+                    <Pill size={20} />
+                  </div>
+                  <div>
+                    <h3 className="font-display text-lg font-bold text-white">Add Medication Reminder</h3>
+                    <p className="text-xs text-slate-400">Set alarms for your daily pills or syrups</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowAddModal(false)}
+                  className="p-1 rounded-xl text-slate-400 hover:text-white hover:bg-white/10"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <form onSubmit={handleCreateManualReminder} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">Medicine Name *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Paracetamol, Metformin"
+                    value={manualForm.medicineName}
+                    onChange={(e) => setManualForm({ ...manualForm, medicineName: e.target.value })}
+                    className="w-full rounded-xl border border-white/10 bg-slate-900 px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:border-cyan-400 focus:outline-none"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-300 mb-1">Dosage</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. 500mg, 1 tablet"
+                      value={manualForm.dosage}
+                      onChange={(e) => setManualForm({ ...manualForm, dosage: e.target.value })}
+                      className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-cyan-400 focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-300 mb-1">Timing</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. After meals, Empty stomach"
+                      value={manualForm.timing}
+                      onChange={(e) => setManualForm({ ...manualForm, timing: e.target.value })}
+                      className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-cyan-400 focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-300 mb-1">Frequency</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Twice daily, Once daily"
+                      value={manualForm.frequencyPerDay}
+                      onChange={(e) => setManualForm({ ...manualForm, frequencyPerDay: e.target.value })}
+                      className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-cyan-400 focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-300 mb-1">Duration</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. 5 days, 1 month"
+                      value={manualForm.duration}
+                      onChange={(e) => setManualForm({ ...manualForm, duration: e.target.value })}
+                      className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-cyan-400 focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">Schedule Times (comma-separated 24h format)</label>
+                  <input
+                    type="text"
+                    placeholder="09:00, 21:00"
+                    value={manualForm.scheduleTimes}
+                    onChange={(e) => setManualForm({ ...manualForm, scheduleTimes: e.target.value })}
+                    className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-cyan-400 focus:outline-none"
+                  />
+                  <p className="text-[11px] text-slate-500 mt-1">Example: 08:00, 14:00, 20:00</p>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">Notes / Instructions</label>
+                  <textarea
+                    rows={2}
+                    placeholder="Take with warm water..."
+                    value={manualForm.notes}
+                    onChange={(e) => setManualForm({ ...manualForm, notes: e.target.value })}
+                    className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-cyan-400 focus:outline-none"
+                  />
+                </div>
+
+                <div className="flex gap-3 pt-3">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowAddModal(false)}
+                    className="flex-1"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    loading={submittingManual}
+                    className="flex-1 bg-gradient-to-r from-sky-500 to-teal-500 text-slate-950 font-bold"
+                  >
+                    Save Reminder
+                  </Button>
+                </div>
+              </form>
             </Card>
           </div>
         )}

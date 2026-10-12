@@ -14,6 +14,7 @@ const patientNavItems: NavItem[] = [
   { href: '/patient/pathology-labs', label: 'Pathology labs', icon: Activity },
   { href: '/patient/appointments', label: 'Appointments', icon: Calendar },
   { href: '/patient/records', label: 'Medical records', icon: FileText },
+  { href: '/patient/documents', label: 'My Documents', icon: ClipboardList },
   { href: '/patient/reminders', label: 'Medicines', icon: Pill },
   { href: '/patient/chat', label: 'Messages', icon: MessageCircle },
   { href: '/patient/payments', label: 'Payments', icon: Wallet },
@@ -30,6 +31,7 @@ const doctorNavItems: NavItem[] = [
   { href: '/doctor/clinical-assessment', label: 'Clinical Assessment', icon: Stethoscope },
   { href: '/doctor/diagnosis', label: 'AI diagnosis', icon: Sparkles },
   { href: '/doctor/ecg', label: 'ECG monitor', icon: Activity },
+  { href: '/patient/documents', label: 'My Documents', icon: ClipboardList },
   { href: '/doctor/chat', label: 'Messages', icon: MessageCircle },
   { href: '/doctor/subscription', label: 'Subscription', icon: CreditCard },
   { href: '/notifications', label: 'Notifications', icon: Bell },
@@ -44,6 +46,7 @@ const hospitalHeadNavItems: NavItem[] = [
   { href: '/hospital-head/receptionists', label: 'Receptionists', icon: Users },
   { href: '/hospital-head/departments', label: 'Departments', icon: Building2 },
   { href: '/hospital-head/staff-approval', label: 'Staff Approval', icon: ShieldPlus },
+  { href: '/patient/documents', label: 'My Documents', icon: ClipboardList },
   { href: '/hospital-head/profile', label: 'Hospital Profile', icon: Building2 },
   { href: '/hospital-head/status', label: 'Hospital Status', icon: Activity },
   { href: '/hospital-head/generate-login', label: 'Generate Login', icon: ShieldPlus },
@@ -57,6 +60,7 @@ const pharmacistNavItems: NavItem[] = [
   { href: '/pharmacist/orders', label: 'Orders', icon: ClipboardList },
   { href: '/pharmacist/prescriptions', label: 'Prescriptions', icon: Pill },
   { href: '/pharmacist/billing', label: 'Billing', icon: CreditCard },
+  { href: '/patient/documents', label: 'My Documents', icon: ClipboardList },
   { href: '/notifications', label: 'Notifications', icon: Bell },
   { href: '/profile', label: 'Profile', icon: User },
 ];
@@ -65,6 +69,7 @@ const pathologyNavItems: NavItem[] = [
   { href: '/pathology/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/pathology/workflow', label: 'Workflow', icon: TestTube },
   { href: '/pathology/labs', label: 'Labs', icon: Microscope },
+  { href: '/patient/documents', label: 'My Documents', icon: ClipboardList },
   { href: '/notifications', label: 'Notifications', icon: Bell },
   { href: '/profile', label: 'Profile', icon: User },
 ];
@@ -74,6 +79,7 @@ const labAssistantNavItems: NavItem[] = [
   { href: '/lab-assistant/tests', label: 'Hospital Tests', icon: TestTube },
   { href: '/lab-assistant/bookings', label: 'Bookings', icon: Calendar },
   { href: '/lab-assistant/upload-report', label: 'Upload Report', icon: FileText },
+  { href: '/patient/documents', label: 'My Documents', icon: ClipboardList },
   { href: '/notifications', label: 'Notifications', icon: Bell },
   { href: '/profile', label: 'Profile', icon: User },
 ];
@@ -83,6 +89,7 @@ const receptionistNavItems: NavItem[] = [
   { href: '/receptionist/appointments', label: 'Appointments', icon: Calendar },
   { href: '/receptionist/schedule', label: 'Daily Schedule', icon: CalendarDays },
   { href: '/receptionist/surgeries', label: 'Surgeries', icon: Stethoscope },
+  { href: '/patient/documents', label: 'My Documents', icon: ClipboardList },
   { href: '/notifications', label: 'Notifications', icon: Bell },
   { href: '/profile', label: 'Profile', icon: User },
 ];
@@ -94,6 +101,7 @@ const adminNavItems: NavItem[] = [
   { href: '/super-admin/broadcast', label: 'Broadcast', icon: Radio },
   { href: '/super-admin/subscriptions', label: 'Subscriptions', icon: CreditCard },
   { href: '/super-admin/subscriptions/free-requests', label: 'Free Requests', icon: Shield },
+  { href: '/patient/documents', label: 'My Documents', icon: ClipboardList },
   { href: '/notifications', label: 'Notifications', icon: Bell },
   { href: '/profile', label: 'Profile', icon: User },
 ];

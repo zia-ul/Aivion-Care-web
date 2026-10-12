@@ -8,6 +8,7 @@ import {
   Modal, Field, inputClass, FL,
 } from '@/components/ui/FlutterTheme';
 import { patientDocumentApi } from '@/lib/api/endpoints';
+import { useAuthStore } from '@/lib/stores/auth';
 import type {
   PatientDocumentResponse, PatientDocumentFolderResponse, DocumentStatsResponse,
   DocumentReminderDTO,
@@ -103,6 +104,8 @@ interface ReminderForm {
 
 export default function PatientDocumentsPage() {
   const router = useRouter();
+  const { user } = useAuthStore();
+  const currentRole = user?.role || 'PATIENT';
   const [documents, setDocuments] = useState<PatientDocumentResponse[]>([]);
   const [folders, setFolders] = useState<PatientDocumentFolderResponse[]>([]);
   const [stats, setStats] = useState<DocumentStatsResponse | null>(null);
@@ -362,7 +365,7 @@ export default function PatientDocumentsPage() {
   const filteredDocs = useMemo(() => documents, [documents]);
 
   return (
-    <AppLayout role="PATIENT" title="My Documents" subtitle="Medical records, reports & prescriptions">
+    <AppLayout role={currentRole} title="My Documents" subtitle="Medical records, reports & prescriptions">
       <div className="space-y-5">
         {error && (
           <div className="rounded-3xl bg-white border border-doctor-danger-soft/40 p-5 text-sm text-doctor-red">{error}</div>

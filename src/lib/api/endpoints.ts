@@ -349,6 +349,17 @@ export const notificationApi = {
 export const patientApi = {
   getVitals: (data: any) => apiClient.post('/api/v1/patient-vitals', data),
   getMedicationReminders: () => apiClient.get('/api/v1/medication-reminders/my'),
+  createMedicationReminder: (data: {
+    medicineName: string;
+    dosage?: string;
+    amountPerUse?: string;
+    frequencyPerDay?: string;
+    timing?: string;
+    duration?: string;
+    notes?: string;
+    startDate?: string;
+    scheduleTimes?: string[];
+  }) => apiClient.post('/api/v1/medication-reminders', data),
   startMedicationReminder: (id: number) =>
     apiClient.post(`/api/v1/medication-reminders/${id}/start`),
   logAdherence: (id: number, data: any) =>
