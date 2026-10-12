@@ -42,6 +42,8 @@ export default function HospitalHeadStaffManagementPage() {
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [adding, setAdding] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedFilter, setSelectedFilter] = useState('ALL');
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -109,6 +111,27 @@ export default function HospitalHeadStaffManagementPage() {
     }
   };
 
+  const FILTER_ROLES = [
+    { label: 'All Members', value: 'ALL' },
+    { label: 'Nurses', value: 'NURSE' },
+    { label: 'Helpers', value: 'HELPER' },
+    { label: 'Receptionists', value: 'RECEPTIONIST' },
+    { label: 'Doctors', value: 'DOCTOR' },
+    { label: 'Lab Assistants', value: 'LAB_ASSISTANT' },
+  ];
+
+  const filteredStaff = staffList.filter((m) => {
+    const matchesFilter = selectedFilter === 'ALL' || m.role === selectedFilter;
+    const q = searchQuery.toLowerCase().trim();
+    const matchesQuery = !q || 
+      m.fullName.toLowerCase().includes(q) || 
+      m.email.toLowerCase().includes(q) || 
+      m.role.toLowerCase().includes(q) || 
+      (m.department && m.department.toLowerCase().includes(q)) || 
+      (m.employeeCode && m.employeeCode.toLowerCase().includes(q));
+    return matchesFilter && matchesQuery;
+  });
+
   return (
     <AppLayout role="HOSPITAL_HEAD" title="Staff & Member Management" subtitle="Manage hospital staff, nurses, helpers, and technicians">
       <div className="max-w-6xl mx-auto space-y-6">
@@ -134,21 +157,51 @@ export default function HospitalHeadStaffManagementPage() {
           </div>
         </div>
 
+        {/* Search and Role Filter Chips */}
+        <div className="bg-surface-20/80 rounded-card border border-tonal-20/50 p-4 space-y-3">
+          <input
+            type="text"
+            placeholder="Search by name, email, role, department or employee ID..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-surface-10 border border-tonal-20/60 rounded-xl px-4 py-2.5 text-sm text-primary-light placeholder:text-primary-light/40 focus:outline-none focus:border-sky-400"
+          />
+          <div className="flex flex-wrap items-center gap-2 pt-1">
+            {FILTER_ROLES.map((f) => {
+              const active = selectedFilter === f.value;
+              return (
+                <button
+                  key={f.value}
+                  type="button"
+                  onClick={() => setSelectedFilter(f.value)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${
+                    active 
+                      ? 'bg-sky-500/20 text-sky-400 border border-sky-500/40' 
+                      : 'bg-surface-10 text-primary-light/60 hover:text-primary-light border border-tonal-20/40'
+                  }`}
+                >
+                  {f.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         {/* Staff Table / List */}
         <div className="bg-surface-20/80 rounded-card border border-tonal-20/50 p-6">
           <h3 className="text-subheading font-semibold text-primary-light mb-4">
-            Active Members ({staffList.length})
+            Active Members ({filteredStaff.length})
           </h3>
 
           {loading ? (
             <div className="py-12 text-center text-primary-light/60">Loading staff records...</div>
-          ) : staffList.length === 0 ? (
+          ) : filteredStaff.length === 0 ? (
             <div className="py-12 text-center text-primary-light/60">
-              No staff members added yet. Click &quot;Add Member&quot; to register your nurses, helpers, and receptionists.
+              No staff members found matching criteria. Click &quot;Add Member&quot; to register new staff.
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {staffList.map((member) => (
+              {filteredStaff.map((member) => (
                 <div key={member.id} className="p-5 bg-surface-10/70 border border-tonal-20/40 rounded-xl space-y-3">
                   <div className="flex items-start justify-between">
                     <div>

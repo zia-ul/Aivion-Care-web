@@ -27,6 +27,7 @@ const doctorNavItems: NavItem[] = [
   { href: '/doctor/patients', label: 'Patients', icon: Users },
   { href: '/doctor/schedule', label: 'Schedule', icon: CalendarDays },
   { href: '/doctor/reports', label: 'Reports', icon: BarChart3 },
+  { href: '/doctor/clinical-assessment', label: 'Clinical Assessment', icon: Stethoscope },
   { href: '/doctor/diagnosis', label: 'AI diagnosis', icon: Sparkles },
   { href: '/doctor/ecg', label: 'ECG monitor', icon: Activity },
   { href: '/doctor/chat', label: 'Messages', icon: MessageCircle },

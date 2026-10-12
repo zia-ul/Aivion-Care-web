@@ -24,6 +24,7 @@ const config: Config = {
           light: 'rgb(var(--primary-light) / <alpha-value>)',
           50: 'rgb(var(--primary-50) / <alpha-value>)',
           DEFAULT: 'rgb(var(--accent) / <alpha-value>)',
+          foreground: 'rgb(var(--primary-foreground) / <alpha-value>)',
         },
         accent: 'rgb(var(--accent) / <alpha-value>)',
         'accent-deep': 'rgb(var(--accent-deep) / <alpha-value>)',
@@ -72,6 +73,35 @@ const config: Config = {
           light: 'rgb(var(--info-light) / <alpha-value>)',
           lighter: 'rgb(var(--info-lighter) / <alpha-value>)',
         },
+        // shadcn/ui-style tokens. The CSS variables are declared in the
+        // ":root" block of styles/globals.css; defining them here turns
+        // bg-background/60, text-foreground, text-muted-foreground,
+        // border-border, bg-card/80, etc. into real utilities.
+        background: 'rgb(var(--background) / <alpha-value>)',
+        foreground: 'rgb(var(--foreground) / <alpha-value>)',
+        card: {
+          DEFAULT: 'rgb(var(--card) / <alpha-value>)',
+          foreground: 'rgb(var(--card-foreground) / <alpha-value>)',
+        },
+        popover: {
+          DEFAULT: 'rgb(var(--popover) / <alpha-value>)',
+          foreground: 'rgb(var(--popover-foreground) / <alpha-value>)',
+        },
+        muted: {
+          DEFAULT: 'rgb(var(--muted) / <alpha-value>)',
+          foreground: 'rgb(var(--muted-foreground) / <alpha-value>)',
+        },
+        secondary: {
+          DEFAULT: 'rgb(var(--secondary) / <alpha-value>)',
+          foreground: 'rgb(var(--secondary-foreground) / <alpha-value>)',
+        },
+        destructive: {
+          DEFAULT: 'rgb(var(--destructive) / <alpha-value>)',
+          foreground: 'rgb(var(--destructive-foreground) / <alpha-value>)',
+        },
+        border: 'rgb(var(--border) / <alpha-value>)',
+        input: 'rgb(var(--input) / <alpha-value>)',
+        ring: 'rgb(var(--ring) / <alpha-value>)',
         // Sky / teal palette matching aiconfidencecure.com
         sky: {
           50: '#f0f9ff', 100: '#e0f2fe', 200: '#bae6fd', 300: '#67e8f9',
