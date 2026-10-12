@@ -85,8 +85,14 @@ export default function MonitoringSection() {
             </span>
             <span className="text-[11px] font-mono text-cyan-400">250 samples/sec</span>
           </div>
-          <svg viewBox="0 0 700 100" className="mt-3 h-20 w-full text-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.4)]" role="img" aria-label="Connected monitoring waveform" preserveAspectRatio="none">
-            <path d="M0 50h40l10-2 10 2 15-25 12 50 12-25h50l10-2 10 2 15-27 12 52 12-25h50l10-2 10 2 15-25 12 50 12-25h50l10-2 10 2 15-27 12 52 12-25h50l10-2 10 2 15-25 12 50 12-25h50l10-2 10 2 15-27 12 52 12-25h80" fill="none" stroke="currentColor" strokeWidth="2.5" />
+          <svg viewBox="0 0 700 100" className="mt-3 h-20 w-full text-cyan-400 drop-shadow-[0_0_12px_rgba(34,211,238,0.7)]" role="img" aria-label="Connected monitoring waveform" preserveAspectRatio="none">
+            <path 
+              d="M0 50h40l10-2 10 2 15-25 12 50 12-25h50l10-2 10 2 15-27 12 52 12-25h50l10-2 10 2 15-25 12 50 12-25h50l10-2 10 2 15-27 12 52 12-25h50l10-2 10 2 15-25 12 50 12-25h50l10-2 10 2 15-27 12 52 12-25h80" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2.5" 
+              className="animate-ecg-dash"
+            />
           </svg>
         </div>
 

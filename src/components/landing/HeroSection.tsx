@@ -134,6 +134,17 @@ const slides: Slide[] = [
 export default function HeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
+  const [liveBpm, setLiveBpm] = useState(72);
+  const [liveSpo2, setLiveSpo2] = useState(98);
+
+  useEffect(() => {
+    const vitalsInterval = setInterval(() => {
+      // Simulate micro-variations of sinus rhythm (70-76 BPM, 98-99% SpO2)
+      setLiveBpm(70 + Math.floor(Math.random() * 6));
+      setLiveSpo2(98 + (Math.random() > 0.5 ? 1 : 0));
+    }, 2400);
+    return () => clearInterval(vitalsInterval);
+  }, []);
 
   useEffect(() => {
     if (!isPlaying) return;
@@ -198,14 +209,16 @@ export default function HeroSection() {
 
           <div className="flex items-center gap-2 sm:gap-3">
             {/* Live ECG heartbeat ticker */}
-            <div className="hidden sm:flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.04] px-3.5 py-1.5 text-xs text-cyan-300">
+            <div className="hidden sm:flex items-center gap-2.5 rounded-2xl border border-cyan-400/30 bg-slate-950/80 px-4 py-2 text-xs text-cyan-300 shadow-lg shadow-cyan-500/10">
               <span className="relative flex h-2.5 w-2.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-500 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500" />
               </span>
               <HeartPulse size={16} className="text-rose-400 animate-heartbeat-fast" />
-              <span className="font-mono font-bold">72 BPM</span>
-              <span className="text-slate-400 text-[11px]">Normal Sinus</span>
+              <span className="font-mono font-extrabold text-white">{liveBpm} BPM</span>
+              <span className="text-slate-500">|</span>
+              <span className="font-mono font-extrabold text-teal-300">{liveSpo2}% SpO₂</span>
+              <span className="text-slate-400 text-[11px] font-semibold">Sinus Rhythm</span>
             </div>
 
             {/* Slide Controller */}
