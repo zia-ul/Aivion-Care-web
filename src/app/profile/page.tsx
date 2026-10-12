@@ -7,7 +7,7 @@ import { authApi, doctorApi } from '@/lib/api/endpoints';
 import { isTokenExpired } from '@/lib/helpers';
 import { wsService } from '@/lib/websocket/client';
 import { useAuthStore } from '@/lib/stores/auth';
-import { User, Mail, Phone, Building2, LogOut, FileUp, ShieldCheck, Trash2, AlertTriangle } from 'lucide-react';
+import { User, Mail, Phone, Building2, LogOut, FileUp, ShieldCheck, Trash2, AlertTriangle, KeyRound } from 'lucide-react';
 import { Card } from '@/components/ui';
 
 export default function ProfilePage() {
@@ -25,8 +25,6 @@ export default function ProfilePage() {
   const handleLogout = async () => {
     const accessToken = localStorage.getItem('accessToken');
     try {
-      // Skip the round-trip when the access token has already expired: the
-      // server would answer 401 and the browser would log a failed request.
       if (!isTokenExpired(accessToken)) {
         await authApi.logout(localStorage.getItem('refreshToken') || undefined);
       }
@@ -46,13 +44,12 @@ export default function ProfilePage() {
     }
   };
 
-  const handleDeleteAccount = async () => {
-    if (!confirm('This will permanently delete your account and all data. Are you sure?')) return;
-    if (!confirm('This action cannot be undone. Type "DELETE" to confirm.')) return;
+  const handleDeactivateAccount = async () => {
+    if (!confirm('This will deactivate your account and revoke active sessions. Are you sure?')) return;
     
     setDeleting(true);
     try {
-        await authApi.deleteProfile();
+      await authApi.deleteProfile();
       try {
         wsService.disconnect();
       } catch {
@@ -64,7 +61,7 @@ export default function ProfilePage() {
       localStorage.removeItem('user');
       router.push('/login');
     } catch (error: any) {
-      alert(error?.response?.data?.message || 'Failed to delete account');
+      alert(error?.response?.data?.message || 'Failed to deactivate account');
     } finally {
       setDeleting(false);
       setShowDeleteConfirm(false);
@@ -85,6 +82,8 @@ export default function ProfilePage() {
   };
 
   if (!mounted) return null;
+
+  const isSuperAdmin = user?.role === 'SUPER_ADMIN';
 
   return (
     <AppLayout role={user?.role || 'PATIENT'} title="Profile" subtitle="Manage your account">
@@ -108,6 +107,18 @@ export default function ProfilePage() {
                 <p className="text-body text-primary-light">{user?.email}</p>
               </div>
             </div>
+
+            {isSuperAdmin && (
+              <div className="flex items-center gap-3 p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl">
+                <ShieldCheck size={18} className="text-amber-400" />
+                <div>
+                  <p className="text-support text-amber-300 font-bold">Super Admin Security Recovery Email</p>
+                  <p className="text-body font-mono text-white">ziaulislam83413@gmail.com</p>
+                  <p className="text-[11px] text-amber-200/70 mt-0.5">Account protected from deletion; only authorized recovery email can reset root credentials.</p>
+                </div>
+              </div>
+            )}
+
             {user?.hospitalName && (
               <div className="flex items-center gap-3 p-3 bg-surface-10/50 rounded-xl">
                 <Building2 size={18} className="text-accent" />
@@ -162,28 +173,40 @@ export default function ProfilePage() {
           )}
 
           <div className="mt-6 pt-6 border-t border-tonal-20/50 space-y-3">
+            <button
+              onClick={() => router.push('/reset-password')}
+              className="flex w-full items-center justify-center gap-2 px-4 py-2 border border-accent/40 bg-accent/10 text-accent rounded-input hover:bg-accent/20 transition-colors"
+            >
+              <KeyRound size={18} /> Reset Password
+            </button>
+
             <button onClick={handleLogout} className="flex w-full items-center justify-center gap-2 px-4 py-2 bg-primary-light/10 text-primary-light rounded-input hover:bg-primary-light/20 transition-colors">
               <LogOut size={18} /> Logout
             </button>
-            <button onClick={() => setShowDeleteConfirm(true)} className="flex w-full items-center justify-center gap-2 px-4 py-2 bg-danger/10 text-danger-light rounded-input hover:bg-danger-fill/20 transition-colors">
-              <Trash2 size={18} /> Delete Account
-            </button>
-            {showDeleteConfirm && (
-              <div className="rounded-xl border border-danger/50 bg-danger/5 p-4 space-y-3">
-                <div className="flex items-start gap-3">
-                  <AlertTriangle size={20} className="text-danger mt-0.5" />
-                  <div className="flex-1">
-                    <p className="font-bold text-danger-light">Confirm Account Deletion</p>
-                    <p className="mt-1 text-sm text-danger/80">This will permanently delete your account, profile, documents, and all associated data. This action cannot be undone.</p>
+
+            {!isSuperAdmin && (
+              <>
+                <button onClick={() => setShowDeleteConfirm(true)} className="flex w-full items-center justify-center gap-2 px-4 py-2 bg-danger/10 text-danger-light rounded-input hover:bg-danger-fill/20 transition-colors">
+                  <Trash2 size={18} /> Deactivate Account
+                </button>
+                {showDeleteConfirm && (
+                  <div className="rounded-xl border border-danger/50 bg-danger/5 p-4 space-y-3">
+                    <div className="flex items-start gap-3">
+                      <AlertTriangle size={20} className="text-danger mt-0.5" />
+                      <div className="flex-1">
+                        <p className="font-bold text-danger-light">Confirm Account Deactivation</p>
+                        <p className="mt-1 text-sm text-danger/80">This deactivates your credentials and revokes active sessions. Clinical history and audit trails are preserved in an inactive state.</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <button onClick={() => setShowDeleteConfirm(false)} className="flex-1 px-4 py-2 border border-tonal-20/50 text-primary-light rounded-input hover:bg-surface-10/50 transition-colors">Cancel</button>
+                      <button onClick={handleDeactivateAccount} disabled={deleting} className="flex-1 px-4 py-2 bg-danger text-white rounded-input hover:bg-danger-fill/90 transition-colors disabled:opacity-50">
+                        {deleting ? 'Deactivating...' : 'Deactivate Account'}
+                      </button>
+                    </div>
                   </div>
-                </div>
-                <div className="flex gap-2">
-                  <button onClick={() => setShowDeleteConfirm(false)} className="flex-1 px-4 py-2 border border-tonal-20/50 text-primary-light rounded-input hover:bg-surface-10/50 transition-colors">Cancel</button>
-                  <button onClick={handleDeleteAccount} disabled={deleting} className="flex-1 px-4 py-2 bg-danger text-white rounded-input hover:bg-danger-fill/90 transition-colors disabled:opacity-50">
-                    {deleting ? 'Deleting...' : 'Delete Permanently'}
-                  </button>
-                </div>
-              </div>
+                )}
+              </>
             )}
           </div>
         </Card>

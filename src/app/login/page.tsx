@@ -76,6 +76,11 @@ export default function LoginPage() {
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
+            <div className="flex justify-end">
+              <Link href="/reset-password" className="text-xs font-semibold text-accent/80 hover:text-accent hover:underline">
+                Forgot password?
+              </Link>
+            </div>
             <Button type="submit" loading={loading} fullWidth size="lg">
               {loading ? 'Signing in…' : 'Sign in securely'}
             </Button>

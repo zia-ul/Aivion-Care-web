@@ -477,5 +477,14 @@ export const patientDocumentApi = {
   deleteReminder: (reminderId: number) => apiClient.delete(`/api/v1/patients/me/documents/reminders/${reminderId}`),
   updateReminderStatus: (reminderId: number, status: string) =>
     apiClient.put<DocumentReminderDTO.ReminderResponse>(`/api/v1/patients/me/documents/reminders/${reminderId}/status`, { status }),
-
 };
+
+export const verificationApi = {
+  sendOtp: (identifier: string) =>
+    apiClient.post('/api/v1/auth/verification/send-otp', { identifier }),
+  verifyOtp: (identifier: string, otp: string) =>
+    apiClient.post('/api/v1/auth/verification/verify-otp', { identifier, otp }),
+  resetPassword: (data: { identifier: string; otp: string; newPassword: string }) =>
+    apiClient.post('/api/v1/auth/verification/reset-password', data),
+};
+
