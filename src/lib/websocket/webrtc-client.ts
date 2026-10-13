@@ -60,10 +60,15 @@ onConnect: () => {
         onDisconnect?.();
       },
       onStompError: (frame) => {
-        console.error('WebRTC STOMP error:', frame.headers['message']);
+        const errorMsg = frame.headers['message'] || 'STOMP connection error';
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('WebRTC STOMP notice:', errorMsg);
+        }
       },
       onWebSocketError: (event) => {
-        console.error('WebRTC WebSocket error:', event);
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('WebRTC WebSocket notice:', event);
+        }
       },
     });
 
