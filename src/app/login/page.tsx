@@ -67,12 +67,41 @@ export default function LoginPage() {
           <p className="mt-2 text-body text-primary-light/55">Sign in to continue to your care workspace.</p>
         </div>
 
-        <Card padding="lg" className="border-accent/15 bg-surface-20/90 shadow-[0_24px_70px_rgba(0,0,0,0.34)] backdrop-blur-xl">
+        <Card padding="lg" className="border-accent/15 bg-surface-20/90 shadow-[0_24px_70px_rgba(0,0,0,0.34)] backdrop-blur-xl rounded-[28px]">
           <form onSubmit={handleSubmit} className="space-y-5">
-            <Input icon={<Mail size={17} />} label="Login ID or email" type="text" value={loginId} onChange={(e) => setLoginId(e.target.value)} placeholder="Enter login ID or email" autoComplete="username" required />
+            <Input 
+              icon={<Mail size={17} />} 
+              label="Login ID or email" 
+              type="text" 
+              value={loginId} 
+              onChange={(e) => setLoginId(e.target.value.trim())} 
+              placeholder="e.g. user@aivioncare.com or MED-1001" 
+              autoComplete="username" 
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck="false"
+              maxLength={120}
+              required 
+            />
             <div className="relative">
-              <Input icon={<KeyRound size={17} />} className="pr-12" label="Password" type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter your password" autoComplete="current-password" required />
-              <button type="button" aria-label={showPassword ? 'Hide password' : 'Show password'} onClick={() => setShowPassword((value) => !value)} className="absolute right-3 top-[2.65rem] z-10 rounded-lg p-1.5 text-primary-light/70 transition hover:bg-surface-30 hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent">
+              <Input 
+                icon={<KeyRound size={17} />} 
+                className="pr-12" 
+                label="Password" 
+                type={showPassword ? 'text' : 'password'} 
+                value={password} 
+                onChange={(e) => setPassword(e.target.value)} 
+                placeholder="Enter your password" 
+                autoComplete="current-password" 
+                maxLength={100}
+                required 
+              />
+              <button 
+                type="button" 
+                aria-label={showPassword ? 'Hide password' : 'Show password'} 
+                onClick={() => setShowPassword((value) => !value)} 
+                className="absolute right-3 top-[2.65rem] z-10 rounded-lg p-1.5 text-primary-light/70 transition hover:bg-surface-30 hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
@@ -81,7 +110,7 @@ export default function LoginPage() {
                 Forgot password?
               </Link>
             </div>
-            <Button type="submit" loading={loading} fullWidth size="lg">
+            <Button type="submit" loading={loading} fullWidth size="lg" className="rounded-full shadow-lg shadow-accent/20">
               {loading ? 'Signing in…' : 'Sign in securely'}
             </Button>
           </form>

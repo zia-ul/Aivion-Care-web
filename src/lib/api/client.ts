@@ -107,9 +107,20 @@ apiClient.interceptors.response.use(
           useAuthStore.getState().clearAuth();
           window.location.href = '/login';
         }
-        return Promise.reject(error);
       } finally {
         isRefreshing = false;
+      }
+    }
+
+    // Handle 403 Forbidden (e.g. Doctor verification pending, unapproved role gate, or permissions)
+    if (error.response?.status === 403 && typeof window !== 'undefined') {
+      const errorMsg = error.response.data?.message || 'Access restricted';
+      // If doctor verification is pending, navigate to approval-pending / verification screen
+      if (errorMsg.toLowerCase().includes('doctor verification') || errorMsg.toLowerCase().includes('pending')) {
+        const currentPath = window.location.pathname;
+        if (currentPath !== '/approval-pending' && currentPath !== '/verification') {
+          window.location.href = '/approval-pending';
+        }
       }
     }
 
