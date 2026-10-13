@@ -15,8 +15,9 @@ const quickLinks = [
 
 const productLinks = [
   ['Aivion Care Web', '/login'],
-  ['Download Android App (APK)', process.env.NEXT_PUBLIC_ANDROID_APK_DRIVE_URL || 'https://drive.google.com/drive/folders/1aivion-care-apk-download'],
+  ['Download Android App (APK)', process.env.NEXT_PUBLIC_ANDROID_APK_DRIVE_URL || 'https://drive.google.com/drive/u/1/folders/1ALfyNroHMqFdpmYDJ-hpWMcndzO4eAd8'],
   ['Qurbani', '/products/qurbani'],
+
   ['Quran', '/products/quran'],
   ['All Products', '/products'],
 ];

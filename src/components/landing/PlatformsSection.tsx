@@ -67,11 +67,26 @@ export default function PlatformsSection() {
                     </li>
                   ))}
                 </ul>
-                <a href="/register" className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-sky-400 hover:text-sky-300 transition-colors">
-                  Get started <ArrowRight size={15} />
-                </a>
+                {title === 'Mobile Application' ? (
+                  <div className="mt-6 flex flex-wrap items-center gap-3">
+                    <a
+                      href="https://drive.google.com/drive/u/1/folders/1ALfyNroHMqFdpmYDJ-hpWMcndzO4eAd8"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-2 rounded-full border border-teal-400/50 bg-gradient-to-r from-teal-500/20 via-cyan-500/20 to-sky-500/20 px-5 py-2.5 text-xs font-bold text-teal-200 shadow-lg shadow-teal-500/10 backdrop-blur-md transition-all hover:scale-105 hover:border-teal-300"
+                    >
+                      <Smartphone size={15} className="animate-bounce text-cyan-300" />
+                      <span>Download Android APK</span>
+                    </a>
+                  </div>
+                ) : (
+                  <a href="/register" className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-sky-400 hover:text-sky-300 transition-colors">
+                    Get started <ArrowRight size={15} />
+                  </a>
+                )}
               </div>
             </article>
+
           ))}
         </div>
       </div>

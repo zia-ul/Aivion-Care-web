@@ -71,7 +71,21 @@ export default function LandingNavbar() {
             })}
           </div>
 
-          <div className="hidden shrink-0 items-center gap-1 pl-2 md:flex">
+          <div className="hidden shrink-0 items-center gap-2 pl-2 md:flex">
+            <a
+              href="https://drive.google.com/drive/u/1/folders/1ALfyNroHMqFdpmYDJ-hpWMcndzO4eAd8"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-full border border-teal-400/40 bg-gradient-to-r from-teal-500/20 via-cyan-500/20 to-sky-500/20 px-3 py-1.5 text-xs font-bold text-teal-200 shadow-sm shadow-teal-500/10 backdrop-blur-md transition-all hover:scale-105 hover:border-teal-300"
+            >
+              <span>Android APK</span>
+            </a>
+            <Link
+              href="/login"
+              className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-sky-500 to-teal-500 px-3.5 py-1.5 text-xs font-bold text-slate-950 shadow-md shadow-sky-500/20 transition-all hover:scale-105"
+            >
+              Sign In
+            </Link>
             <ThemeToggle />
           </div>
         </nav>
@@ -110,6 +124,7 @@ export default function LandingNavbar() {
     </header>
   );
 }
+
 
 
 

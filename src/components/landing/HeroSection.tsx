@@ -455,13 +455,14 @@ export default function HeroSection() {
                 </Link>
 
                 <a
-                  href={process.env.NEXT_PUBLIC_ANDROID_APK_DRIVE_URL || "https://drive.google.com/drive/folders/1aivion-care-apk-download"}
+                  href={process.env.NEXT_PUBLIC_ANDROID_APK_DRIVE_URL || "https://drive.google.com/drive/u/1/folders/1ALfyNroHMqFdpmYDJ-hpWMcndzO4eAd8"}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center justify-center gap-2 rounded-full border border-teal-500/40 bg-teal-500/10 px-6 py-4 text-sm font-bold text-teal-300 shadow-sm backdrop-blur-md transition-all duration-300 hover:scale-[1.03] hover:bg-teal-500/20"
+                  className="inline-flex items-center justify-center gap-2 rounded-full border border-teal-400/60 bg-gradient-to-r from-teal-500/20 via-cyan-500/20 to-sky-500/20 px-6 py-4 text-sm font-bold text-teal-200 shadow-lg shadow-teal-500/15 backdrop-blur-md transition-all duration-300 hover:scale-[1.03] hover:border-teal-300 hover:shadow-cyan-400/30"
                 >
-                  <Smartphone size={17} /> Download Android App
+                  <Smartphone size={17} className="animate-bounce text-cyan-300" /> Download Android App
                 </a>
+
 
                 <a
                   href="https://www.aiconfidencecure.com/"
