@@ -492,13 +492,17 @@ option { color: rgb(var(--primary-light)); background: rgb(var(--surface-20)); }
 .animation-delay-800 { animation-delay: 800ms; }
 
 .animate-heartbeat {
-  animation: heartbeat 1.1s cubic-bezier(0.215, 0.61, 0.355, 1) infinite !important;
-  transform-origin: center !important;
+  display: inline-block !important;
+  animation: heartbeat 1.2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite !important;
+  transform-origin: center center !important;
+  will-change: transform, filter;
 }
 
 .animate-heartbeat-fast {
-  animation: heartbeat 0.75s cubic-bezier(0.215, 0.61, 0.355, 1) infinite !important;
-  transform-origin: center !important;
+  display: inline-block !important;
+  animation: heartbeat 0.8s cubic-bezier(0.215, 0.61, 0.355, 1) infinite !important;
+  transform-origin: center center !important;
+  will-change: transform, filter;
 }
 
 .animate-ecg-flow {
@@ -509,7 +513,7 @@ option { color: rgb(var(--primary-light)); background: rgb(var(--surface-20)); }
 
 .animate-ecg-dash {
   stroke-dasharray: 24 12;
-  animation: ecg-dash 3s linear infinite !important;
+  animation: ecg-dash 2.8s linear infinite !important;
 }
 
 .animate-radiant-pulse {

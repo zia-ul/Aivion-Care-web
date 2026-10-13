@@ -22,27 +22,35 @@ function AnimatedCounter({ target, suffix = '', prefix = '' }: { target: number;
   const [started, setStarted] = useState(false);
 
   useEffect(() => {
+    // Immediate fallback trigger after 400ms in case intersection observer is delayed
+    const timer = setTimeout(() => {
+      setStarted(true);
+    }, 400);
+
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && !started) {
+        if (entry.isIntersecting) {
           setStarted(true);
         }
       },
-      { threshold: 0.2 }
+      { threshold: 0.1 }
     );
 
     if (ref.current) {
       observer.observe(ref.current);
     }
 
-    return () => observer.disconnect();
-  }, [started]);
+    return () => {
+      clearTimeout(timer);
+      observer.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     if (!started) return;
 
     let startTime: number | null = null;
-    const duration = 1600; // ms
+    const duration = 1800; // ms
 
     const step = (timestamp: number) => {
       if (!startTime) startTime = timestamp;
@@ -65,7 +73,7 @@ function AnimatedCounter({ target, suffix = '', prefix = '' }: { target: number;
   }, [started, target]);
 
   return (
-    <span ref={ref} className="tabular-nums">
+    <span ref={ref} className="tabular-nums inline-block">
       {prefix}
       {count}
       {suffix}
