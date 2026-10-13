@@ -1,3 +1,5 @@
+'use client';
+
 import AboutSection from '@/components/landing/AboutSection';
 import AISection from '@/components/landing/AISection';
 import BenefitsSection from '@/components/landing/BenefitsSection';
