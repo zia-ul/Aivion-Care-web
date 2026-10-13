@@ -1,6 +1,6 @@
 // Bump when static assets change: the fetch handler is cache-first, so a stale
 // name keeps serving the previous build (which silently broke new sound files).
-const CACHE_NAME = 'medication-reminders-v2';
+const CACHE_NAME = 'medication-reminders-v3';
 const STATIC_ASSETS = [
   '/',
   '/patient/reminders',
@@ -36,10 +36,11 @@ self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
   const url = new URL(event.request.url);
-  // Never intercept or cache WebSocket handshakes, SockJS info/polling, or REST API endpoints
+  // Never intercept or cache WebSocket handshakes, SockJS info/polling, REST API endpoints, or _next assets
   if (
     url.pathname.startsWith('/ws') ||
     url.pathname.startsWith('/api') ||
+    url.pathname.startsWith('/_next') ||
     url.searchParams.has('token') ||
     url.origin !== self.location.origin
   ) {
