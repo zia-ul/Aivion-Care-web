@@ -86,6 +86,8 @@ export const authApi = {
     apiClient.post('/api/v1/auth/verification/send-otp', data),
   verifyOtp: (data: { identifier: string; otp: string }) =>
     apiClient.post('/api/v1/auth/verification/verify-otp', data),
+  changePassword: (data: { currentPassword: string; newPassword: string }) =>
+    apiClient.post('/api/v1/auth/change-password', data),
 };
 
 export const appointmentApi = {

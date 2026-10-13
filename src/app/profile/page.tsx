@@ -7,8 +7,9 @@ import { authApi, doctorApi } from '@/lib/api/endpoints';
 import { isTokenExpired } from '@/lib/helpers';
 import { wsService } from '@/lib/websocket/client';
 import { useAuthStore } from '@/lib/stores/auth';
-import { User, Mail, Phone, Building2, LogOut, FileUp, ShieldCheck, Trash2, AlertTriangle, KeyRound } from 'lucide-react';
-import { Card } from '@/components/ui';
+import { User, Mail, Phone, Building2, LogOut, FileUp, ShieldCheck, Trash2, AlertTriangle, KeyRound, Lock, Eye, EyeOff } from 'lucide-react';
+import { Card, Button, Input } from '@/components/ui';
+import toast from 'react-hot-toast';
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -17,6 +18,15 @@ export default function ProfilePage() {
   const [uploadingType, setUploadingType] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
+
+  // Change password with old password
+  const [showChangePassword, setShowChangePassword] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showCurrentPw, setShowCurrentPw] = useState(false);
+  const [showNewPw, setShowNewPw] = useState(false);
+  const [changingPassword, setChangingPassword] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -78,6 +88,36 @@ export default function ProfilePage() {
       alert(error?.response?.data?.message || 'Document upload failed');
     } finally {
       setUploadingType(null);
+    }
+  };
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!currentPassword) {
+      toast.error('Please enter your current password');
+      return;
+    }
+    if (newPassword.length < 6) {
+      toast.error('New password must be at least 6 characters long');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast.error('New passwords do not match');
+      return;
+    }
+
+    setChangingPassword(true);
+    try {
+      await authApi.changePassword({ currentPassword, newPassword });
+      toast.success('Password changed successfully!');
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      setShowChangePassword(false);
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || 'Failed to update password. Please check your current password.');
+    } finally {
+      setChangingPassword(false);
     }
   };
 
@@ -173,11 +213,101 @@ export default function ProfilePage() {
           )}
 
           <div className="mt-6 pt-6 border-t border-tonal-20/50 space-y-3">
+            {showChangePassword ? (
+              <form onSubmit={handleChangePassword} className="p-4 rounded-2xl border border-accent/20 bg-surface-20/70 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-accent font-bold">
+                    <Lock size={18} />
+                    <span>Change Password</span>
+                  </div>
+                  <button 
+                    type="button" 
+                    onClick={() => setShowChangePassword(false)}
+                    className="text-xs text-primary-light/60 hover:text-primary-light"
+                  >
+                    Cancel
+                  </button>
+                </div>
+
+                <div className="relative">
+                  <Input
+                    icon={<Lock size={16} />}
+                    label="Current Password"
+                    type={showCurrentPw ? 'text' : 'password'}
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    placeholder="Enter current password"
+                    className="pr-10"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowCurrentPw(!showCurrentPw)}
+                    className="absolute right-3 top-[2.4rem] text-primary-light/60 hover:text-accent"
+                  >
+                    {showCurrentPw ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+
+                <div className="relative">
+                  <Input
+                    icon={<KeyRound size={16} />}
+                    label="New Password"
+                    type={showNewPw ? 'text' : 'password'}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="Min 6 characters"
+                    className="pr-10"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowNewPw(!showNewPw)}
+                    className="absolute right-3 top-[2.4rem] text-primary-light/60 hover:text-accent"
+                  >
+                    {showNewPw ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+
+                <Input
+                  icon={<KeyRound size={16} />}
+                  label="Confirm New Password"
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Re-enter new password"
+                  required
+                />
+
+                <div className="flex items-center justify-between pt-1">
+                  <button
+                    type="button"
+                    onClick={() => router.push('/reset-password')}
+                    className="text-xs text-accent/80 hover:text-accent underline"
+                  >
+                    Lost your current password?
+                  </button>
+                  <Button type="submit" loading={changingPassword} size="sm">
+                    {changingPassword ? 'Updating…' : 'Update Password'}
+                  </Button>
+                </div>
+              </form>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setShowChangePassword(true)}
+                className="flex w-full items-center justify-center gap-2 px-4 py-2 border border-accent/40 bg-accent/10 text-accent rounded-input hover:bg-accent/20 transition-colors"
+              >
+                <Lock size={18} /> Change Password (Using Current Password)
+              </button>
+            )}
+
             <button
+              type="button"
               onClick={() => router.push('/reset-password')}
-              className="flex w-full items-center justify-center gap-2 px-4 py-2 border border-accent/40 bg-accent/10 text-accent rounded-input hover:bg-accent/20 transition-colors"
+              className="flex w-full items-center justify-center gap-2 px-4 py-2 border border-primary-light/20 bg-surface-10/40 text-primary-light/80 rounded-input hover:bg-surface-20 transition-colors text-sm"
             >
-              <KeyRound size={18} /> Reset Password
+              <KeyRound size={17} /> Forgot / Lost Password? Reset via Email or SMS OTP
             </button>
 
             <button onClick={handleLogout} className="flex w-full items-center justify-center gap-2 px-4 py-2 bg-primary-light/10 text-primary-light rounded-input hover:bg-primary-light/20 transition-colors">
