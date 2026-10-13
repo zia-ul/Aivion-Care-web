@@ -158,17 +158,20 @@ export default function SupportChatbot() {
             </div>
 
             {/* Moving ECG Line across MediBot header */}
-            <div className="mt-2.5 h-5 w-full text-cyan-400/80">
-              <svg viewBox="0 0 300 20" className="h-full w-full" preserveAspectRatio="none">
+            <div className="mt-2.5 h-6 w-full text-cyan-300 relative overflow-hidden rounded-lg bg-slate-950/60 p-0.5 border border-cyan-500/20">
+              <svg viewBox="0 0 300 20" className="h-full w-full drop-shadow-[0_0_8px_rgba(34,211,238,0.9)]" preserveAspectRatio="none">
                 <path
-                  d="M0 10 h40 l6 -7 l5 14 l5 -10 l6 3 h40 l6 -7 l5 14 l5 -10 l6 3 h40"
+                  d="M0 10 h40 l6 -7 l5 14 l5 -10 l6 3 h40 l6 -7 l5 14 l5 -10 l6 3 h40 l6 -7 l5 14 l5 -10 l6 3 h60"
                   fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
+                  stroke="#22d3ee"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                   className="animate-ecg-dash"
                 />
               </svg>
             </div>
+
           </div>
 
           {/* Messages Feed */}

@@ -382,17 +382,20 @@ export default function HeroSection() {
                   </div>
 
                   {/* Moving SVG ECG Line */}
-                  <div className="mt-2.5 h-12 w-full text-cyan-400">
-                    <svg viewBox="0 0 500 50" className="h-full w-full drop-shadow-[0_0_8px_rgba(34,211,238,0.6)]" preserveAspectRatio="none">
+                  <div className="mt-2.5 h-12 w-full text-cyan-300 relative overflow-hidden rounded-xl bg-slate-900/60 p-1 border border-cyan-500/20">
+                    <svg viewBox="0 0 500 50" className="h-full w-full drop-shadow-[0_0_12px_rgba(34,211,238,0.9)]" preserveAspectRatio="none">
                       <path 
                         d="M0 25 h80 l10 -15 l8 32 l8 -22 l10 5 h80 l10 -15 l8 32 l8 -22 l10 5 h80 l10 -15 l8 32 l8 -22 l10 5 h140" 
                         fill="none" 
-                        stroke="currentColor" 
-                        strokeWidth="2.5" 
+                        stroke="#22d3ee" 
+                        strokeWidth="3" 
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                         className="animate-ecg-dash"
                       />
                     </svg>
                   </div>
+
                 </div>
               </div>
 
