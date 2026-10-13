@@ -1,7 +1,9 @@
 import Link from 'next/link';
-import { ArrowRight, CheckCircle2, type LucideIcon } from 'lucide-react';
+import { ArrowRight, CheckCircle2, Sparkles, type LucideIcon } from 'lucide-react';
 import { SectionHeader } from '@/components/landing/common';
-import PageShell from '@/components/landing/PageShell';import { CTASection } from '@/components/landing/ProductCTASection';
+import PageShell from '@/components/landing/PageShell';
+import { CTASection } from '@/components/landing/ProductCTASection';
+import { ParagraphWithBg } from '@/components/common/ParagraphWithBg';
 
 export interface ProductFeature {
   title: string;
@@ -96,6 +98,17 @@ export default function ProductPageTemplate({ product }: { product: ProductDetai
                 </article>
               ))}
             </div>
+
+            {/* Radiant Background Section */}
+            <ParagraphWithBg
+              imageSrc="/images/healthcare/hospital-interior.jpg"
+              imageAlt="Aivion Care Clinical Operating Center"
+              badge="Integrated Healthcare OS"
+              badgeIcon={<Sparkles size={16} className="text-teal-300" />}
+              heading="End-to-End Hospital, Clinic & Teleconsultation Operations"
+              paragraph="Built from the ground up to unify doctors, diagnostic laboratories, smart pharmacies, and patients into a synchronized clinical loop with real-time biometric safeguards and instant digital prescriptions."
+              className="mt-14"
+            />
           </div>
         </section>
 

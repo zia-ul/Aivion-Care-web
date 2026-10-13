@@ -1,6 +1,7 @@
-import { ArrowRight, BrainCircuit, HeartPulse, Lock, ShieldCheck, Stethoscope, Users } from 'lucide-react';
+import { ArrowRight, BrainCircuit, HeartPulse, Lock, ShieldCheck, Stethoscope, Users, Sparkles } from 'lucide-react';
 import { SectionHeader } from '@/components/landing/common';
 import PageShell from '@/components/landing/PageShell';
+import { ParagraphWithBg } from '@/components/common/ParagraphWithBg';
 const capabilities = [
   { title: '24/7 Health Monitoring', description: 'Continuous monitoring designed to keep a live pulse on patient health instead of relying only on occasional visits and delayed symptom reporting.', points: ['Live visibility into changing vitals', 'Built for home and remote care contexts', 'Supports proactive follow-up'], Icon: HeartPulse },
   { title: 'Real-Time Health Insights', description: 'Transforms incoming health signals into timely observations that can help patients and clinicians react faster to risk patterns.', points: ['Live signal interpretation', 'Faster awareness of concerning trends', 'Simple insight surfaces for decision support'], Icon: BrainCircuit },
@@ -19,6 +20,17 @@ export default function CapabilitiesPage() {
           title="Capabilities designed to keep care proactive, connected, and affordable."
           description="From 24/7 monitoring to AI-assisted diagnostic support and secure care-data coordination, Aivion Care is being built around real healthcare needs."
         />
+
+        <ParagraphWithBg
+          imageSrc="/images/healthcare/smart-monitoring.jpg"
+          imageAlt="AI Biometric Surveillance Capabilities"
+          badge="Signal-Driven Healthcare"
+          badgeIcon={<Sparkles size={16} className="text-cyan-400" />}
+          heading="Continuous Biometric Intelligence Powered by Hardware & AI"
+          paragraph="Traditional checkups capture less than 1% of your physiological reality. Our capabilities platform bridges medical IoT sensors directly into clinical dashboards, transforming intermittent visits into a continuous loop of patient safety."
+          className="mt-8 mb-10"
+        />
+
         <div className="mt-10 grid gap-5 lg:grid-cols-2">
           {capabilities.map(({ title, description, points, Icon }) => (
             <article key={title} className="rounded-2xl border border-sky-500/15 bg-surface-20/60 p-6 backdrop-blur sm:p-7">

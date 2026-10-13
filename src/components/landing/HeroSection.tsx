@@ -132,13 +132,35 @@ export default function HeroSection() {
   const [isPlaying, setIsPlaying] = useState(true);
   const [liveBpm, setLiveBpm] = useState(72);
   const [liveSpo2, setLiveSpo2] = useState(98);
+  const [liveBp, setLiveBp] = useState({ sys: 118, dia: 78 });
+  const [liveResp, setLiveResp] = useState(16);
 
   useEffect(() => {
+    // Dynamic biological waveform simulation: increases & decreases dynamically
     const vitalsInterval = setInterval(() => {
-      // Simulate micro-variations of sinus rhythm (70-76 BPM, 98-99% SpO2)
-      setLiveBpm(70 + Math.floor(Math.random() * 6));
-      setLiveSpo2(98 + (Math.random() > 0.5 ? 1 : 0));
-    }, 2400);
+      setLiveBpm((prev) => {
+        const delta = (Math.random() - 0.48) * 4;
+        const next = Math.round(prev + delta);
+        return Math.max(68, Math.min(84, next));
+      });
+      setLiveSpo2((prev) => {
+        const delta = Math.random() > 0.5 ? 1 : -1;
+        const next = prev + delta;
+        return Math.max(97, Math.min(100, next));
+      });
+      setLiveBp((prev) => {
+        const dSys = Math.random() > 0.5 ? 1 : -1;
+        const dDia = Math.random() > 0.5 ? 1 : -1;
+        return {
+          sys: Math.max(114, Math.min(124, prev.sys + dSys)),
+          dia: Math.max(74, Math.min(82, prev.dia + dDia))
+        };
+      });
+      setLiveResp((prev) => {
+        const d = Math.random() > 0.6 ? 1 : -1;
+        return Math.max(14, Math.min(18, prev + d));
+      });
+    }, 1800);
     return () => clearInterval(vitalsInterval);
   }, []);
 
@@ -184,6 +206,7 @@ export default function HeroSection() {
                 src="/aivion-care-logo.png"
                 alt="Aivion Care Logo"
                 fill
+                sizes="(max-width: 640px) 48px, 56px"
                 className="object-contain animate-heartbeat p-1"
                 priority
               />
@@ -214,7 +237,10 @@ export default function HeroSection() {
               <span className="font-mono font-extrabold text-white">{liveBpm} BPM</span>
               <span className="text-slate-500">|</span>
               <span className="font-mono font-extrabold text-teal-300">{liveSpo2}% SpO₂</span>
-              <span className="text-slate-400 text-[11px] font-semibold">Sinus Rhythm</span>
+              <span className="text-slate-500">|</span>
+              <span className="font-mono font-extrabold text-sky-300">{liveBp.sys}/{liveBp.dia} mmHg</span>
+              <span className="text-slate-500">|</span>
+              <span className="font-mono font-extrabold text-emerald-300">{liveResp} rpm</span>
             </div>
 
             {/* Slide Controller */}
@@ -411,6 +437,7 @@ export default function HeroSection() {
                       src={s.image}
                       alt={s.solutionTitle}
                       fill
+                      sizes="80px"
                       className="object-cover"
                     />
                     <div className="absolute inset-0 bg-slate-950/20" />
