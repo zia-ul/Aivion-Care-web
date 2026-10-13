@@ -35,27 +35,44 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
+  const url = new URL(event.request.url);
+  // Never intercept or cache WebSocket handshakes, SockJS info/polling, or REST API endpoints
+  if (
+    url.pathname.startsWith('/ws') ||
+    url.pathname.startsWith('/api') ||
+    url.searchParams.has('token') ||
+    url.origin !== self.location.origin
+  ) {
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {
         return cachedResponse;
       }
 
-      return fetch(event.request).then((response) => {
-        if (!response || response.status !== 200 || response.type !== 'basic') {
+      return fetch(event.request)
+        .then((response) => {
+          if (!response || response.status !== 200 || response.type !== 'basic') {
+            return response;
+          }
+
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
+
           return response;
-        }
-
-        const responseToCache = response.clone();
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, responseToCache);
+        })
+        .catch(() => {
+          // Fallback gracefully for offline or network blips
+          return caches.match('/');
         });
-
-        return response;
-      });
     })
   );
 });
+
 
 self.addEventListener('push', (event) => {
   if (!event.data) return;

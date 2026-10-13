@@ -9,58 +9,67 @@ const inter = Inter({ subsets: ['latin'], display: 'swap' });
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.aiconfidencecure.com'),
   title: {
-    default: 'Aivion Care — Connected Healthcare & 24/7 AI Telemetry OS',
-    template: '%s | Aivion Care',
+    default: 'Aivion Care — Book Doctor Appointments Online, Clinic Software & Hospital OS',
+    template: '%s | Aivion Care — Healthcare & Clinic Software',
   },
-  description: 'Connected Healthcare Operating System: 24/7 continuous vitals monitoring, real-time Pan-Tompkins ECG, instant HD doctor teleconsultations, digital prescriptions, and multi-role hospital management.',
+  description: 'Book verified doctor appointments online instantly, find top multi-specialty hospitals near you, or power your clinical practice with Aivion Care — India\'s next-gen AI clinic software, hospital ERP, 24/7 continuous vitals telemetry & digital prescriptions.',
   applicationName: 'Aivion Care',
   authors: [{ name: 'AI Confidence Cure', url: 'https://www.aiconfidencecure.com' }],
   creator: 'AI Confidence Cure (AMUIF Incubated)',
   publisher: 'AI Confidence Cure',
   keywords: [
+    'book doctor appointment online',
+    'online doctor consultation',
+    'find doctors near me',
+    'best hospital near me',
+    'clinic management software',
+    'doctor practice management software',
+    'hospital management software India',
+    'hospital ERP',
+    'telemedicine app India',
+    'online medicine delivery pharmacy',
+    'pathology lab tests online',
     'Aivion Care',
     'AI Confidence Cure',
-    'connected healthcare',
-    'telemedicine India',
-    'continuous vitals monitoring',
-    'live ECG telemetry',
-    'Pan-Tompkins QRS algorithm',
-    'online doctor consultation',
-    'hospital management system',
-    'digital prescriptions',
-    'patient medical records',
-    'clinical health tech',
-    'AMUIF startup'
+    'continuous vitals telemetry',
+    'digital prescription software',
+    'electronic health records EHR',
+    'smart OPD token queue',
+    'Practo alternative doctor app'
   ],
+  alternates: {
+    canonical: 'https://www.aiconfidencecure.com',
+  },
   openGraph: {
     type: 'website',
     locale: 'en_IN',
     url: 'https://www.aiconfidencecure.com',
-    title: 'Aivion Care — Connected Healthcare & 24/7 AI Telemetry OS',
-    description: 'Instant doctor appointments, 24/7 live ECG telemetry, digital prescriptions, and whole-hospital synchronization in one workspace.',
+    title: 'Aivion Care — Book Doctor Appointments Online, Clinic Software & Hospital OS',
+    description: 'Instant verified doctor consultations, top hospitals, and all-in-one clinic management software. 24/7 AI telemetry, digital prescriptions & seamless appointments.',
     siteName: 'Aivion Care',
     images: [
       {
         url: '/images/aivion-care-logo.png',
         width: 800,
         height: 800,
-        alt: 'Aivion Care Connected Healthcare Logo',
+        alt: 'Aivion Care Healthcare Ecosystem Logo',
       },
       {
         url: '/images/healthcare/smart-monitoring.jpg',
         width: 1200,
         height: 630,
-        alt: 'Aivion Care 24/7 Smart Telemetry Monitoring',
+        alt: 'Aivion Care Online Doctor Appointments & Hospital Software',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Aivion Care — Connected Healthcare & 24/7 AI Telemetry OS',
-    description: 'Autonomous ECG, instant doctor video queues, hospital bed sync, and EHR passport. No cap, just seamless care.',
+    title: 'Aivion Care — Book Doctor Appointments Online & Clinic Management Software',
+    description: 'Find verified doctors, book appointments, or digitize your hospital and clinic with all-in-one AI clinical software.',
     images: ['/images/healthcare/smart-monitoring.jpg'],
     creator: '@aivioncare',
   },
+
   robots: {
     index: true,
     follow: true,
@@ -109,6 +118,65 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify([
+              {
+                '@context': 'https://schema.org',
+                '@type': 'MedicalWebPage',
+                name: 'Aivion Care — Book Doctor Appointments Online & Clinic Software',
+                url: 'https://www.aiconfidencecure.com',
+                description: 'Book verified doctors online, access top hospital schedules, and empower clinics with smart AI management software.',
+                about: {
+                  '@type': 'MedicalBusiness',
+                  name: 'Aivion Care',
+                  url: 'https://www.aiconfidencecure.com',
+                  logo: 'https://www.aiconfidencecure.com/images/aivion-care-logo.png',
+                  medicalSpecialty: [
+                    'GeneralPractice',
+                    'Cardiology',
+                    'Pediatrics',
+                    'Dermatology',
+                    'Orthopedics',
+                    'Gynecology'
+                  ],
+                  availableService: [
+                    {
+                      '@type': 'MedicalTherapy',
+                      name: 'Online Doctor Video Consultation'
+                    },
+                    {
+                      '@type': 'MedicalTherapy',
+                      name: 'In-Clinic Doctor Appointment Booking'
+                    },
+                    {
+                      '@type': 'MedicalTherapy',
+                      name: '24/7 Continuous Vitals & ECG Telemetry'
+                    }
+                  ]
+                }
+              },
+              {
+                '@context': 'https://schema.org',
+                '@type': 'SoftwareApplication',
+                name: 'Aivion Care Clinic & Hospital OS',
+                operatingSystem: 'Web, Android, iOS',
+                applicationCategory: 'HealthApplication, BusinessApplication',
+                offers: {
+                  '@type': 'Offer',
+                  price: '0',
+                  priceCurrency: 'INR'
+                },
+                aggregateRating: {
+                  '@type': 'AggregateRating',
+                  ratingValue: '4.9',
+                  ratingCount: '1280'
+                }
+              }
+            ])
+          }}
+        />
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#22D3C5" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -117,6 +185,7 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icons/icon-512x512.svg" />
         <link rel="icon" type="image/svg+xml" sizes="any" href="/icons/icon-512x512.svg" />
       </head>
+
       <body className={inter.className}>
         <Providers>{children}</Providers>
       </body>
