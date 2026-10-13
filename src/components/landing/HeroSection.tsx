@@ -160,7 +160,7 @@ export default function HeroSection() {
         const d = Math.random() > 0.6 ? 1 : -1;
         return Math.max(14, Math.min(18, prev + d));
       });
-    }, 1800);
+    }, 1100);
     return () => clearInterval(vitalsInterval);
   }, []);
 
@@ -394,11 +394,11 @@ export default function HeroSection() {
                     </div>
 
                     <div className="text-right">
-                      <p className="text-lg font-black text-teal-300 font-mono">
-                        {slide.stats}
+                      <p className="text-lg font-black text-teal-600 dark:text-teal-300 font-mono transition-all duration-300">
+                        {liveBpm} BPM <span className="text-xs text-cyan-600 dark:text-cyan-400 font-sans">({liveSpo2}%)</span>
                       </p>
-                      <p className="text-[10px] font-semibold text-slate-400">
-                        {slide.statsLabel}
+                      <p className="text-[10px] font-semibold text-primary-light/60">
+                        Live Sinus Telemetry
                       </p>
                     </div>
                   </div>

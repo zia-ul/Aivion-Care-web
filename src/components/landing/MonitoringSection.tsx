@@ -1,7 +1,31 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Activity, AlertTriangle, HeartPulse, Thermometer, Waves, Sparkles, CheckCircle2 } from 'lucide-react';
 
 export default function MonitoringSection() {
+  const [bpm, setBpm] = useState(72);
+  const [spo2, setSpo2] = useState(98);
+  const [temp, setTemp] = useState(36.6);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setBpm((prev) => {
+        const delta = (Math.random() - 0.49) * 3;
+        return Math.max(68, Math.min(82, Math.round(prev + delta)));
+      });
+      setSpo2((prev) => {
+        const delta = Math.random() > 0.6 ? 1 : -1;
+        return Math.max(97, Math.min(100, prev + delta));
+      });
+      setTemp((prev) => {
+        const delta = (Math.random() - 0.5) * 0.1;
+        return Number((Math.max(36.4, Math.min(37.0, prev + delta))).toFixed(1));
+      });
+    }, 1200);
+    return () => clearInterval(timer);
+  }, []);
   return (
     <section className="relative mx-auto grid max-w-[1400px] items-center gap-12 px-5 py-20 sm:px-8 lg:grid-cols-[0.85fr_1.15fr] lg:px-10 lg:py-28">
       <div>
@@ -66,14 +90,14 @@ export default function MonitoringSection() {
 
         <div className="mt-5 grid grid-cols-3 gap-3">
           {([
-            ['Heart Rate', '72 bpm', HeartPulse, 'text-rose-500 dark:text-rose-400'],
-            ['SpO₂ Oxygen', '98%', Waves, 'text-sky-600 dark:text-sky-400'],
-            ['Core Temp', '36.6 °C', Thermometer, 'text-amber-600 dark:text-amber-400'],
+            ['Heart Rate', `${bpm} bpm`, HeartPulse, 'text-rose-500 dark:text-rose-400'],
+            ['SpO₂ Oxygen', `${spo2}%`, Waves, 'text-sky-600 dark:text-sky-400'],
+            ['Core Temp', `${temp} °C`, Thermometer, 'text-amber-600 dark:text-amber-400'],
           ] as const).map(([label, value, Icon, colorClass]) => (
             <div key={String(label)} className="rounded-2xl border border-tonal-20 bg-surface-30/60 p-3.5 transition-all duration-300 hover:border-cyan-400/40">
               <Icon size={19} className={colorClass} />
               <p className="mt-2.5 text-[11px] font-semibold text-primary-light/60">{label}</p>
-              <p className="mt-0.5 text-base font-extrabold text-primary-light sm:text-lg">{value}</p>
+              <p className="mt-0.5 text-base font-extrabold text-primary-light sm:text-lg font-mono transition-all duration-300">{value}</p>
             </div>
           ))}
         </div>

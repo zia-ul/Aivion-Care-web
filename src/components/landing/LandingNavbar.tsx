@@ -43,8 +43,8 @@ export default function LandingNavbar() {
       <div className="relative mx-auto w-full max-w-[1400px] px-4 py-3 pr-14 md:px-6 md:pr-6">
         <nav className="flex w-full items-center justify-between gap-3 rounded-[22px] border border-tonal-20 bg-surface-20/85 px-4 py-2.5 shadow-lg shadow-accent/10 backdrop-blur-xl transition-all duration-300">
           <Link href="/" className="flex items-center gap-2 pr-3 border-r border-tonal-20" aria-label="AI Confidence Cure home">
-            <div className="w-8 h-8 rounded-md bg-sky-500/10 flex items-center justify-center shadow-lg shadow-accent/20 p-1">
-              <Image src="/aivion-care-logo.png" alt="Aivion Care logo" width={28} height={28} className="h-full w-full object-contain" priority />
+            <div className="w-8 h-8 rounded-lg bg-sky-500/15 flex items-center justify-center shadow-lg shadow-sky-500/25 p-1 border border-sky-400/40">
+              <Image src="/aivion-care-logo.png" alt="Aivion Care logo" width={28} height={28} className="h-full w-full object-contain animate-heartbeat" priority />
             </div>
             <div className="flex flex-col">
               <span className="font-bold text-sm leading-tight text-primary-light">AI Confidence Cure</span>
