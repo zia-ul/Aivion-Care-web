@@ -82,7 +82,7 @@ export default function CapabilitiesSection() {
           {capabilities.map(({ title, text, punchline, points, image, Icon, color }) => (
             <article
               key={title}
-              className="group relative flex flex-col justify-between overflow-hidden rounded-[28px] border border-white/10 bg-slate-950/80 p-7 shadow-2xl backdrop-blur-xl transition-all duration-500 hover:-translate-y-1.5 hover:border-cyan-400/50 hover:shadow-cyan-500/10"
+              className="group relative flex flex-col justify-between overflow-hidden rounded-[28px] border border-tonal-20 bg-surface-20/85 dark:bg-slate-950/80 p-7 shadow-2xl backdrop-blur-xl transition-all duration-500 hover:-translate-y-1.5 hover:border-cyan-500/50 dark:hover:border-cyan-400/50 hover:shadow-cyan-500/10"
             >
               {/* Background Hospital / Tech Image with Radiant Mask */}
               <div className="absolute inset-0 -z-10 overflow-hidden">
@@ -90,10 +90,10 @@ export default function CapabilitiesSection() {
                   src={image}
                   alt={title}
                   fill
-                  className="object-cover opacity-25 transition-transform duration-700 group-hover:scale-110 group-hover:opacity-40"
+                  className="object-cover opacity-25 dark:opacity-35 transition-transform duration-700 group-hover:scale-110 group-hover:opacity-40"
                   sizes="(max-width: 1024px) 100vw, 650px"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/85 to-slate-950/50" />
+                <div className="absolute inset-0 bg-gradient-to-t from-surface-20 via-surface-20/80 to-surface-20/40 dark:from-slate-950 dark:via-slate-950/85 dark:to-slate-950/50" />
               </div>
 
               {/* Radiant Glow Orb */}
@@ -101,12 +101,12 @@ export default function CapabilitiesSection() {
 
               <div>
                 <div className="flex items-center justify-between">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/[0.06] border border-white/10 shadow-inner group-hover:border-cyan-400/40">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-sky-500/15 border border-sky-500/25 dark:border-white/10 shadow-inner group-hover:border-cyan-400/40">
                     <Icon size={26} className={`${color} group-hover:scale-110 transition-transform`} />
                   </div>
                   
                   {/* Moving ECG Line SVG */}
-                  <div className="h-8 w-32 text-cyan-400/70 group-hover:text-cyan-300 transition-colors">
+                  <div className="h-8 w-32 text-cyan-600 dark:text-cyan-400/70 group-hover:text-cyan-700 dark:group-hover:text-cyan-300 transition-colors">
                     <svg viewBox="0 0 140 30" className="h-full w-full" preserveAspectRatio="none">
                       <path
                         d="M0 15 h35 l6 -12 l6 24 l6 -16 l8 4 h40"
@@ -119,31 +119,31 @@ export default function CapabilitiesSection() {
                   </div>
                 </div>
 
-                <h3 className="mt-6 font-display text-xl font-extrabold text-white group-hover:text-cyan-200 transition-colors">
+                <h3 className="mt-6 font-display text-xl font-extrabold text-primary-light group-hover:text-cyan-700 dark:group-hover:text-cyan-200 transition-colors">
                   {title}
                 </h3>
-                <p className="mt-1 text-xs font-bold text-teal-300 uppercase tracking-wider">
+                <p className="mt-1 text-xs font-bold text-teal-600 dark:text-teal-300 uppercase tracking-wider">
                   {punchline}
                 </p>
-                <p className="mt-3 text-sm leading-relaxed text-slate-300">
+                <p className="mt-3 text-sm leading-relaxed text-primary-light/80">
                   {text}
                 </p>
 
                 <ul className="mt-5 space-y-2.5">
                   {points.map((point) => (
-                    <li key={point} className="flex items-center gap-2.5 text-xs font-medium text-slate-300">
-                      <HeartPulse size={14} className="shrink-0 text-rose-400 animate-heartbeat" />
+                    <li key={point} className="flex items-center gap-2.5 text-xs font-medium text-primary-light/75">
+                      <HeartPulse size={14} className="shrink-0 text-rose-500 dark:text-rose-400 animate-heartbeat" />
                       {point}
                     </li>
                   ))}
                 </ul>
               </div>
 
-              <div className="mt-8 pt-4 border-t border-white/10 flex items-center justify-between text-xs font-semibold text-slate-400 group-hover:text-white transition-colors">
-                <span className="flex items-center gap-1.5 text-teal-300">
-                  <span className="h-2 w-2 rounded-full bg-teal-400 animate-ping" /> Continuous Clinical Intel
+              <div className="mt-8 pt-4 border-t border-tonal-20 flex items-center justify-between text-xs font-semibold text-primary-light/60 group-hover:text-primary-light transition-colors">
+                <span className="flex items-center gap-1.5 text-teal-600 dark:text-teal-300">
+                  <span className="h-2 w-2 rounded-full bg-teal-500 animate-ping" /> Continuous Clinical Intel
                 </span>
-                <span className="text-cyan-400 group-hover:translate-x-1 transition-transform">
+                <span className="text-cyan-600 dark:text-cyan-400 group-hover:translate-x-1 transition-transform">
                   Learn More →
                 </span>
               </div>

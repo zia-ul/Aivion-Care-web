@@ -64,9 +64,9 @@ export default function PatientRecordsPage() {
         {loading ? (
           <p className="text-sm text-doctor-dim">Loading records...</p>
         ) : error ? (
-          <div className="rounded-3xl bg-white border border-doctor-danger-soft/40 p-5 text-sm text-doctor-red">{error}</div>
+          <div className="rounded-3xl bg-surface-20 border border-doctor-danger-soft/40 p-5 text-sm text-doctor-red">{error}</div>
         ) : items.length === 0 ? (
-          <div className="rounded-3xl bg-white border border-doctor-border-soft p-6 text-center text-sm text-doctor-dim">
+          <div className="rounded-3xl bg-surface-20 border border-doctor-border-soft p-6 text-center text-sm text-doctor-dim">
             No finalized consultations yet. Records appear here after your doctor finalizes a prescription.
           </div>
         ) : (
@@ -78,7 +78,7 @@ export default function PatientRecordsPage() {
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <p className="text-white font-semibold">Dr. {item.doctorName ?? '—'}</p>
+                        <p className="text-primary-light font-semibold">Dr. {item.doctorName ?? '—'}</p>
                         {item.speciality && <Pill color={FL.lavender}>{item.speciality}</Pill>}
                         {item.prescriptionSent && <Pill color={FL.mint}>Prescription sent</Pill>}
                       </div>

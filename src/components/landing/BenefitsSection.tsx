@@ -110,7 +110,7 @@ export default function BenefitsSection() {
         {benefits.map(({ title, text, punchline, image, Icon }) => (
           <article
             key={title}
-            className="group relative flex flex-col justify-between overflow-hidden rounded-[26px] border border-white/10 bg-slate-950/80 p-6 shadow-xl backdrop-blur-xl transition-all duration-500 hover:-translate-y-1.5 hover:border-cyan-400/50 hover:shadow-cyan-500/10"
+            className="group relative flex flex-col justify-between overflow-hidden rounded-[26px] border border-tonal-20 bg-surface-20/85 dark:bg-slate-950/80 p-6 shadow-xl backdrop-blur-xl transition-all duration-500 hover:-translate-y-1.5 hover:border-cyan-500/50 dark:hover:border-cyan-400/50 hover:shadow-cyan-500/10"
           >
             {/* Box Background Image with radiant dark gradient overlay */}
             <div className="absolute inset-0 -z-10 overflow-hidden">
@@ -118,10 +118,10 @@ export default function BenefitsSection() {
                 src={image}
                 alt={title}
                 fill
-                className="object-cover opacity-20 transition-transform duration-700 group-hover:scale-110 group-hover:opacity-35"
+                className="object-cover opacity-25 dark:opacity-35 transition-transform duration-700 group-hover:scale-110 group-hover:opacity-40"
                 sizes="(max-width: 768px) 100vw, 350px"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/85 to-slate-950/50" />
+              <div className="absolute inset-0 bg-gradient-to-t from-surface-20 via-surface-20/80 to-surface-20/40 dark:from-slate-950 dark:via-slate-950/85 dark:to-slate-950/50" />
             </div>
 
             {/* Radiant Corner Glow */}
@@ -129,29 +129,29 @@ export default function BenefitsSection() {
 
             <div>
               <div className="flex items-center justify-between">
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/[0.06] border border-white/10 shadow-inner group-hover:border-cyan-400/40">
-                  <Icon size={20} className="text-cyan-400 group-hover:scale-110 transition-transform" />
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-sky-500/15 border border-sky-500/25 dark:border-white/10 shadow-inner group-hover:border-cyan-400/40">
+                  <Icon size={20} className="text-cyan-600 dark:text-cyan-400 group-hover:scale-110 transition-transform" />
                 </div>
 
                 {/* Animated Heartbeat Indicator */}
-                <HeartPulse size={16} className="text-rose-400 animate-heartbeat" />
+                <HeartPulse size={16} className="text-rose-500 dark:text-rose-400 animate-heartbeat" />
               </div>
 
-              <h3 className="mt-5 font-display text-base font-bold text-white group-hover:text-cyan-200 transition-colors">
+              <h3 className="mt-5 font-display text-base font-bold text-primary-light group-hover:text-cyan-700 dark:group-hover:text-cyan-200 transition-colors">
                 {title}
               </h3>
-              <p className="mt-1 text-[11px] font-bold text-teal-300 uppercase tracking-wider">
+              <p className="mt-1 text-[11px] font-bold text-teal-600 dark:text-teal-300 uppercase tracking-wider">
                 {punchline}
               </p>
-              <p className="mt-2.5 text-xs leading-relaxed text-slate-300">
+              <p className="mt-2.5 text-xs leading-relaxed text-primary-light/80">
                 {text}
               </p>
             </div>
 
             {/* Mini ECG bottom separator */}
-            <div className="mt-5 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] font-semibold text-slate-400">
-              <span className="text-teal-300 font-mono">100% Care Sync</span>
-              <span className="text-cyan-400 group-hover:translate-x-1 transition-transform">Active →</span>
+            <div className="mt-5 pt-3 border-t border-tonal-20 flex items-center justify-between text-[11px] font-semibold text-primary-light/60">
+              <span className="text-teal-600 dark:text-teal-300 font-mono">100% Care Sync</span>
+              <span className="text-cyan-600 dark:text-cyan-400 group-hover:translate-x-1 transition-transform">Active →</span>
             </div>
           </article>
         ))}

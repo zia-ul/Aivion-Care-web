@@ -187,7 +187,7 @@ function RedFlagBanner({ redFlags }: { redFlags: RedFlag[] }) {
           <AlertTriangle size={22} />
         </div>
         <div className="flex-1">
-          <h4 className={`text-white font-semibold ${hasCritical ? 'text-doctor-pink' : 'text-doctor-gold'}`}>
+          <h4 className={`font-semibold ${hasCritical ? 'text-doctor-pink' : 'text-doctor-gold'}`}>
             {hasCritical ? '⚠️ Potential Clinical Red Flag(s) Detected' : '⚠️ Clinical Attention Recommended'}
           </h4>
           <p className="text-sm text-doctor-muted mt-1">

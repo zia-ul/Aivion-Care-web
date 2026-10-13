@@ -43,7 +43,7 @@ export function InvestigationEditor({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-bold text-white flex items-center gap-2">
+        <h3 className="text-lg font-bold text-primary-light flex items-center gap-2">
           <FileText className="h-5 w-5 text-doctor-slate" />
           Investigations ({investigations.length})
         </h3>

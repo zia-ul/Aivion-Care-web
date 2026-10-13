@@ -43,7 +43,7 @@ export default function EcosystemSection() {
           {roles.map(({ role, text, Icon, image }) => (
             <div
               key={role}
-              className="group relative flex flex-col justify-between overflow-hidden rounded-[26px] border border-white/10 bg-slate-950/85 p-6 text-center shadow-xl backdrop-blur-xl transition-all duration-500 hover:-translate-y-2 hover:border-cyan-400/50 hover:shadow-cyan-500/20"
+              className="group relative flex flex-col justify-between overflow-hidden rounded-[26px] border border-tonal-20 bg-surface-20/85 dark:bg-slate-950/85 p-6 text-center shadow-xl backdrop-blur-xl transition-all duration-500 hover:-translate-y-2 hover:border-cyan-500/50 dark:hover:border-cyan-400/50 hover:shadow-cyan-500/20"
             >
               {/* Background Role Image */}
               <div className="absolute inset-0 -z-10 overflow-hidden">
@@ -51,33 +51,33 @@ export default function EcosystemSection() {
                   src={image}
                   alt={role}
                   fill
-                  className="object-cover opacity-25 transition-transform duration-700 group-hover:scale-110 group-hover:opacity-40"
+                  className="object-cover opacity-25 dark:opacity-35 transition-transform duration-700 group-hover:scale-110 group-hover:opacity-40"
                   sizes="(max-width: 768px) 100vw, 260px"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/85 to-slate-950/50" />
+                <div className="absolute inset-0 bg-gradient-to-t from-surface-20 via-surface-20/80 to-surface-20/40 dark:from-slate-950 dark:via-slate-950/85 dark:to-slate-950/50" />
               </div>
 
               <div>
-                <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-sky-400/20 bg-sky-500/15 text-cyan-300 shadow-lg group-hover:scale-105 transition-transform">
+                <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-sky-500/25 bg-sky-500/15 text-cyan-600 dark:text-cyan-300 dark:border-sky-400/20 shadow-lg group-hover:scale-105 transition-transform">
                   <Icon size={26} />
                 </span>
-                <h3 className="mt-5 font-display text-lg font-bold text-white group-hover:text-cyan-300 transition-colors">
+                <h3 className="mt-5 font-display text-lg font-bold text-primary-light group-hover:text-cyan-700 dark:group-hover:text-cyan-300 transition-colors">
                   {role}
                 </h3>
-                <p className="mt-2 text-xs leading-5 text-slate-300">
+                <p className="mt-2 text-xs leading-5 text-primary-light/75">
                   {text}
                 </p>
               </div>
 
-              <div className="mt-5 pt-3 border-t border-white/5 flex items-center justify-center gap-1.5 text-[11px] font-mono text-teal-400">
+              <div className="mt-5 pt-3 border-t border-tonal-20 flex items-center justify-center gap-1.5 text-[11px] font-mono text-teal-600 dark:text-teal-400">
                 <CheckCircle2 size={12} /> Connected
               </div>
             </div>
           ))}
         </div>
 
-        <div className="mx-auto mt-10 flex max-w-xl items-center justify-center gap-3 rounded-2xl border border-cyan-400/30 bg-slate-950/80 p-4 text-sm font-semibold text-cyan-300 backdrop-blur-xl shadow-2xl">
-          <Building2 size={20} className="text-teal-400" />
+        <div className="mx-auto mt-10 flex max-w-xl items-center justify-center gap-3 rounded-2xl border border-cyan-500/30 dark:border-cyan-400/30 bg-surface-20/85 dark:bg-slate-950/80 p-4 text-sm font-semibold text-cyan-700 dark:text-cyan-300 backdrop-blur-xl shadow-2xl">
+          <Building2 size={20} className="text-teal-600 dark:text-teal-400" />
           <span>One connected workspace for the complete care journey · AMUIF Incubated</span>
         </div>
       </div>

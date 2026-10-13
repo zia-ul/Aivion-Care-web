@@ -55,7 +55,7 @@ export default function HospitalDetailPage({ params }: { params: Promise<{ id: s
                 <div className="flex items-start gap-3">
                   <div className="w-12 h-12 rounded-2xl bg-doctor-mint/15 flex items-center justify-center text-doctor-mint shrink-0"><MapPin size={22} /></div>
                   <div>
-                    <p className="text-white font-semibold text-lg">{hospital.name}</p>
+                    <p className="text-primary-light font-semibold text-lg">{hospital.name}</p>
                     <p className="text-xs text-doctor-muted mt-1">{[hospital.address, hospital.city, hospital.state, hospital.country].filter(Boolean).join(', ') || 'Address not listed'}</p>
                     {hospital.phone && <p className="text-xs text-doctor-muted mt-1">Phone: {hospital.phone}</p>}
                     {hospital.email && <p className="text-xs text-doctor-muted mt-1">Email: {hospital.email}</p>}
@@ -67,7 +67,7 @@ export default function HospitalDetailPage({ params }: { params: Promise<{ id: s
             )}
 
             <DarkCard tone="patient">
-              <h3 className="text-lg font-bold text-white">Services</h3>
+              <h3 className="text-lg font-bold text-primary-light">Services</h3>
               {services.length > 0 ? <ul className="mt-3 grid gap-2 sm:grid-cols-2">{services.map((service) => <li key={service} className="rounded-xl bg-doctor-shell px-3 py-2 text-sm text-primary-light">✓ {service}</li>)}</ul> : <p className="mt-2 text-sm text-doctor-muted">No services listed.</p>}
             </DarkCard>
 
@@ -81,7 +81,7 @@ export default function HospitalDetailPage({ params }: { params: Promise<{ id: s
 
             <h3 className="text-lg font-bold text-doctor-ink">Doctors ({filtered.length})</h3>
             {filtered.length === 0 ? (
-              <div className="rounded-3xl bg-white border border-doctor-border-soft p-6 text-center text-sm text-doctor-dim">No doctors found for this filter.</div>
+              <div className="rounded-3xl bg-surface-20 border border-doctor-border-soft p-6 text-center text-sm text-doctor-dim">No doctors found for this filter.</div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {filtered.map((d) => (
@@ -89,7 +89,7 @@ export default function HospitalDetailPage({ params }: { params: Promise<{ id: s
                     <div className="flex items-start gap-3">
                       <div className="w-12 h-12 rounded-2xl bg-doctor-blue/15 flex items-center justify-center text-doctor-blue shrink-0"><Stethoscope size={22} /></div>
                       <div className="min-w-0 flex-1">
-                        <p className="text-white font-semibold truncate">Dr. {d.name ?? '—'}</p>
+                        <p className="text-primary-light font-semibold truncate">Dr. {d.name ?? '—'}</p>
                         <p className="text-xs text-doctor-muted mt-1">{d.speciality ?? 'General'}</p>
                         <div className="flex flex-wrap gap-3 mt-2 text-xs text-doctor-muted">
                           {d.qualification && <span className="inline-flex items-center gap-1"><GraduationCap size={12} /> {d.qualification}</span>}

@@ -77,7 +77,7 @@ export default function PatientAppointmentsPage() {
   return (
     <AppLayout role="PATIENT" title="My Appointments" subtitle="Upcoming and past visits">
       <div className="space-y-5">
-        <div className="inline-flex rounded-2xl bg-white border border-doctor-border-input p-1">
+        <div className="inline-flex rounded-2xl bg-surface-20 border border-doctor-border-input p-1">
           {(['upcoming', 'history'] as const).map((t) => (
             <button
               key={t}

@@ -98,9 +98,9 @@ export default function ResetPasswordPage() {
                 required
               />
 
-              <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3 text-xs leading-5 text-primary-light/60">
-                <span className="block font-bold text-white">Super Admin Recovery:</span>
-                Super Admin credentials can only be recovered via primary authorized email (<code className="text-teal-300">ziaulislam83413@gmail.com</code>).
+              <div className="rounded-xl border border-tonal-20 bg-surface-20 p-3 text-xs leading-5 text-primary-light/60">
+                <span className="block font-bold text-primary-light">Super Admin Recovery:</span>
+                Super Admin credentials can only be recovered via primary authorized email (<code className="text-teal-600 dark:text-teal-300">ziaulislam83413@gmail.com</code>).
               </div>
 
               <Button type="submit" loading={loading} fullWidth size="lg">

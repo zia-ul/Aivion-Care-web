@@ -56,24 +56,24 @@ export default function AboutSection() {
           </dl>
         </div>
 
-        <div className="relative overflow-hidden rounded-[28px] border border-white/10 bg-slate-950/80 p-6 sm:p-8 shadow-2xl backdrop-blur-xl">
+        <div className="relative overflow-hidden rounded-[28px] border border-tonal-20 bg-surface-20/85 dark:bg-slate-950/80 p-6 sm:p-8 shadow-2xl backdrop-blur-xl">
           <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-sky-500/20 via-teal-500/20 to-cyan-500/20 blur-xl opacity-75" />
           
           {/* Real Hospital & Doctor Visual */}
-          <div className="relative mb-6 h-48 w-full overflow-hidden rounded-2xl border border-white/10">
+          <div className="relative mb-6 h-48 w-full overflow-hidden rounded-2xl border border-tonal-20">
             <Image
               src="/images/healthcare/doctor-patient-care.jpg"
               alt="Doctor consulting patient with AI telemetry"
               fill
-              className="object-cover opacity-75 transition-transform duration-700 hover:scale-105"
+              className="object-cover opacity-75 dark:opacity-90 transition-transform duration-700 hover:scale-105"
               sizes="(max-width: 768px) 100vw, 600px"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-surface-20 via-surface-20/40 to-transparent dark:from-slate-950 dark:via-slate-950/40 dark:to-transparent" />
             <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between">
-              <span className="rounded-full bg-sky-500/20 px-3 py-1 text-xs font-bold text-sky-300 border border-sky-500/30 backdrop-blur-md">
+              <span className="rounded-full bg-sky-500/20 px-3 py-1 text-xs font-bold text-sky-700 dark:text-sky-300 border border-sky-500/30 backdrop-blur-md">
                 Continuous Doctor-Patient Loop
               </span>
-              <span className="text-[11px] font-semibold text-teal-300">
+              <span className="text-[11px] font-semibold text-teal-600 dark:text-teal-300">
                 AI Telemetry Enabled
               </span>
             </div>
@@ -81,14 +81,14 @@ export default function AboutSection() {
 
           <div className="relative z-10 grid grid-cols-2 gap-3 sm:grid-cols-5">
             {nodes.map(([label, Icon]) => (
-              <div key={label} className="rounded-2xl border border-white/10 bg-white/[0.03] p-3 text-center transition-all duration-300 hover:-translate-y-1 hover:border-cyan-400/50 hover:bg-white/[0.08]">
-                <Icon size={20} className="mx-auto text-sky-400" />
-                <p className="mt-2 text-xs font-semibold text-slate-200">{label}</p>
+              <div key={label} className="rounded-2xl border border-tonal-20 bg-surface-30/60 dark:bg-white/[0.03] p-3 text-center transition-all duration-300 hover:-translate-y-1 hover:border-cyan-500/50 dark:hover:border-cyan-400/50 hover:bg-surface-40/60 dark:hover:bg-white/[0.08]">
+                <Icon size={20} className="mx-auto text-sky-600 dark:text-sky-400" />
+                <p className="mt-2 text-xs font-semibold text-primary-light/90">{label}</p>
               </div>
             ))}
           </div>
-          <div className="mt-6 flex items-center justify-center gap-2 text-xs font-medium text-slate-400">
-            <Building2 size={15} className="text-teal-400" /> Unified clinical operating system across clinics and hospitals
+          <div className="mt-6 flex items-center justify-center gap-2 text-xs font-medium text-primary-light/70">
+            <Building2 size={15} className="text-teal-600 dark:text-teal-400" /> Unified clinical operating system across clinics and hospitals
           </div>
         </div>
       </div>

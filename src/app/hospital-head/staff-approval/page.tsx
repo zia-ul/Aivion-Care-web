@@ -268,7 +268,7 @@ export default function HospitalHeadStaffManagementPage() {
       {/* Add Member Modal */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-[#0c1e29] border border-tonal-20/80 rounded-2xl p-6 max-w-lg w-full space-y-5 shadow-2xl">
+          <div className="bg-surface-20 border border-tonal-20 rounded-2xl p-6 max-w-lg w-full space-y-5 shadow-2xl">
             <div className="flex items-center justify-between pb-3 border-b border-tonal-20/50">
               <h3 className="text-lg font-bold text-primary-light flex items-center gap-2">
                 <UserPlus className="h-5 w-5 text-sky-400" />

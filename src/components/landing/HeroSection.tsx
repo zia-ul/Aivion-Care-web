@@ -354,24 +354,24 @@ export default function HeroSection() {
 
                 {/* Top Banner inside visual box */}
                 <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/40 bg-slate-950/80 px-3.5 py-1 text-xs font-bold text-rose-300 backdrop-blur-md shadow-lg">
-                    <span className="h-2 w-2 rounded-full bg-rose-400 animate-ping" /> {slide.problemBadge}
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/40 bg-surface-20/85 dark:bg-slate-950/80 px-3.5 py-1 text-xs font-bold text-rose-700 dark:text-rose-300 backdrop-blur-md shadow-lg">
+                    <span className="h-2 w-2 rounded-full bg-rose-500 dark:bg-rose-400 animate-ping" /> {slide.problemBadge}
                   </span>
 
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-teal-500/50 bg-slate-950/80 px-3.5 py-1 text-xs font-extrabold text-teal-300 backdrop-blur-md uppercase tracking-wider shadow-lg">
-                    <CheckCircle2 size={14} className="text-teal-400" /> Solved by AI
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-teal-500/50 bg-surface-20/85 dark:bg-slate-950/80 px-3.5 py-1 text-xs font-extrabold text-teal-700 dark:text-teal-300 backdrop-blur-md uppercase tracking-wider shadow-lg">
+                    <CheckCircle2 size={14} className="text-teal-600 dark:text-teal-400" /> Solved by AI
                   </span>
                 </div>
 
                 {/* Middle Problem Box */}
-                <div className="absolute top-16 left-4 right-4 rounded-2xl border border-white/15 bg-slate-950/85 p-3.5 backdrop-blur-md shadow-xl z-10">
-                  <p className="text-xs sm:text-sm font-semibold text-slate-100 leading-relaxed">
+                <div className="absolute top-16 left-4 right-4 rounded-2xl border border-tonal-20 bg-surface-20/85 dark:border-white/15 dark:bg-slate-950/85 p-3.5 backdrop-blur-md shadow-xl z-10">
+                  <p className="text-xs sm:text-sm font-semibold text-primary-light leading-relaxed">
                     ⚠️ {slide.problemText}
                   </p>
                 </div>
 
                 {/* Bottom Telemetry Card: Live Waveform & Heart Pulse */}
-                <div className="absolute bottom-4 left-4 right-4 rounded-2xl border border-cyan-400/40 bg-slate-950/92 p-4 backdrop-blur-xl shadow-2xl z-10">
+                <div className="absolute bottom-4 left-4 right-4 rounded-2xl border border-cyan-500/40 dark:border-cyan-400/40 bg-surface-20/95 dark:bg-slate-950/92 p-4 backdrop-blur-xl shadow-2xl z-10">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2.5">
                       <div className="relative h-10 w-10 rounded-xl bg-sky-500/20 border border-sky-400/40 flex items-center justify-center">
@@ -384,10 +384,10 @@ export default function HeroSection() {
                         />
                       </div>
                       <div>
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-cyan-400">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-cyan-600 dark:text-cyan-400">
                           {slide.solutionBadge}
                         </p>
-                        <p className="text-sm font-extrabold text-white">
+                        <p className="text-sm font-extrabold text-primary-light">
                           {slide.solutionTitle}
                         </p>
                       </div>
@@ -404,7 +404,7 @@ export default function HeroSection() {
                   </div>
 
                   {/* Moving SVG ECG Line */}
-                  <div className="mt-2.5 h-12 w-full text-cyan-300 relative overflow-hidden rounded-xl bg-slate-900/60 p-1 border border-cyan-500/20">
+                  <div className="mt-2.5 h-12 w-full text-cyan-300 relative overflow-hidden rounded-xl bg-surface-30/60 dark:bg-slate-900/60 p-1 border border-cyan-500/20">
                     <svg viewBox="0 0 500 50" className="h-full w-full drop-shadow-[0_0_12px_rgba(34,211,238,0.9)]" preserveAspectRatio="none">
                       <path 
                         d="M0 25 h80 l10 -15 l8 32 l8 -22 l10 5 h80 l10 -15 l8 32 l8 -22 l10 5 h80 l10 -15 l8 32 l8 -22 l10 5 h140" 
@@ -430,7 +430,7 @@ export default function HeroSection() {
                     className={`group relative h-14 w-20 shrink-0 overflow-hidden rounded-xl border transition-all duration-300 ${
                       idx === currentSlide 
                         ? 'border-cyan-400 ring-2 ring-cyan-400/50 scale-105' 
-                        : 'border-white/10 opacity-50 hover:opacity-100 hover:border-white/30'
+                        : 'border-tonal-20 opacity-50 hover:opacity-100 hover:border-cyan-500/40 dark:hover:border-white/30'
                     }`}
                   >
                     <Image

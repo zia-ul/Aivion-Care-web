@@ -86,7 +86,7 @@ export function MedicationEditor({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-bold text-white flex items-center gap-2">
+        <h3 className="text-lg font-bold text-primary-light flex items-center gap-2">
           <Sparkles className="h-5 w-5 text-doctor-gold" />
           Medicines ({medications.length})
         </h3>

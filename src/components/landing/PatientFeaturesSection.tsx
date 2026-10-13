@@ -39,28 +39,28 @@ export default function PatientFeaturesSection() {
         <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {features.map(({ title, description, icon: Icon, href, image }) => (
             <a key={title} href={href} className="group block">
-              <div className="relative flex flex-col justify-between overflow-hidden rounded-[26px] border border-white/10 bg-slate-950/85 p-6 shadow-xl backdrop-blur-xl transition-all duration-500 hover:-translate-y-1.5 hover:border-cyan-400/50 hover:shadow-cyan-500/15 h-full">
+              <div className="relative flex flex-col justify-between overflow-hidden rounded-[26px] border border-tonal-20 bg-surface-20/85 dark:bg-slate-950/85 p-6 shadow-xl backdrop-blur-xl transition-all duration-500 hover:-translate-y-1.5 hover:border-cyan-500/50 dark:hover:border-cyan-400/50 hover:shadow-cyan-500/15 h-full">
                 {/* Background clinical image with gradient overlay */}
                 <div className="absolute inset-0 -z-10 overflow-hidden">
                   <Image
                     src={image}
                     alt={title}
                     fill
-                    className="object-cover opacity-20 transition-transform duration-700 group-hover:scale-110 group-hover:opacity-35"
+                    className="object-cover opacity-25 dark:opacity-35 transition-transform duration-700 group-hover:scale-110 group-hover:opacity-40"
                     sizes="(max-width: 768px) 100vw, 350px"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/85 to-slate-950/60" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-surface-20 via-surface-20/80 to-surface-20/40 dark:from-slate-950 dark:via-slate-950/85 dark:to-slate-950/60" />
                 </div>
 
                 <div>
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-500/15 text-cyan-300 border border-sky-400/20 shadow-md">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-500/15 text-sky-600 dark:text-cyan-300 border border-sky-500/25 dark:border-sky-400/20 shadow-md">
                     <Icon size={24} aria-hidden="true" />
                   </div>
-                  <h3 className="mt-5 text-lg font-bold text-white group-hover:text-cyan-300 transition-colors">{title}</h3>
-                  <p className="mt-2 text-xs leading-5 text-slate-300">{description}</p>
+                  <h3 className="mt-5 text-lg font-bold text-primary-light group-hover:text-cyan-700 dark:group-hover:text-cyan-300 transition-colors">{title}</h3>
+                  <p className="mt-2 text-xs leading-5 text-primary-light/80">{description}</p>
                 </div>
 
-                <span className="mt-5 inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-cyan-400 group-hover:text-cyan-300">
+                <span className="mt-5 inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-cyan-700 dark:text-cyan-400 group-hover:text-cyan-800 dark:group-hover:text-cyan-300">
                   <span>Open portal</span> <ArrowRight size={14} className="transition-transform duration-300 group-hover:translate-x-1" />
                 </span>
               </div>

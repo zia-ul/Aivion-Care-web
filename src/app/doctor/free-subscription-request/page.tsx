@@ -105,10 +105,10 @@ export default function FreeSubscriptionRequestPage() {
   }
 
   const statusConfig = {
-    PENDING: { label: 'Pending Review', color: 'text-amber-400 bg-amber-400/10', icon: Hourglass, description: 'Your request is being reviewed by the admin team.' },
-    APPROVED: { label: 'Approved', color: 'text-green-400 bg-green-400/10', icon: CheckCircle, description: 'Your request has been approved! You now have appointment access without subscription.' },
-    REJECTED: { label: 'Rejected', color: 'text-red-400 bg-red-400/10', icon: XCircle, description: 'Your request was rejected. Please check the review notes below.' },
-    EXPIRED: { label: 'Expired', color: 'text-gray-400 bg-gray-400/10', icon: AlertCircle, description: 'Your approved access has expired.' },
+    PENDING: { label: 'Pending Review', color: 'text-amber-600 dark:text-amber-400 bg-amber-500/10', icon: Hourglass, description: 'Your request is being reviewed by the admin team.' },
+    APPROVED: { label: 'Approved', color: 'text-green-600 dark:text-green-400 bg-green-500/10', icon: CheckCircle, description: 'Your request has been approved! You now have appointment access without subscription.' },
+    REJECTED: { label: 'Rejected', color: 'text-red-600 dark:text-red-400 bg-red-500/10', icon: XCircle, description: 'Your request was rejected. Please check the review notes below.' },
+    EXPIRED: { label: 'Expired', color: 'text-primary-light/60 bg-surface-30', icon: AlertCircle, description: 'Your approved access has expired.' },
   } as const;
 
   return (

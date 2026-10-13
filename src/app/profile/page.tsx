@@ -153,7 +153,7 @@ export default function ProfilePage() {
                 <ShieldCheck size={18} className="text-amber-400" />
                 <div>
                   <p className="text-support text-amber-300 font-bold">Super Admin Security Recovery Email</p>
-                  <p className="text-body font-mono text-white">ziaulislam83413@gmail.com</p>
+                  <p className="text-body font-mono text-primary-light">ziaulislam83413@gmail.com</p>
                   <p className="text-[11px] text-amber-200/70 mt-0.5">Account protected from deletion; only authorized recovery email can reset root credentials.</p>
                 </div>
               </div>

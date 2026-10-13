@@ -78,16 +78,16 @@ export default function SupportChatbot() {
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className="fixed bottom-6 right-6 z-50 group flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-sky-500 via-teal-400 to-cyan-400 p-1 text-slate-950 shadow-2xl shadow-cyan-500/40 transition-all duration-300 hover:scale-105"
+        className="fixed bottom-6 right-6 z-50 group flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-sky-400 via-teal-400 to-cyan-400 dark:from-sky-500 dark:via-teal-400 dark:to-cyan-400 p-1 text-slate-950 shadow-xl shadow-cyan-500/30 dark:shadow-cyan-500/40 transition-all duration-300 hover:scale-105"
         aria-label="Open MediBot support chatbot"
         aria-expanded={open}
       >
         {/* Radiant Heartbeat Ring */}
-        <span className="absolute -inset-1 rounded-full bg-teal-400/40 blur-md animate-radiant-pulse" />
+        <span className="absolute -inset-1 rounded-full bg-teal-400/30 dark:bg-teal-400/40 blur-md animate-radiant-pulse" />
 
-        <div className="relative flex h-full w-full items-center justify-center rounded-full bg-slate-950 text-cyan-300">
+        <div className="relative flex h-full w-full items-center justify-center rounded-full bg-white text-cyan-600 dark:bg-slate-950 dark:text-cyan-300">
           {open ? (
-            <X size={26} className="text-white" />
+            <X size={26} className="text-rose-500 dark:text-white" />
           ) : (
             <div className="relative flex items-center justify-center">
               {/* MediBot Animated Heart SVG Icon */}
@@ -106,7 +106,7 @@ export default function SupportChatbot() {
               {/* Mini glowing heart indicator badge */}
               <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-4 w-4 bg-cyan-500 items-center justify-center border border-white/20">
+                <span className="relative inline-flex rounded-full h-4 w-4 bg-cyan-500 items-center justify-center border border-white/50 dark:border-white/20">
                   <Sparkles size={9} className="text-slate-950" />
                 </span>
               </span>

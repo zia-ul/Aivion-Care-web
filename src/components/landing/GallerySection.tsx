@@ -288,11 +288,11 @@ export default function GallerySection() {
           </div>
 
           {/* Quick Counter Badge */}
-          <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-slate-950/80 p-3 backdrop-blur-md">
-            <HeartPulse size={20} className="text-rose-400 animate-heartbeat" />
+          <div className="flex items-center gap-3 rounded-2xl border border-tonal-20 bg-surface-20/80 p-3 backdrop-blur-md dark:border-white/10 dark:bg-slate-950/80">
+            <HeartPulse size={20} className="text-rose-500 animate-heartbeat dark:text-rose-400" />
             <div>
-              <p className="text-xs font-bold text-white">26 Clinical Environments</p>
-              <p className="text-[11px] text-teal-300 font-mono">100% Connected Workflow</p>
+              <p className="text-xs font-bold text-primary-light">26 Clinical Environments</p>
+              <p className="text-[11px] font-mono text-teal-600 dark:text-teal-300">100% Connected Workflow</p>
             </div>
           </div>
         </div>
@@ -310,7 +310,7 @@ export default function GallerySection() {
               className={`rounded-full px-4 py-2 text-xs font-bold transition-all duration-300 ${
                 activeFilter === cat
                   ? 'bg-gradient-to-r from-sky-500 to-teal-500 text-slate-950 shadow-lg shadow-sky-500/25 scale-105'
-                  : 'border border-white/10 bg-slate-950/60 text-slate-300 hover:border-cyan-400/40 hover:text-white'
+                  : 'border border-tonal-20 bg-surface-20/70 dark:bg-slate-950/60 text-primary-light/80 hover:border-cyan-500/40 dark:hover:border-cyan-400/40 hover:text-primary-light'
               }`}
             >
               {cat}
@@ -323,7 +323,7 @@ export default function GallerySection() {
           {filtered.map((item, idx) => (
             <article
               key={item.title + idx}
-              className="group relative flex flex-col overflow-hidden rounded-[26px] border border-white/10 bg-slate-950/80 shadow-2xl backdrop-blur-xl transition-all duration-500 hover:-translate-y-2 hover:border-cyan-400/40 hover:shadow-cyan-500/20"
+              className="group relative flex flex-col overflow-hidden rounded-[26px] border border-tonal-20 bg-surface-20/85 dark:bg-slate-950/80 shadow-2xl backdrop-blur-xl transition-all duration-500 hover:-translate-y-2 hover:border-cyan-500/40 dark:hover:border-cyan-400/40 hover:shadow-cyan-500/20"
             >
               {/* Image Box with Radiant Border Effect */}
               <div className="relative h-60 w-full overflow-hidden">
@@ -331,25 +331,25 @@ export default function GallerySection() {
                   src={item.image}
                   alt={item.title}
                   fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-110"
+                  className="object-cover opacity-90 dark:opacity-100 transition-transform duration-700 group-hover:scale-110"
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 420px"
                 />
                 
                 {/* Vignette Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-surface-20 via-surface-20/20 to-transparent dark:from-slate-950 dark:via-slate-950/20" />
                 
                 {/* Top Category and Tag Badges */}
                 <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
-                  <span className="rounded-full border border-white/15 bg-slate-950/80 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-cyan-300 backdrop-blur-md">
+                  <span className="rounded-full border border-cyan-500/30 bg-surface-20/85 dark:border-white/15 dark:bg-slate-950/80 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-cyan-700 dark:text-cyan-300 backdrop-blur-md">
                     {item.category}
                   </span>
-                  <span className="rounded-full border border-teal-400/30 bg-slate-950/80 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-teal-300 backdrop-blur-md">
+                  <span className="rounded-full border border-teal-500/30 bg-surface-20/85 dark:border-teal-400/30 dark:bg-slate-950/80 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-teal-700 dark:text-teal-300 backdrop-blur-md">
                     {item.tag}
                   </span>
                 </div>
 
                 {/* Animated ECG Heartbeat waveform on hover */}
-                <div className="absolute bottom-2 left-4 right-4 h-6 text-cyan-400/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <div className="absolute bottom-2 left-4 right-4 h-6 text-cyan-600 dark:text-cyan-400/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <svg viewBox="0 0 300 20" className="h-full w-full drop-shadow-[0_0_6px_rgba(34,211,238,0.7)]" preserveAspectRatio="none">
                     <path
                       d="M0 10 h50 l8 -8 l6 16 l6 -12 l8 4 h50 l8 -8 l6 16 l6 -12 l8 4 h100"
@@ -365,27 +365,27 @@ export default function GallerySection() {
               {/* Card Body with Radiant Effect */}
               <div className="flex flex-1 flex-col justify-between p-6">
                 <div>
-                  <h3 className="font-display text-lg font-bold text-white group-hover:text-cyan-300 transition-colors">
+                  <h3 className="font-display text-lg font-bold text-primary-light group-hover:text-cyan-700 dark:group-hover:text-cyan-300 transition-colors">
                     {item.title}
                   </h3>
-                  <p className="mt-1 text-xs font-semibold text-teal-300 uppercase tracking-wider">
+                  <p className="mt-1 text-xs font-semibold text-teal-600 dark:text-teal-300 uppercase tracking-wider">
                     {item.subtitle}
                   </p>
-                  <p className="mt-3 text-xs leading-relaxed text-slate-300">
+                  <p className="mt-3 text-xs leading-relaxed text-primary-light/75">
                     {item.text}
                   </p>
                 </div>
 
-                <div className="mt-5 pt-4 border-t border-white/5 flex items-center justify-between">
+                <div className="mt-5 pt-4 border-t border-tonal-20 flex items-center justify-between">
                   <a
                     href="/register"
-                    className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-cyan-400 hover:text-cyan-300 transition-colors"
+                    className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 dark:hover:text-cyan-300 transition-colors"
                   >
                     <span>Connect Care</span>
                     <ArrowRight size={13} className="transition-transform group-hover:translate-x-1" />
                   </a>
-                  <span className="flex items-center gap-1 text-[11px] font-mono text-slate-400">
-                    <CheckCircle2 size={13} className="text-teal-400" /> Verified
+                  <span className="flex items-center gap-1 text-[11px] font-mono text-primary-light/60">
+                    <CheckCircle2 size={13} className="text-teal-600 dark:text-teal-400" /> Verified
                   </span>
                 </div>
               </div>

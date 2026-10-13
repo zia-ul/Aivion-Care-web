@@ -64,7 +64,7 @@ export default function PatientPaymentsPage() {
         {loading ? (
           <p className="text-sm text-doctor-dim">Loading invoices...</p>
         ) : rows.length === 0 ? (
-          <div className="rounded-3xl bg-white border border-doctor-border-soft p-6 text-center text-sm text-doctor-dim">No appointments yet.</div>
+          <div className="rounded-3xl bg-surface-20 border border-doctor-border-soft p-6 text-center text-sm text-doctor-dim">No appointments yet.</div>
         ) : (
           <div className="space-y-3">
             {rows.map(({ appt, invoice, error }) => (
@@ -72,12 +72,12 @@ export default function PatientPaymentsPage() {
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <p className="text-white font-semibold inline-flex items-center gap-2"><Receipt size={16} className="text-doctor-mint" /> {invoice?.invoiceNumber ?? `Appointment #${appt.id}`}</p>
+                      <p className="text-primary-light font-semibold inline-flex items-center gap-2"><Receipt size={16} className="text-doctor-mint" /> {invoice?.invoiceNumber ?? `Appointment #${appt.id}`}</p>
                       {invoice?.paymentStatus && <Pill color={statusColor(invoice.paymentStatus)}>{invoice.paymentStatus}</Pill>}
                     </div>
                     <p className="text-xs text-doctor-muted mt-1">Dr. {appt.doctorName ?? '—'} • {appt.appointmentDate}</p>
                     {invoice && (
-                      <p className="text-sm text-white font-bold mt-2">
+                      <p className="text-sm text-primary-light font-bold mt-2">
                         ₹{String(invoice.totalAmount ?? '0')}
                         {(invoice.discount || invoice.tax) && (
                           <span className="text-xs font-normal text-doctor-muted ml-2">

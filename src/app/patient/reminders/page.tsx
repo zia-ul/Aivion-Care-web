@@ -126,21 +126,21 @@ export default function PatientRemindersPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'TAKEN': return 'bg-green-500/20 text-green-400 border-green-500/30';
-      case 'SKIPPED': return 'bg-red-500/20 text-red-400 border-red-500/30';
+      case 'TAKEN': return 'bg-green-500/20 text-green-600 dark:text-green-400 border-green-500/30';
+      case 'SKIPPED': return 'bg-red-500/20 text-red-600 dark:text-red-400 border-red-500/30';
       case 'PENDING':
         const now = new Date();
-        return 'bg-amber-500/20 text-amber-400 border-amber-500/30';
-      default: return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
+        return 'bg-amber-500/20 text-amber-600 dark:text-amber-400 border-amber-500/30';
+      default: return 'bg-gray-500/20 text-primary-light/60 border-gray-500/30';
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'TAKEN': return <CheckCircle size={14} className="text-green-400" />;
-      case 'SKIPPED': return <XCircle size={14} className="text-red-400" />;
-      case 'PENDING': return <Clock size={14} className="text-amber-400" />;
-      default: return <Clock size={14} className="text-gray-400" />;
+      case 'TAKEN': return <CheckCircle size={14} className="text-green-600 dark:text-green-400" />;
+      case 'SKIPPED': return <XCircle size={14} className="text-red-600 dark:text-red-400" />;
+      case 'PENDING': return <Clock size={14} className="text-amber-600 dark:text-amber-400" />;
+      default: return <Clock size={14} className="text-primary-light/60" />;
     }
   };
 
@@ -203,7 +203,7 @@ export default function PatientRemindersPage() {
 
         {error && (
           <Card className="p-4 bg-red-500/5 border-red-500/20">
-            <p className="text-sm text-red-400">{error}</p>
+            <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
           </Card>
         )}
 
@@ -224,7 +224,7 @@ export default function PatientRemindersPage() {
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2 flex-wrap">
                           <p className="text-lg font-semibold text-primary-light truncate">{r.medicineName}</p>
-                          <Badge status="ACTIVE" className="bg-green-500/20 text-green-400 border-green-500/30" />
+                          <Badge status="ACTIVE" className="bg-green-500/20 text-green-600 dark:text-green-400 border-green-500/30" />
                         </div>
                         <p className="text-sm text-primary-light/60 mt-1">
                           {[r.dosage, r.amountPerUse, r.frequencyPerDay, r.timing, r.durationText]
@@ -247,7 +247,7 @@ export default function PatientRemindersPage() {
                                 key={dose.doseTime}
                                 className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium border ${
                                   isDoseOverdue(dose)
-                                    ? 'bg-red-500/20 text-red-400 border-red-500/30 animate-pulse'
+                                    ? 'bg-red-500/20 text-red-600 dark:text-red-400 border-red-500/30 animate-pulse'
                                     : getStatusColor(dose.status)
                                 }`}
                               >
@@ -315,20 +315,20 @@ export default function PatientRemindersPage() {
           {inactiveReminders.length > 0 && (
             <div>
               <h3 className="text-heading font-bold text-primary-light mb-3 flex items-center gap-2">
-                <Pause size={20} className="text-amber-400" />
+                <Pause size={20} className="text-amber-600 dark:text-amber-400" />
                 Inactive Reminders ({inactiveReminders.length})
               </h3>
               <div className="space-y-3">
                 {inactiveReminders.map((r) => (
                   <Card key={r.id} className="p-4 opacity-70">
                     <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 rounded-2xl bg-gray-500/15 flex items-center justify-center text-gray-400 shrink-0">
+                      <div className="w-12 h-12 rounded-2xl bg-gray-500/15 flex items-center justify-center text-primary-light/60 shrink-0">
                         <Pill size={24} />
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2 flex-wrap">
                           <p className="text-lg font-semibold text-primary-light truncate">{r.medicineName}</p>
-                          <Badge status="INACTIVE" className="bg-gray-500/20 text-gray-400 border-gray-500/30" />
+                          <Badge status="INACTIVE" className="bg-gray-500/20 text-primary-light/60 border-gray-500/30" />
                         </div>
                         <p className="text-sm text-primary-light/60 mt-1">
                           {[r.dosage, r.amountPerUse, r.frequencyPerDay, r.timing, r.durationText]
@@ -387,21 +387,21 @@ export default function PatientRemindersPage() {
 
         {showAddModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-            <Card className="w-full max-w-lg p-6 bg-slate-950 border border-white/15 rounded-3xl">
-              <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-5">
+            <Card className="w-full max-w-lg p-6 bg-surface-20 border border-tonal-20 rounded-3xl">
+              <div className="flex items-center justify-between pb-4 border-b border-tonal-20 mb-5">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-10 h-10 rounded-2xl bg-sky-500/15 border border-sky-400/30 flex items-center justify-center text-cyan-400">
+                  <div className="w-10 h-10 rounded-2xl bg-sky-500/15 border border-sky-400/30 flex items-center justify-center text-cyan-600 dark:text-cyan-400">
                     <Pill size={20} />
                   </div>
                   <div>
-                    <h3 className="font-display text-lg font-bold text-white">Add Medication Reminder</h3>
-                    <p className="text-xs text-slate-400">Set alarms for your daily pills or syrups</p>
+                    <h3 className="font-display text-lg font-bold text-primary-light">Add Medication Reminder</h3>
+                    <p className="text-xs text-primary-light/60">Set alarms for your daily pills or syrups</p>
                   </div>
                 </div>
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="p-1 rounded-xl text-slate-400 hover:text-white hover:bg-white/10"
+                  className="p-1 rounded-xl text-primary-light/60 hover:text-primary-light hover:bg-surface-30"
                 >
                   ✕
                 </button>
@@ -409,83 +409,83 @@ export default function PatientRemindersPage() {
 
               <form onSubmit={handleCreateManualReminder} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Medicine Name *</label>
+                  <label className="block text-xs font-semibold text-primary-light/80 mb-1">Medicine Name *</label>
                   <input
                     type="text"
                     required
                     placeholder="e.g. Paracetamol, Metformin"
                     value={manualForm.medicineName}
                     onChange={(e) => setManualForm({ ...manualForm, medicineName: e.target.value })}
-                    className="w-full rounded-xl border border-white/10 bg-slate-900 px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:border-cyan-400 focus:outline-none"
+                    className="w-full rounded-xl border border-tonal-20 bg-surface-10 px-3.5 py-2.5 text-sm text-primary-light placeholder:text-primary-light/50 focus:border-cyan-500 dark:focus:border-cyan-400 focus:outline-none"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">Dosage</label>
+                    <label className="block text-xs font-semibold text-primary-light/80 mb-1">Dosage</label>
                     <input
                       type="text"
                       placeholder="e.g. 500mg, 1 tablet"
                       value={manualForm.dosage}
                       onChange={(e) => setManualForm({ ...manualForm, dosage: e.target.value })}
-                      className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-cyan-400 focus:outline-none"
+                      className="w-full rounded-xl border border-tonal-20 bg-surface-10 px-3 py-2 text-sm text-primary-light placeholder:text-primary-light/50 focus:border-cyan-500 dark:focus:border-cyan-400 focus:outline-none"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">Timing</label>
+                    <label className="block text-xs font-semibold text-primary-light/80 mb-1">Timing</label>
                     <input
                       type="text"
                       placeholder="e.g. After meals, Empty stomach"
                       value={manualForm.timing}
                       onChange={(e) => setManualForm({ ...manualForm, timing: e.target.value })}
-                      className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-cyan-400 focus:outline-none"
+                      className="w-full rounded-xl border border-tonal-20 bg-surface-10 px-3 py-2 text-sm text-primary-light placeholder:text-primary-light/50 focus:border-cyan-500 dark:focus:border-cyan-400 focus:outline-none"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">Frequency</label>
+                    <label className="block text-xs font-semibold text-primary-light/80 mb-1">Frequency</label>
                     <input
                       type="text"
                       placeholder="e.g. Twice daily, Once daily"
                       value={manualForm.frequencyPerDay}
                       onChange={(e) => setManualForm({ ...manualForm, frequencyPerDay: e.target.value })}
-                      className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-cyan-400 focus:outline-none"
+                      className="w-full rounded-xl border border-tonal-20 bg-surface-10 px-3 py-2 text-sm text-primary-light placeholder:text-primary-light/50 focus:border-cyan-500 dark:focus:border-cyan-400 focus:outline-none"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">Duration</label>
+                    <label className="block text-xs font-semibold text-primary-light/80 mb-1">Duration</label>
                     <input
                       type="text"
                       placeholder="e.g. 5 days, 1 month"
                       value={manualForm.duration}
                       onChange={(e) => setManualForm({ ...manualForm, duration: e.target.value })}
-                      className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-cyan-400 focus:outline-none"
+                      className="w-full rounded-xl border border-tonal-20 bg-surface-10 px-3 py-2 text-sm text-primary-light placeholder:text-primary-light/50 focus:border-cyan-500 dark:focus:border-cyan-400 focus:outline-none"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Schedule Times (comma-separated 24h format)</label>
+                  <label className="block text-xs font-semibold text-primary-light/80 mb-1">Schedule Times (comma-separated 24h format)</label>
                   <input
                     type="text"
                     placeholder="09:00, 21:00"
                     value={manualForm.scheduleTimes}
                     onChange={(e) => setManualForm({ ...manualForm, scheduleTimes: e.target.value })}
-                    className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-cyan-400 focus:outline-none"
+                    className="w-full rounded-xl border border-tonal-20 bg-surface-10 px-3 py-2 text-sm text-primary-light placeholder:text-primary-light/50 focus:border-cyan-500 dark:focus:border-cyan-400 focus:outline-none"
                   />
-                  <p className="text-[11px] text-slate-500 mt-1">Example: 08:00, 14:00, 20:00</p>
+                  <p className="text-[11px] text-primary-light/50 mt-1">Example: 08:00, 14:00, 20:00</p>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Notes / Instructions</label>
+                  <label className="block text-xs font-semibold text-primary-light/80 mb-1">Notes / Instructions</label>
                   <textarea
                     rows={2}
                     placeholder="Take with warm water..."
                     value={manualForm.notes}
                     onChange={(e) => setManualForm({ ...manualForm, notes: e.target.value })}
-                    className="w-full rounded-xl border border-white/10 bg-slate-900 px-3 py-2 text-sm text-white placeholder-slate-500 focus:border-cyan-400 focus:outline-none"
+                    className="w-full rounded-xl border border-tonal-20 bg-surface-10 px-3 py-2 text-sm text-primary-light placeholder:text-primary-light/50 focus:border-cyan-500 dark:focus:border-cyan-400 focus:outline-none"
                   />
                 </div>
 

@@ -79,7 +79,7 @@ export default function RolesSection() {
           {roles.map(({ title, subtitle, text, items, image, Icon, cta, color }) => (
             <article
               key={title}
-              className="group relative flex flex-col justify-between overflow-hidden rounded-[28px] border border-white/10 bg-slate-950/80 p-7 shadow-2xl backdrop-blur-xl transition-all duration-500 hover:-translate-y-1.5 hover:border-cyan-400/50 hover:shadow-cyan-500/10"
+              className="group relative flex flex-col justify-between overflow-hidden rounded-[28px] border border-tonal-20 bg-surface-20/85 dark:bg-slate-950/80 p-7 shadow-2xl backdrop-blur-xl transition-all duration-500 hover:-translate-y-1.5 hover:border-cyan-500/50 dark:hover:border-cyan-400/50 hover:shadow-cyan-500/10"
             >
               {/* Background Hospital Role Image */}
               <div className="absolute inset-0 -z-10 overflow-hidden">
@@ -87,10 +87,10 @@ export default function RolesSection() {
                   src={image}
                   alt={title}
                   fill
-                  className="object-cover opacity-25 transition-transform duration-700 group-hover:scale-110 group-hover:opacity-40"
+                  className="object-cover opacity-25 dark:opacity-35 transition-transform duration-700 group-hover:scale-110 group-hover:opacity-40"
                   sizes="(max-width: 1024px) 100vw, 650px"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/85 to-slate-950/50" />
+                <div className="absolute inset-0 bg-gradient-to-t from-surface-20 via-surface-20/80 to-surface-20/40 dark:from-slate-950 dark:via-slate-950/85 dark:to-slate-950/50" />
               </div>
 
               {/* Radiant Glow Orb */}
@@ -99,21 +99,21 @@ export default function RolesSection() {
               <div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/[0.06] border border-white/10 shadow-inner group-hover:border-cyan-400/40">
+                    <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-500/15 border border-sky-500/25 dark:border-white/10 shadow-inner group-hover:border-cyan-400/40">
                       <Icon size={22} className={`${color} group-hover:scale-110 transition-transform`} />
                     </span>
                     <div>
-                      <h3 className="font-display text-lg font-extrabold tracking-wide text-white">
+                      <h3 className="font-display text-lg font-extrabold tracking-wide text-primary-light">
                         {title}
                       </h3>
-                      <p className="text-xs font-bold text-teal-300">
+                      <p className="text-xs font-bold text-teal-600 dark:text-teal-300">
                         {subtitle}
                       </p>
                     </div>
                   </div>
 
                   {/* Mini animated ECG pulse line */}
-                  <div className="h-6 w-20 text-cyan-400/60 group-hover:text-cyan-300 transition-colors">
+                  <div className="h-6 w-20 text-cyan-600 dark:text-cyan-400/60 group-hover:text-cyan-700 dark:group-hover:text-cyan-300 transition-colors">
                     <svg viewBox="0 0 100 24" className="h-full w-full" preserveAspectRatio="none">
                       <path
                         d="M0 12 h25 l4 -8 l5 16 l4 -10 l4 2 h40"
@@ -126,24 +126,24 @@ export default function RolesSection() {
                   </div>
                 </div>
 
-                <p className="mt-4 text-sm leading-relaxed text-slate-300">
+                <p className="mt-4 text-sm leading-relaxed text-primary-light/80">
                   {text}
                 </p>
 
                 <ul className="mt-5 space-y-2">
                   {items.map((item) => (
-                    <li key={item} className="flex items-center gap-2 text-xs font-medium text-slate-300">
-                      <HeartPulse size={13} className="shrink-0 text-rose-400 animate-heartbeat" />
+                    <li key={item} className="flex items-center gap-2 text-xs font-medium text-primary-light/75">
+                      <HeartPulse size={13} className="shrink-0 text-rose-500 dark:text-rose-400 animate-heartbeat" />
                       {item}
                     </li>
                   ))}
                 </ul>
               </div>
 
-              <div className="mt-6 pt-5 border-t border-white/10">
+              <div className="mt-6 pt-5 border-t border-tonal-20">
                 <Link
                   href="/login"
-                  className="inline-flex items-center gap-2 text-sm font-bold text-cyan-400 hover:text-cyan-300 transition-colors group-hover:translate-x-1"
+                  className="inline-flex items-center gap-2 text-sm font-bold text-cyan-700 hover:text-cyan-800 dark:text-cyan-400 dark:hover:text-cyan-300 transition-colors group-hover:translate-x-1"
                 >
                   {cta} <ArrowRight size={16} />
                 </Link>

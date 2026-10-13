@@ -52,9 +52,9 @@ export default function PatientHospitalsPage() {
         {loading ? (
           <p className="text-sm text-doctor-dim">Loading hospitals...</p>
         ) : error ? (
-          <div className="rounded-3xl bg-white border border-doctor-danger-soft/40 p-5 text-sm text-doctor-red">{error}</div>
+          <div className="rounded-3xl bg-surface-20 border border-doctor-danger-soft/40 p-5 text-sm text-doctor-red">{error}</div>
         ) : hospitals.length === 0 ? (
-          <div className="rounded-3xl bg-white border border-doctor-border-soft p-6 text-center text-sm text-doctor-dim">
+          <div className="rounded-3xl bg-surface-20 border border-doctor-border-soft p-6 text-center text-sm text-doctor-dim">
             No hospitals found. Try a different city.
           </div>
         ) : (
@@ -68,7 +68,7 @@ export default function PatientHospitalsPage() {
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center justify-between gap-2">
-                        <p className="text-white font-semibold truncate">{h.name}</p>
+                        <p className="text-primary-light font-semibold truncate">{h.name}</p>
                         <Pill color={h.status === 'APPROVED' ? FL.mint : FL.gold}>{h.status ?? ''}</Pill>
                       </div>
                       <p className="text-xs text-doctor-muted mt-1 flex items-center gap-1">

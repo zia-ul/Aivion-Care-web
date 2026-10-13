@@ -368,7 +368,7 @@ export default function PatientDocumentsPage() {
     <AppLayout role={currentRole} title="My Documents" subtitle="Medical records, reports & prescriptions">
       <div className="space-y-5">
         {error && (
-          <div className="rounded-3xl bg-white border border-doctor-danger-soft/40 p-5 text-sm text-doctor-red">{error}</div>
+          <div className="rounded-3xl bg-surface-20 border border-doctor-danger-soft/40 p-5 text-sm text-doctor-red">{error}</div>
         )}
 
         {/* Stats */}

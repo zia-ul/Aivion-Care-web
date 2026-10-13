@@ -86,7 +86,7 @@ export default function FeaturesSection() {
           {features.map(({ title, text, punchline, image, Icon, color }) => (
             <article
               key={title}
-              className="group relative flex flex-col justify-between overflow-hidden rounded-[26px] border border-white/10 bg-slate-950/80 p-6 shadow-xl backdrop-blur-xl transition-all duration-500 hover:-translate-y-1.5 hover:border-cyan-400/50 hover:shadow-cyan-500/10"
+              className="group relative flex flex-col justify-between overflow-hidden rounded-[26px] border border-tonal-20 bg-surface-20/85 dark:bg-slate-950/80 p-6 shadow-xl backdrop-blur-xl transition-all duration-500 hover:-translate-y-1.5 hover:border-cyan-500/50 dark:hover:border-cyan-400/50 hover:shadow-cyan-500/10"
             >
               {/* Box Background Image with radiant dark gradient overlay */}
               <div className="absolute inset-0 -z-10 overflow-hidden">
@@ -94,10 +94,10 @@ export default function FeaturesSection() {
                   src={image}
                   alt={title}
                   fill
-                  className="object-cover opacity-25 transition-transform duration-700 group-hover:scale-110 group-hover:opacity-40"
+                  className="object-cover opacity-25 dark:opacity-35 transition-transform duration-700 group-hover:scale-110 group-hover:opacity-40"
                   sizes="(max-width: 768px) 100vw, 400px"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/85 to-slate-950/50" />
+                <div className="absolute inset-0 bg-gradient-to-t from-surface-20 via-surface-20/80 to-surface-20/40 dark:from-slate-950 dark:via-slate-950/85 dark:to-slate-950/50" />
               </div>
 
               {/* Radiant Glow on Card Corner */}
@@ -105,12 +105,12 @@ export default function FeaturesSection() {
 
               <div>
                 <div className="flex items-center justify-between">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/[0.06] border border-white/10 shadow-inner group-hover:border-cyan-400/40">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-500/15 text-sky-600 dark:text-cyan-300 border border-sky-500/25 dark:border-sky-400/20 shadow-inner group-hover:border-cyan-400/40">
                     <Icon size={22} className={`${color} group-hover:scale-110 transition-transform`} />
                   </div>
                   
                   {/* Mini animated ECG pulse line in each box */}
-                  <div className="h-6 w-20 text-cyan-400/60 group-hover:text-cyan-300 transition-colors">
+                  <div className="h-6 w-20 text-cyan-600 dark:text-cyan-400/60 group-hover:text-cyan-700 dark:group-hover:text-cyan-300 transition-colors">
                     <svg viewBox="0 0 100 24" className="h-full w-full" preserveAspectRatio="none">
                       <path
                         d="M0 12 h25 l4 -8 l5 16 l4 -10 l4 2 h40"
@@ -123,22 +123,22 @@ export default function FeaturesSection() {
                   </div>
                 </div>
 
-                <h3 className="mt-5 font-display text-lg font-bold text-white group-hover:text-cyan-200 transition-colors">
+                <h3 className="mt-5 font-display text-lg font-bold text-primary-light group-hover:text-cyan-700 dark:group-hover:text-cyan-200 transition-colors">
                   {title}
                 </h3>
-                <p className="mt-1 text-xs font-bold text-teal-300 uppercase tracking-wider">
+                <p className="mt-1 text-xs font-bold text-teal-600 dark:text-teal-300 uppercase tracking-wider">
                   {punchline}
                 </p>
-                <p className="mt-3 text-sm leading-relaxed text-slate-300">
+                <p className="mt-3 text-sm leading-relaxed text-primary-light/80">
                   {text}
                 </p>
               </div>
 
-              <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between text-xs font-semibold text-slate-400 group-hover:text-white transition-colors">
+              <div className="mt-6 pt-4 border-t border-tonal-20 flex items-center justify-between text-xs font-semibold text-primary-light/60 group-hover:text-primary-light transition-colors">
                 <span className="flex items-center gap-1.5">
-                  <HeartPulse size={14} className="text-rose-400 animate-heartbeat" /> Live Care Active
+                  <HeartPulse size={14} className="text-rose-500 dark:text-rose-400 animate-heartbeat" /> Live Care Active
                 </span>
-                <span className="text-cyan-400 group-hover:translate-x-1 transition-transform">
+                <span className="text-cyan-600 dark:text-cyan-400 group-hover:translate-x-1 transition-transform">
                   Explore →
                 </span>
               </div>
