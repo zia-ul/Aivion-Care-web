@@ -15,10 +15,6 @@ import {
   ChevronRight, 
   Play, 
   Pause, 
-  Clock,
-  Waves,
-  Building2,
-  Stethoscope,
   CheckCircle2
 } from 'lucide-react';
 
