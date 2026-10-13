@@ -23,9 +23,15 @@ export function Providers({ children }: { children: React.ReactNode }) {
   // Sync the theme store with the data-theme attribute set before hydration.
   useEffect(() => initThemeStore(), []);
 
-  // Register Service Worker for push notifications
+  // Register Service Worker for push notifications (production only to prevent stale dev caching)
   useEffect(() => {
-    if ('serviceWorker' in navigator) {
+    if (
+      typeof window !== 'undefined' &&
+      'serviceWorker' in navigator &&
+      process.env.NODE_ENV === 'production' &&
+      window.location.hostname !== 'localhost' &&
+      window.location.hostname !== '127.0.0.1'
+    ) {
       navigator.serviceWorker.register('/sw.js')
         .then((registration) => {
           console.log('Service Worker registered:', registration.scope);
@@ -33,6 +39,20 @@ export function Providers({ children }: { children: React.ReactNode }) {
         .catch((error) => {
           console.warn('Service Worker registration failed:', error);
         });
+    } else if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+      // In development / localhost, proactively unregister any previously registered service worker
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        for (const reg of registrations) {
+          reg.unregister();
+        }
+      });
+      if ('caches' in window) {
+        caches.keys().then((names) => {
+          for (const name of names) {
+            caches.delete(name);
+          }
+        });
+      }
     }
   }, []);
 

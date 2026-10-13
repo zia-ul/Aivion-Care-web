@@ -1,9 +1,7 @@
 // Bump when static assets change: the fetch handler is cache-first, so a stale
 // name keeps serving the previous build (which silently broke new sound files).
-const CACHE_NAME = 'medication-reminders-v3';
+const CACHE_NAME = 'medication-reminders-v4';
 const STATIC_ASSETS = [
-  '/',
-  '/patient/reminders',
   '/icons/icon-512x512.svg',
   '/sounds/message-notification.wav',
   '/sounds/reminder-notification.wav',
