@@ -64,7 +64,7 @@ export default function LoginPage() {
           </span>
           <p className="text-xs font-bold uppercase tracking-[0.24em] text-accent/75">Aivion Care</p>
           <h1 className="mt-2 text-headline font-extrabold tracking-tight text-primary-light">Welcome back</h1>
-          <p className="mt-2 text-body text-primary-light/55">Sign in to continue to your care workspace.</p>
+          <p className="mt-2 text-body text-primary-light/70">Sign in to continue to your care workspace.</p>
         </div>
 
         <Card padding="lg" className="border-accent/15 bg-surface-20/90 shadow-[0_24px_70px_rgba(0,0,0,0.34)] backdrop-blur-xl rounded-[28px]">
@@ -115,13 +115,13 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          <div className="mt-6 flex items-start gap-3 rounded-xl border border-accent/10 bg-accent/5 p-3.5 text-xs leading-5 text-primary-light/50">
+          <div className="mt-6 flex items-start gap-3 rounded-xl border border-accent/10 bg-accent/5 p-3.5 text-xs leading-5 text-primary-light/70">
             <ShieldCheck size={17} className="mt-0.5 shrink-0 text-accent" aria-hidden="true" />
             <span>Your health information is protected with a secure, private workspace.</span>
           </div>
         </Card>
 
-        <p className="mt-6 text-center text-body text-primary-light/60">
+        <p className="mt-6 text-center text-body text-primary-light/70">
           Don&apos;t have an account?{' '}
           <Link href="/register" className="font-bold text-accent transition hover:text-accent/80 hover:underline">Create an account</Link>
         </p>

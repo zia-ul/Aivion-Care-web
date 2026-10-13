@@ -80,10 +80,10 @@ export default function TrustStats() {
       <div className="mx-auto grid max-w-[1400px] grid-cols-2 divide-x divide-y divide-sky-500/15 px-5 py-2 sm:px-8 md:grid-cols-4 md:divide-y-0 lg:px-10 relative z-10">
         {statsConfig.map(({ target, suffix, prefix, label }) => (
           <div key={label} className="px-4 py-7 text-center md:py-8 transition-transform hover:-translate-y-0.5">
-            <p className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-cyan-300 to-teal-400 sm:text-4xl drop-shadow-sm">
+            <p className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-sky-600 via-cyan-600 to-teal-600 dark:from-sky-400 dark:via-cyan-300 dark:to-teal-400 sm:text-4xl drop-shadow-sm">
               <AnimatedCounter target={target} suffix={suffix} prefix={prefix} />
             </p>
-            <p className="mt-1.5 text-xs font-semibold uppercase tracking-wider text-primary-light/75 dark:text-primary-light/65">
+            <p className="mt-1.5 text-xs font-semibold uppercase tracking-wider text-primary-light/75">
               {label}
             </p>
           </div>

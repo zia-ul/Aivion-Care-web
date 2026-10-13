@@ -244,12 +244,12 @@ export default function HeroSection() {
             </div>
 
             {/* Slide Controller */}
-            <div className="flex items-center gap-1 rounded-2xl border border-white/10 bg-white/[0.03] p-1">
+            <div className="flex items-center gap-1 rounded-2xl border border-tonal-20 bg-surface-20/60 p-1">
               <button
                 type="button"
                 onClick={() => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length)}
                 aria-label="Previous story slide"
-                className="p-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-white/10 transition"
+                className="p-1.5 rounded-xl text-primary-light/60 hover:text-primary-light hover:bg-accent/10 transition"
               >
                 <ChevronLeft size={16} />
               </button>
@@ -257,7 +257,7 @@ export default function HeroSection() {
                 type="button"
                 onClick={() => setIsPlaying(!isPlaying)}
                 aria-label={isPlaying ? "Pause autoplay" : "Play autoplay"}
-                className="p-1.5 rounded-xl text-cyan-300 hover:text-white hover:bg-white/10 transition"
+                className="p-1.5 rounded-xl text-cyan-700 hover:text-primary-light hover:bg-accent/10 transition dark:text-cyan-300"
               >
                 {isPlaying ? <Pause size={15} /> : <Play size={15} />}
               </button>
@@ -265,7 +265,7 @@ export default function HeroSection() {
                 type="button"
                 onClick={() => setCurrentSlide((prev) => (prev + 1) % slides.length)}
                 aria-label="Next story slide"
-                className="p-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-white/10 transition"
+                className="p-1.5 rounded-xl text-primary-light/60 hover:text-primary-light hover:bg-accent/10 transition"
               >
                 <ChevronRight size={16} />
               </button>
@@ -397,7 +397,7 @@ export default function HeroSection() {
                       <p className="text-lg font-black text-teal-600 dark:text-teal-300 font-mono transition-all duration-300">
                         {liveBpm} BPM <span className="text-xs text-cyan-600 dark:text-cyan-400 font-sans">({liveSpo2}%)</span>
                       </p>
-                      <p className="text-[10px] font-semibold text-primary-light/60">
+                      <p className="text-[10px] font-semibold text-primary-light/70">
                         Live Sinus Telemetry
                       </p>
                     </div>
@@ -466,7 +466,7 @@ export default function HeroSection() {
                 {slide.description}
               </p>
 
-              <p className="mt-2 text-sm text-primary-light/60">
+              <p className="mt-2 text-sm text-primary-light/70">
                 Aivion Care connects patients, doctors, hospitals, labs, and pharmacies into one unified live feed. No cap, no silos, just seamless care.
               </p>
 
@@ -474,7 +474,7 @@ export default function HeroSection() {
               <div className="mt-8 flex flex-wrap items-center gap-3">
                 <Link
                   href={slide.actionHref}
-                  className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-sky-500 to-teal-500 px-7 py-4 text-sm font-bold text-white shadow-xl shadow-sky-500/25 transition-all duration-300 hover:scale-[1.03] hover:shadow-cyan-400/35"
+                  className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-sky-500 to-teal-500 px-7 py-4 text-sm font-bold text-slate-950 shadow-xl shadow-sky-500/25 transition-all duration-300 hover:scale-[1.03] hover:shadow-cyan-400/35"
                 >
                   <span>{slide.actionText}</span>
                   <ArrowRight size={17} className="transition-transform duration-300 group-hover:translate-x-1" />
@@ -484,9 +484,9 @@ export default function HeroSection() {
                   href={process.env.NEXT_PUBLIC_ANDROID_APK_DRIVE_URL || "https://drive.google.com/drive/u/1/folders/1ALfyNroHMqFdpmYDJ-hpWMcndzO4eAd8"}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center justify-center gap-2 rounded-full border border-teal-500/50 bg-teal-500/15 px-6 py-4 text-sm font-bold text-teal-700 dark:text-teal-200 shadow-lg shadow-teal-500/10 backdrop-blur-md transition-all duration-300 hover:scale-[1.03] hover:border-teal-400 hover:shadow-cyan-400/20"
+                  className="inline-flex items-center justify-center gap-2 rounded-full border border-teal-500/50 bg-teal-500/15 dark:bg-teal-500/20 px-6 py-4 text-sm font-bold text-teal-900 dark:text-teal-200 shadow-lg shadow-teal-500/10 backdrop-blur-md transition-all duration-300 hover:scale-[1.03] hover:border-teal-500 hover:shadow-cyan-400/20"
                 >
-                  <Smartphone size={17} className="animate-bounce text-teal-600 dark:text-cyan-300" /> Download Android App
+                  <Smartphone size={17} className="animate-bounce text-teal-700 dark:text-cyan-300" /> Download Android App
                 </a>
 
 

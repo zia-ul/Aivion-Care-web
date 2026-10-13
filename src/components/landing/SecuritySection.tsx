@@ -81,11 +81,11 @@ export default function SecuritySection() {
           imageSrc="/images/healthcare/surgery-theatre.jpg"
           imageAlt="Advanced Hospital Operating Theatre and Security Infrastructure"
           badge="Zero-Trust Architecture"
-          badgeIcon={<ShieldCheck size={16} className="text-cyan-400" />}
+          badgeIcon={<ShieldCheck size={16} className="text-teal-600 dark:text-teal-300" />}
           heading={
             <span>
               Military-Grade Healthcare Security &{' '}
-              <span className="bg-gradient-to-r from-sky-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-sky-600 via-teal-600 to-cyan-600 dark:from-sky-400 dark:via-teal-300 dark:to-cyan-400 bg-clip-text text-transparent">
                 Complex Algorithmic Intelligence
               </span>
             </span>
@@ -101,10 +101,10 @@ export default function SecuritySection() {
           className="mb-14"
         >
           <div className="flex flex-wrap items-center gap-3">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-teal-400/40 bg-teal-500/20 px-3.5 py-1 text-xs font-bold text-teal-300">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-teal-400/40 bg-teal-500/20 px-3.5 py-1 text-xs font-bold text-teal-700 dark:text-teal-300">
               <Sparkles size={13} /> DISHA & HIPAA Standard Aligned
             </span>
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-cyan-400/40 bg-cyan-500/20 px-3.5 py-1 text-xs font-bold text-cyan-300">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-cyan-400/40 bg-cyan-500/20 px-3.5 py-1 text-xs font-bold text-cyan-700 dark:text-cyan-300">
               <LockKeyhole size={13} /> Hardware-Level Enclave Encryption
             </span>
           </div>

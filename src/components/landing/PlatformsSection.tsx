@@ -3,9 +3,22 @@
 import React from 'react';
 import Image from 'next/image';
 import { ArrowRight, Globe2, Smartphone, Tablet, ExternalLink } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { SectionHeader } from './common';
 
-const platforms = [
+interface PlatformCard {
+  title: string;
+  description: string;
+  icon: LucideIcon;
+  features: readonly string[];
+  color: 'sky' | 'teal';
+  ctaText: string;
+  ctaLink: string;
+  isExternal?: boolean;
+  bgImage: string;
+}
+
+const platforms: PlatformCard[] = [
   {
     title: 'Web Application',
     description: 'Access Aivion Care from any modern browser on desktop or laptop. Full feature parity with the mobile app — appointments, consultations, prescriptions, health records, monitoring, and AI-assisted workflows all work seamlessly in your browser.',
@@ -123,8 +136,8 @@ export default function PlatformsSection() {
                     rel={isExternal ? 'noreferrer' : undefined}
                     className={`w-full inline-flex items-center justify-center gap-2 rounded-xl border px-5 py-3 text-sm font-bold shadow-md transition-all duration-200 hover:scale-[1.02] active:scale-95 ${
                       color === 'sky'
-                        ? 'border-sky-400/50 bg-gradient-to-r from-sky-500/20 via-cyan-500/25 to-blue-500/20 text-sky-700 dark:text-cyan-200 hover:border-sky-400 hover:shadow-sky-500/20'
-                        : 'border-teal-400/50 bg-gradient-to-r from-teal-500/20 via-cyan-500/25 to-emerald-500/20 text-teal-700 dark:text-teal-200 hover:border-teal-400 hover:shadow-teal-500/20'
+                        ? 'border-sky-500/50 dark:border-sky-400/50 bg-sky-500/15 dark:bg-gradient-to-r dark:from-sky-500/20 dark:via-cyan-500/25 dark:to-blue-500/20 text-sky-900 dark:text-cyan-200 hover:border-sky-500 hover:shadow-sky-500/20'
+                        : 'border-teal-500/50 dark:border-teal-400/50 bg-teal-500/15 dark:bg-gradient-to-r dark:from-teal-500/20 dark:via-cyan-500/25 dark:to-emerald-500/20 text-teal-900 dark:text-teal-200 hover:border-teal-500 hover:shadow-teal-500/20'
                     }`}
                   >
                     <span>{ctaText}</span>

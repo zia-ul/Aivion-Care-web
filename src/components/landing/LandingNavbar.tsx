@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Smartphone } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import Image from 'next/image';
@@ -76,8 +76,9 @@ export default function LandingNavbar() {
               href="https://drive.google.com/drive/u/1/folders/1ALfyNroHMqFdpmYDJ-hpWMcndzO4eAd8"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-full border border-teal-400/40 bg-gradient-to-r from-teal-500/20 via-cyan-500/20 to-sky-500/20 px-3 py-1.5 text-xs font-bold text-teal-200 shadow-sm shadow-teal-500/10 backdrop-blur-md transition-all hover:scale-105 hover:border-teal-300"
+              className="inline-flex items-center gap-1.5 rounded-full border border-teal-500/40 dark:border-teal-400/40 bg-teal-500/15 dark:bg-gradient-to-r dark:from-teal-500/20 dark:via-cyan-500/20 dark:to-sky-500/20 px-3 py-1.5 text-xs font-bold text-teal-800 dark:text-teal-200 shadow-sm shadow-teal-500/10 backdrop-blur-md transition-all hover:scale-105 hover:border-teal-400 dark:hover:border-teal-300"
             >
+              <Smartphone size={13} className="text-teal-700 dark:text-cyan-300" />
               <span>Android APK</span>
             </a>
             <Link

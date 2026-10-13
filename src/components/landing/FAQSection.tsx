@@ -36,11 +36,11 @@ export default function FAQSection() {
   return (
     <section id="faq" className="mx-auto max-w-[1400px] px-5 py-20 sm:px-8 lg:px-10 lg:py-28">
       <div className="max-w-2xl">
-        <p className="text-support font-semibold uppercase tracking-[0.16em] text-sky-400">FAQs</p>
+        <p className="text-support font-semibold uppercase tracking-[0.16em] text-sky-600 dark:text-sky-400">FAQs</p>
         <h2 className="mt-3 text-section font-bold text-primary-light sm:text-subtitle">
           Questions you might have
         </h2>
-        <p className="mt-5 leading-7 text-primary-light/60">
+        <p className="mt-5 leading-7 text-primary-light/70">
           Everything you need to know about Aivion Care before getting started. Cannot find your answer? Reach out to our support team.
         </p>
       </div>
@@ -64,18 +64,18 @@ export default function FAQSection() {
                 aria-expanded={isOpen}
               >
                 <span className="flex items-center gap-3 text-sm font-semibold text-primary-light sm:text-base">
-                  <HelpCircle size={18} className="shrink-0 text-sky-400" aria-hidden="true" />
+                  <HelpCircle size={18} className="shrink-0 text-sky-600 dark:text-sky-400" aria-hidden="true" />
                   {question}
                 </span>
                 {isOpen ? (
-                  <ArrowUp size={18} className="shrink-0 text-sky-400" />
+                  <ArrowUp size={18} className="shrink-0 text-sky-600 dark:text-sky-400" />
                 ) : (
-                  <ArrowDown size={18} className="shrink-0 text-sky-400" />
+                  <ArrowDown size={18} className="shrink-0 text-sky-600 dark:text-sky-400" />
                 )}
               </button>
               {isOpen && (
                 <div className="px-5 pb-5 sm:px-6 sm:pb-6">
-                  <p className="text-sm leading-7 text-primary-light/60">{answer}</p>
+                  <p className="text-sm leading-7 text-primary-light/70">{answer}</p>
                 </div>
               )}
             </div>
@@ -84,7 +84,7 @@ export default function FAQSection() {
       </div>
 
       <div className="mt-8 flex flex-wrap gap-4">
-        <a href="/contact" className="inline-flex items-center gap-2 rounded-2xl border border-sky-500/20 bg-sky-500/10 px-5 py-3 text-sm font-semibold text-sky-400 transition hover:-translate-y-0.5 hover:border-accent/50">
+        <a href="/contact" className="inline-flex items-center gap-2 rounded-2xl border border-sky-500/20 bg-sky-500/10 px-5 py-3 text-sm font-semibold text-sky-600 dark:text-sky-400 transition hover:-translate-y-0.5 hover:border-accent/50">
           <Stethoscope size={16} /> Contact support
         </a>
         <a href="/privacy-policy" className="inline-flex items-center gap-2 rounded-2xl border border-sky-500/20 bg-surface-20/60 px-5 py-3 text-sm font-semibold text-muted-foreground transition hover:-translate-y-0.5 hover:border-accent/50">

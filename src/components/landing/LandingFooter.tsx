@@ -116,7 +116,7 @@ function FooterGroup({ title, links }: { title: string; links: string[][] }) {
       <ul className="mt-4 space-y-3">
         {links.map(([label, href]) => (
           <li key={label}>
-            <a href={href} className="text-sm text-muted-foreground transition-colors hover:text-sky-400">
+            <a href={href} className="text-sm text-muted-foreground transition-colors hover:text-sky-600 dark:hover:text-sky-400">
               {label}
             </a>
           </li>
@@ -139,7 +139,7 @@ function FooterContact({
 }) {
   const body = (
     <div className="flex items-start gap-3">
-      <Icon size={17} className="mt-0.5 shrink-0 text-sky-400" aria-hidden="true" />
+      <Icon size={17} className="mt-0.5 shrink-0 text-sky-600 dark:text-sky-400" aria-hidden="true" />
       <div className="min-w-0">
         <p className="text-support uppercase tracking-[0.12em] text-muted-foreground">{label}</p>
         <p className="mt-1 text-sm leading-6 text-primary-light/80">{value}</p>

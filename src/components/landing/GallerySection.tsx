@@ -276,13 +276,13 @@ export default function GallerySection() {
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
           <div className="max-w-2xl">
-            <p className="inline-flex items-center gap-2 rounded-full border border-teal-400/30 bg-teal-500/10 px-3.5 py-1 text-xs font-bold uppercase tracking-[0.2em] text-teal-300">
-              <Sparkles size={13} className="text-cyan-300 animate-pulse" /> 26+ Real Clinical Environments
+            <p className="inline-flex items-center gap-2 rounded-full border border-teal-500/30 bg-teal-500/10 px-3.5 py-1 text-xs font-bold uppercase tracking-[0.2em] text-teal-700 dark:text-teal-300">
+              <Sparkles size={13} className="text-cyan-600 dark:text-cyan-300 animate-pulse" /> 26+ Real Clinical Environments
             </p>
-            <h2 className="mt-4 font-display text-3xl font-extrabold tracking-tight text-white sm:text-4xl lg:text-5xl">
-              Visual Gallery: <span className="bg-gradient-to-r from-sky-400 via-teal-300 to-cyan-300 bg-clip-text text-transparent">Hospitals, Clinics, Doctors & Patients.</span>
+            <h2 className="mt-4 font-display text-3xl font-extrabold tracking-tight text-primary-light sm:text-4xl lg:text-5xl">
+              Visual Gallery: <span className="bg-gradient-to-r from-sky-600 via-teal-600 to-cyan-600 dark:from-sky-400 dark:via-teal-300 dark:to-cyan-300 bg-clip-text text-transparent">Hospitals, Clinics, Doctors & Patients.</span>
             </h2>
-            <p className="mt-4 text-base leading-relaxed text-slate-300 sm:text-lg">
+            <p className="mt-4 text-base leading-relaxed text-primary-light/70 sm:text-lg">
               Explore how Aivion Care powers hospitals, emergency suites, doctors, operating theatres, laboratories, and outpatient clinics across India with one unified operating system.
             </p>
           </div>

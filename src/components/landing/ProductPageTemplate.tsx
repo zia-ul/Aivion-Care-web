@@ -39,23 +39,23 @@ export default function ProductPageTemplate({ product }: { product: ProductDetai
           <div className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-10">
             <div className="grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr]">
               <div>
-                <p className="inline-flex items-center gap-2 rounded-full border border-sky-500/20 bg-sky-500/10 px-3 py-1.5 text-support font-semibold uppercase tracking-[0.14em] text-sky-400">
+                <p className="inline-flex items-center gap-2 rounded-full border border-sky-500/20 bg-sky-500/10 px-3 py-1.5 text-support font-semibold uppercase tracking-[0.14em] text-sky-600 dark:text-sky-400">
                   <span className="h-2 w-2 rounded-full bg-success-light" /> {eyebrow}
                 </p>
                 <h1 className="mt-6 text-headline font-bold leading-tight text-primary-light">{title}</h1>
-                <p className="mt-5 text-xl font-semibold leading-8 text-sky-400">{tagline}</p>
-                <p className="mt-4 max-w-2xl leading-7 text-primary-light/60">{description}</p>
+                <p className="mt-5 text-xl font-semibold leading-8 text-sky-600 dark:text-sky-400">{tagline}</p>
+                <p className="mt-4 max-w-2xl leading-7 text-primary-light/70">{description}</p>
                 <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                   <Link href="/register" className="inline-flex items-center justify-center gap-2 rounded-input bg-accent-fill px-5 py-3 font-bold text-white transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-sky-500/20">
                     {ctaLabel} <ArrowRight size={18} />
                   </Link>
-                  <Link href="/contact" className="inline-flex items-center justify-center gap-2 rounded-input border border-sky-500/20 bg-sky-500/5 px-5 py-3 font-semibold text-sky-400 transition hover:-translate-y-0.5 hover:bg-sky-500/10">
+                  <Link href="/contact" className="inline-flex items-center justify-center gap-2 rounded-input border border-sky-500/20 bg-sky-500/5 px-5 py-3 font-semibold text-sky-600 transition hover:-translate-y-0.5 hover:bg-sky-500/10 dark:text-sky-400">
                     Talk to the team
                   </Link>
                 </div>
                 <div className="mt-8 flex flex-wrap gap-2">
                   {platforms.map((platform) => (
-                    <span key={platform} className="rounded-full border border-sky-500/20 bg-sky-500/10 px-3 py-1.5 text-support font-medium text-sky-300">
+                    <span key={platform} className="rounded-full border border-sky-500/20 bg-sky-500/10 px-3 py-1.5 text-support font-medium text-sky-700 dark:text-sky-300">
                       {platform}
                     </span>
                   ))}
@@ -65,14 +65,14 @@ export default function ProductPageTemplate({ product }: { product: ProductDetai
               <div className="relative animate-fade-in-up animation-delay-200">
                 <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-br from-sky-500/20 via-transparent to-teal-500/20 blur-xl opacity-60" />
                 <div className="relative rounded-2xl border border-sky-500/20 bg-surface-20/60 p-6 backdrop-blur sm:p-8">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-sky-500/15 text-sky-400">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-sky-500/15 text-sky-600 dark:text-sky-400">
                     <Icon size={28} aria-hidden="true" />
                   </div>
                   <p className="mt-5 text-support uppercase tracking-[0.14em] text-muted-foreground">{status}</p>
                   <ul className="mt-4 space-y-3">
                     {highlights.map((highlight) => (
                       <li key={highlight} className="flex items-start gap-3 text-sm text-primary-light/70">
-                        <CheckCircle2 size={17} className="mt-0.5 shrink-0 text-sky-400" aria-hidden="true" />
+                        <CheckCircle2 size={17} className="mt-0.5 shrink-0 text-sky-600 dark:text-sky-400" aria-hidden="true" />
                         {highlight}
                       </li>
                     ))}
@@ -94,7 +94,7 @@ export default function ProductPageTemplate({ product }: { product: ProductDetai
               {features.map((feature) => (
                 <article key={feature.title} className="rounded-2xl border border-tonal-20/70 bg-surface-20/60 p-6 backdrop-blur transition hover:-translate-y-1 hover:border-accent/50">
                   <h3 className="text-heading font-bold text-primary-light">{feature.title}</h3>
-                  <p className="mt-2 text-sm leading-6 text-primary-light/55">{feature.text}</p>
+                  <p className="mt-2 text-sm leading-6 text-primary-light/70">{feature.text}</p>
                 </article>
               ))}
             </div>
@@ -104,7 +104,7 @@ export default function ProductPageTemplate({ product }: { product: ProductDetai
               imageSrc="/images/healthcare/hospital-interior.jpg"
               imageAlt="Aivion Care Clinical Operating Center"
               badge="Integrated Healthcare OS"
-              badgeIcon={<Sparkles size={16} className="text-teal-300" />}
+              badgeIcon={<Sparkles size={16} className="text-teal-700 dark:text-teal-300" />}
               heading="End-to-End Hospital, Clinic & Teleconsultation Operations"
               paragraph="Built from the ground up to unify doctors, diagnostic laboratories, smart pharmacies, and patients into a synchronized clinical loop with real-time biometric safeguards and instant digital prescriptions."
               className="mt-14"

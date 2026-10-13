@@ -19,10 +19,10 @@ export default function RecognitionsPage() {
         <div className="mt-10 grid gap-5 lg:grid-cols-3">
           {recognitions.map(({ title, text, Icon, org, detail }) => (
             <article key={title} className="rounded-2xl border border-sky-500/15 bg-surface-20/60 p-6 backdrop-blur">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-sky-500/15 text-sky-400"><Icon size={24} aria-hidden="true" /></div>
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-sky-500/15 text-sky-600 dark:text-sky-400"><Icon size={24} aria-hidden="true" /></div>
               <h3 className="mt-5 text-heading font-bold text-primary-light">{title}</h3>
-              <p className="mt-2 text-sm leading-6 text-primary-light/55">{text}</p>
-              <div className="mt-5 flex items-center gap-2 text-sm text-sky-400"><Building2 size={14} aria-hidden="true" /><span className="font-semibold">{org}</span></div>
+              <p className="mt-2 text-sm leading-6 text-primary-light/70">{text}</p>
+              <div className="mt-5 flex items-center gap-2 text-sm text-sky-600 dark:text-sky-400"><Building2 size={14} aria-hidden="true" /><span className="font-semibold">{org}</span></div>
               <p className="mt-1 text-support text-muted-foreground">{detail}</p>
             </article>
           ))}

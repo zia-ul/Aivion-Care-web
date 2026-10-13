@@ -25,20 +25,20 @@ export default function TeamPage() {
           {team.map(({ initials, name, role, bio, skills, linkedin }) => (
             <article key={name} className="rounded-2xl border border-sky-500/15 bg-surface-20/60 p-6 backdrop-blur">
               <div className="flex items-center gap-4">
-                <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-sky-500/15 text-lg font-bold text-sky-400">{initials}</span>
+                <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-sky-500/15 text-lg font-bold text-sky-600 dark:text-sky-400">{initials}</span>
                 <div className="min-w-0">
                   <h3 className="truncate font-semibold text-primary-light">{name}</h3>
-                  <p className="truncate text-sm text-sky-400">{role}</p>
+                  <p className="truncate text-sm text-sky-600 dark:text-sky-400">{role}</p>
                 </div>
               </div>
-              <p className="mt-5 text-sm leading-6 text-primary-light/55">{bio}</p>
+              <p className="mt-5 text-sm leading-6 text-primary-light/70">{bio}</p>
               <div className="mt-5 flex flex-wrap gap-2">
                 {skills.map((skill) => (
-                  <span key={skill} className="rounded-full border border-sky-500/20 bg-sky-500/10 px-2.5 py-1 text-[11px] font-medium text-sky-300">{skill}</span>
+                  <span key={skill} className="rounded-full border border-sky-500/20 bg-sky-500/10 px-2.5 py-1 text-[11px] font-medium text-sky-700 dark:text-sky-300">{skill}</span>
                 ))}
               </div>
               {linkedin && (
-                <a href={linkedin} target="_blank" rel="noreferrer" className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-sky-400 hover:text-sky-300">
+                <a href={linkedin} target="_blank" rel="noreferrer" className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-sky-600 dark:text-sky-400 hover:text-sky-500 dark:hover:text-sky-300">
                   LinkedIn <ArrowRight size={15} />
                 </a>
               )}
@@ -56,17 +56,17 @@ export default function TeamPage() {
             {foundations.map(({ name, tagline, text, Icon, focus }) => (
               <article key={name} className="rounded-2xl border border-sky-500/15 bg-surface-20/60 p-6 backdrop-blur">
                 <div className="flex items-center gap-4">
-                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-sky-500/15 text-sky-400"><Icon size={22} aria-hidden="true" /></span>
+                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-sky-500/15 text-sky-600 dark:text-sky-400"><Icon size={22} aria-hidden="true" /></span>
                   <div>
                     <h3 className="text-heading font-bold text-primary-light">{name}</h3>
-                    <p className="text-sm text-sky-400">{tagline}</p>
+                    <p className="text-sm text-sky-600 dark:text-sky-400">{tagline}</p>
                   </div>
                 </div>
-                <p className="mt-5 text-sm leading-6 text-primary-light/55">{text}</p>
+                <p className="mt-5 text-sm leading-6 text-primary-light/70">{text}</p>
                 <ul className="mt-5 space-y-2">
                   {focus.map((item) => (
                     <li key={item} className="flex items-center gap-2 text-sm text-primary-light/65">
-                      <ShieldCheck size={14} className="shrink-0 text-success-light" aria-hidden="true" />{item}
+                      <ShieldCheck size={14} className="shrink-0 text-emerald-700 dark:text-success-light" aria-hidden="true" />{item}
                     </li>
                   ))}
                 </ul>

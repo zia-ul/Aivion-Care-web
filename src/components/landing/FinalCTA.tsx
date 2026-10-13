@@ -92,7 +92,7 @@ export default function FinalCTA() {
             href={process.env.NEXT_PUBLIC_ANDROID_APK_DRIVE_URL || "https://drive.google.com/drive/folders/1aivion-care-apk-download"}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center justify-center gap-2 rounded-full border border-teal-500/40 bg-teal-500/15 px-6 py-4 text-base font-bold text-teal-300 transition-all duration-300 hover:bg-teal-500/25"
+            className="inline-flex items-center justify-center gap-2 rounded-full border border-teal-500/40 bg-teal-500/15 dark:bg-teal-500/15 px-6 py-4 text-base font-bold text-teal-800 dark:text-teal-200 transition-all duration-300 hover:bg-teal-500/25"
           >
             <span>Android APK</span>
           </a>

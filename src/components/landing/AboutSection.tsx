@@ -9,16 +9,16 @@ export default function AboutSection() {
       <div className="pointer-events-none absolute inset-x-0 top-0 h-72 bg-gradient-to-b from-sky-500/5 via-transparent to-transparent" />
       <div className="mx-auto grid max-w-[1400px] items-center gap-14 px-5 sm:px-8 lg:grid-cols-[0.95fr_1.05fr] lg:px-10">
         <div>
-          <p className="text-support font-semibold uppercase tracking-[0.16em] text-sky-400">About Aivion Care</p>
+          <p className="text-support font-semibold uppercase tracking-[0.16em] text-sky-600 dark:text-sky-400">About Aivion Care</p>
           <h2 className="mt-3 text-section font-bold text-primary-light sm:text-subtitle">
             Your health, finally connected. No cap.
           </h2>
-          <p className="mt-5 leading-7 text-primary-light/60">
+          <p className="mt-5 leading-7 text-primary-light/70">
             Aivion Care is the connected healthcare ecosystem from AI Confidence Cure — a student-led
             Indian health-tech startup incubated at AMU. We built the app so you stop juggling
             doctors, labs, pharmacies and paperwork.
           </p>
-          <p className="mt-4 leading-7 text-primary-light/60">
+          <p className="mt-4 leading-7 text-primary-light/70">
             Appointments, teleconsultation, lab reports, prescriptions, medication reminders,
             health alerts and AI-assisted workflows — every part of the care journey lives in one
             place. Clinical judgement stays with the clinician. Tech just makes the connection.
@@ -35,7 +35,7 @@ export default function AboutSection() {
                 href="https://www.aiconfidencecure.com/"
                 target="_blank"
                 rel="noreferrer"
-                className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-sky-400 hover:text-sky-300"
+                className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-sky-600 hover:text-sky-500 dark:text-sky-400 dark:hover:text-sky-300"
               >
                 aiconfidencecure.com <ArrowUpRight size={15} />
               </a>
@@ -49,7 +49,7 @@ export default function AboutSection() {
               ['2025', 'Founded & incorporated in India'],
             ].map(([value, label]) => (
               <div key={label} className="rounded-xl border border-tonal-20/70 bg-surface-20/60 p-4">
-                <dt className="text-2xl font-bold text-sky-400">{value}</dt>
+                <dt className="text-2xl font-bold text-sky-600 dark:text-sky-400">{value}</dt>
                 <dd className="mt-1 text-sm text-muted-foreground">{label}</dd>
               </div>
             ))}

@@ -1,6 +1,11 @@
 import type { Config } from 'tailwindcss';
 
 const config: Config = {
+  // `dark:` utilities follow the manual toggle (`data-theme` on <html>),
+  // not the OS setting. Without this they default to `media` and fight the
+  // theme store: OS-dark + app-light would still apply `dark:` colours,
+  // painting pale `dark:text-*` labels on pale light-theme fills.
+  darkMode: ['selector', "[data-theme='dark']"],
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',

@@ -71,13 +71,13 @@ export default function FeaturesSection() {
 
       <div className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-10 relative z-10">
         <div className="max-w-2xl">
-          <div className="inline-flex items-center gap-2 rounded-full border border-sky-400/30 bg-sky-500/10 px-3.5 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-sky-300">
-            <Sparkles size={13} className="text-teal-300" /> Platform Architecture
+          <div className="inline-flex items-center gap-2 rounded-full border border-sky-500/30 bg-sky-500/10 px-3.5 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-sky-700 dark:text-sky-300">
+            <Sparkles size={13} className="text-teal-600 dark:text-teal-300" /> Platform Architecture
           </div>
-          <h2 className="mt-4 font-display text-3xl font-extrabold tracking-tight text-white sm:text-4xl lg:text-5xl">
-            Everything You Need for <span className="bg-gradient-to-r from-sky-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">Connected Healthcare</span>
+          <h2 className="mt-4 font-display text-3xl font-extrabold tracking-tight text-primary-light sm:text-4xl lg:text-5xl">
+            Everything You Need for <span className="bg-gradient-to-r from-sky-600 via-teal-600 to-cyan-600 dark:from-sky-400 dark:via-teal-300 dark:to-cyan-400 bg-clip-text text-transparent">Connected Healthcare</span>
           </h2>
-          <p className="mt-4 text-base leading-relaxed text-slate-300 sm:text-lg">
+          <p className="mt-4 text-base leading-relaxed text-primary-light/70 sm:text-lg">
             From booking to bedside, every workflow has a place. Designed with real hospital backgrounds, rounded radiant cards, and live ECG monitors.
           </p>
         </div>

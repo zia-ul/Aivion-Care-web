@@ -59,7 +59,7 @@ export default function ContactPage() {
         <div className="mt-10 grid gap-4 sm:grid-cols-3">
           {facts.map((fact) => (
             <div key={fact.label} className="animate-fade-in-up rounded-2xl border border-sky-500/15 bg-surface-20/60 p-5 text-center backdrop-blur">
-              <p className="text-xl font-bold text-sky-400">{fact.value}</p>
+              <p className="text-xl font-bold text-sky-600 dark:text-sky-400">{fact.value}</p>
               <p className="mt-1 text-support text-muted-foreground">{fact.label}</p>
             </div>
           ))}
@@ -69,7 +69,7 @@ export default function ContactPage() {
             guessing which inbox handles their question. */}
         <div className="mt-8">
           <h2 className="text-heading font-bold text-primary-light">Choose the right team</h2>
-          <p className="mt-2 text-sm text-primary-light/60">
+          <p className="mt-2 text-sm text-primary-light/70">
             Each address reaches the team responsible for that kind of enquiry.
           </p>
           <ul className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -79,15 +79,15 @@ export default function ContactPage() {
                   href={mailto(channel.address)}
                   className="flex h-full items-start gap-4 rounded-2xl border border-sky-500/15 bg-surface-20/60 p-5 backdrop-blur transition hover:-translate-y-0.5 hover:border-accent/50"
                 >
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-sky-500/15 text-sky-400">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-sky-500/15 text-sky-600 dark:text-sky-400">
                     <Mail size={19} aria-hidden="true" />
                   </span>
                   <span className="min-w-0">
                     <span className="block text-support font-semibold uppercase tracking-[0.12em] text-muted-foreground">
                       {channel.label}
                     </span>
-                    <span className="mt-1 block break-words text-sm font-medium text-sky-400">{channel.address}</span>
-                    <span className="mt-1 block text-sm leading-6 text-primary-light/60">{channel.purpose}</span>
+                    <span className="mt-1 block break-words text-sm font-medium text-sky-600 dark:text-sky-400">{channel.address}</span>
+                    <span className="mt-1 block text-sm leading-6 text-primary-light/70">{channel.purpose}</span>
                   </span>
                 </a>
               </li>
@@ -100,11 +100,11 @@ export default function ContactPage() {
             <h2 className="text-heading font-bold text-primary-light">Office Details</h2>
             <div className="rounded-2xl border border-sky-500/15 bg-surface-20/60 p-5 backdrop-blur">
               <p className="flex items-start gap-3 text-sm leading-6 text-primary-light/70">
-                <MapPin size={17} className="mt-0.5 shrink-0 text-sky-400" aria-hidden="true" />
+                <MapPin size={17} className="mt-0.5 shrink-0 text-sky-600 dark:text-sky-400" aria-hidden="true" />
                 {contactPoints[1].value}
               </p>
               <p className="mt-3 flex items-start gap-3 text-sm leading-6 text-primary-light/70">
-                <CalendarDays size={17} className="mt-0.5 shrink-0 text-sky-400" aria-hidden="true" />
+                <CalendarDays size={17} className="mt-0.5 shrink-0 text-sky-600 dark:text-sky-400" aria-hidden="true" />
                 Saturday - Sunday, 10:00 AM to 4:00 PM
               </p>
             </div>
@@ -117,7 +117,7 @@ export default function ContactPage() {
               </div>
               <div className="relative">
                 <h3 className="font-semibold text-primary-light">AMU Innovation Foundation, Aligarh</h3>
-                <p className="mt-2 text-sm leading-6 text-primary-light/55">
+                <p className="mt-2 text-sm leading-6 text-primary-light/70">
                   This section is ready for an embedded map whenever the contact flow moves from starter site to a production operations setup.
                 </p>
               </div>
@@ -126,7 +126,7 @@ export default function ContactPage() {
 
           <div>
             <h2 className="text-heading font-bold text-primary-light">Inquiry Form</h2>
-            <p className="mt-2 text-sm leading-6 text-primary-light/60">
+            <p className="mt-2 text-sm leading-6 text-primary-light/70">
               Tell us how you want to collaborate. Use the form to reach out about pilots, partnerships, media, mentorship, or internship interest.
             </p>
 
@@ -160,10 +160,10 @@ export default function ContactPage() {
                 {status !== 'sending' && <ArrowRight size={17} />}
               </button>
               {status === 'success' && (
-                <p className="mt-4 rounded-2xl bg-success/10 p-3 text-sm text-success-light" role="status">Your inquiry was sent. We will get back to you soon.</p>
+                <p className="mt-4 rounded-2xl bg-success/10 p-3 text-sm text-emerald-700 dark:text-success-light" role="status">Your inquiry was sent. We will get back to you soon.</p>
               )}
               {status === 'error' && (
-                <p className="mt-4 rounded-2xl bg-danger/10 p-3 text-sm text-danger-light" role="alert">{errorMessage || `We could not send your message. Please try again or email ${CONTACT_EMAILS.info}.`}</p>
+                <p className="mt-4 rounded-2xl bg-danger/10 p-3 text-sm text-rose-700 dark:text-danger-light" role="alert">{errorMessage || `We could not send your message. Please try again or email ${CONTACT_EMAILS.info}.`}</p>
               )}
             </form>
           </div>
@@ -171,7 +171,7 @@ export default function ContactPage() {
 
         <div className="mt-10 rounded-2xl border border-sky-500/20 bg-sky-500/10 p-6 text-center backdrop-blur sm:p-10">
           <h2 className="text-section font-bold text-primary-light">Let us build preventive healthcare with stronger visibility and better coordination.</h2>
-          <p className="mx-auto mt-4 max-w-2xl leading-7 text-primary-light/60">
+          <p className="mx-auto mt-4 max-w-2xl leading-7 text-primary-light/70">
             The team is open to conversations about product pilots, ecosystem partnerships, startup support, and internship collaboration.
           </p>
           <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">

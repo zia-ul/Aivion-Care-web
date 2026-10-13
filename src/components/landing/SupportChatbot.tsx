@@ -120,10 +120,10 @@ export default function SupportChatbot() {
         <div
           role="dialog"
           aria-label="MediBot Health Assistant"
-          className="fixed bottom-24 right-6 z-50 flex h-[540px] w-[92vw] max-w-sm flex-col overflow-hidden rounded-[28px] border border-cyan-400/30 bg-slate-950/95 shadow-2xl backdrop-blur-2xl"
+          className="fixed bottom-24 right-6 z-50 flex h-[540px] w-[92vw] max-w-sm flex-col overflow-hidden rounded-[28px] border border-tonal-20 bg-surface-20/95 shadow-2xl backdrop-blur-2xl"
         >
           {/* Header with Hospital/Heart Rate Theme */}
-          <div className="relative overflow-hidden border-b border-white/10 bg-slate-900/80 p-4">
+          <div className="relative overflow-hidden border-b border-tonal-20 bg-surface-30/80 p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="relative flex h-10 w-10 items-center justify-center rounded-2xl border border-rose-500/40 bg-rose-500/15 p-1 shadow-md">
@@ -135,12 +135,12 @@ export default function SupportChatbot() {
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5">
-                    <p className="font-display text-sm font-bold text-white">MediBot AI</p>
-                    <span className="rounded-full bg-teal-500/20 px-2 py-0.5 text-[9px] font-extrabold text-teal-300 border border-teal-500/30 uppercase">
+                    <p className="font-display text-sm font-bold text-primary-light">MediBot AI</p>
+                    <span className="rounded-full bg-teal-500/15 px-2 py-0.5 text-[9px] font-extrabold text-teal-700 border border-teal-500/30 uppercase dark:bg-teal-500/20 dark:text-teal-300">
                       24/7 Clinical
                     </span>
                   </div>
-                  <p className="flex items-center gap-1.5 text-xs text-slate-300">
+                  <p className="flex items-center gap-1.5 text-xs text-primary-light/80">
                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
                     Vitals Copilot Online
                   </p>
@@ -150,7 +150,7 @@ export default function SupportChatbot() {
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="rounded-xl p-1.5 text-slate-400 hover:bg-white/10 hover:text-white transition"
+                className="rounded-xl p-1.5 text-primary-light/60 hover:bg-surface-40/60 hover:text-primary-light transition"
                 aria-label="Close chat"
               >
                 <X size={18} />
@@ -158,7 +158,7 @@ export default function SupportChatbot() {
             </div>
 
             {/* Moving ECG Line across MediBot header */}
-            <div className="mt-2.5 h-6 w-full text-cyan-300 relative overflow-hidden rounded-lg bg-slate-950/60 p-0.5 border border-cyan-500/20">
+            <div className="mt-2.5 h-6 w-full text-cyan-600 relative overflow-hidden rounded-lg bg-surface-10/60 p-0.5 border border-accent/20 dark:text-cyan-300">
               <svg viewBox="0 0 300 20" className="h-full w-full drop-shadow-[0_0_8px_rgba(34,211,238,0.9)]" preserveAspectRatio="none">
                 <path
                   d="M0 10 h40 l6 -7 l5 14 l5 -10 l6 3 h40 l6 -7 l5 14 l5 -10 l6 3 h40 l6 -7 l5 14 l5 -10 l6 3 h60"
@@ -182,15 +182,15 @@ export default function SupportChatbot() {
                 className={`flex gap-2 ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 {m.role === 'bot' && (
-                  <div className="relative h-6 w-6 shrink-0 rounded-full bg-sky-500/20 border border-sky-400/40 p-0.5">
+                  <div className="relative h-6 w-6 shrink-0 rounded-full bg-accent/20 border border-accent/40 p-0.5">
                     <Image src="/aivion-care-logo.png" alt="" fill className="object-contain" />
                   </div>
                 )}
                 <div
                   className={`max-w-[80%] rounded-2xl p-3 leading-relaxed ${
                     m.role === 'user'
-                      ? 'bg-gradient-to-r from-sky-500 to-teal-500 text-slate-950 font-medium'
-                      : 'border border-white/10 bg-slate-900/80 text-slate-200'
+                      ? 'bg-gradient-to-r from-accent-fill to-accent-deep text-on-accent font-medium'
+                      : 'border border-tonal-20 bg-surface-30 text-primary-light'
                   }`}
                 >
                   {m.text}
@@ -199,16 +199,16 @@ export default function SupportChatbot() {
             ))}
 
             {typing && (
-              <div className="flex items-center gap-2 text-cyan-400">
+              <div className="flex items-center gap-2 text-accent">
                 <HeartPulse size={14} className="animate-heartbeat" />
-                <span className="text-[11px] text-slate-400">MediBot is analyzing...</span>
+                <span className="text-[11px] text-primary-light/60">MediBot is analyzing...</span>
               </div>
             )}
           </div>
 
           {/* Quick Suggestions */}
-          <div className="border-t border-white/10 bg-slate-950/70 p-2.5">
-            <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+          <div className="border-t border-tonal-20 bg-surface-10 p-2.5">
+            <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-primary-light/60">
               Quick Inquiries:
             </p>
             <div className="flex gap-1.5 overflow-x-auto pb-1 no-scrollbar">
@@ -217,7 +217,7 @@ export default function SupportChatbot() {
                   key={reply}
                   type="button"
                   onClick={() => send(reply)}
-                  className="shrink-0 rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-medium text-slate-300 hover:border-cyan-400/50 hover:bg-cyan-500/10 hover:text-cyan-200 transition"
+                  className="shrink-0 rounded-full border border-tonal-20 bg-surface-30 px-2.5 py-1 text-[11px] font-medium text-primary-light/80 hover:border-accent/50 hover:bg-accent/10 hover:text-accent transition"
                 >
                   {reply}
                 </button>
@@ -226,18 +226,18 @@ export default function SupportChatbot() {
           </div>
 
           {/* Input Form */}
-          <form onSubmit={handleSubmit} className="flex gap-2 border-t border-white/10 bg-slate-900/90 p-3">
+          <form onSubmit={handleSubmit} className="flex gap-2 border-t border-tonal-20 bg-surface-30 p-3">
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask MediBot about vitals, doctors..."
-              className="flex-1 rounded-xl border border-white/10 bg-slate-950 px-3 py-2 text-xs text-white placeholder-slate-500 focus:border-cyan-400 focus:outline-none"
+              className="flex-1 rounded-xl border border-tonal-30 bg-surface-10 px-3 py-2 text-xs text-primary-light placeholder:text-primary-light/50 focus:border-accent focus:outline-none"
             />
             <button
               type="submit"
               disabled={!input.trim()}
-              className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-r from-sky-500 to-teal-500 text-slate-950 disabled:opacity-40 transition hover:scale-105"
+              className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-r from-accent-fill to-accent-deep text-on-accent disabled:opacity-40 transition hover:scale-105"
               aria-label="Send message"
             >
               <Send size={15} />

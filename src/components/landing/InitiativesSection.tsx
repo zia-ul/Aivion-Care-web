@@ -26,13 +26,13 @@ export default function InitiativesSection() {
     <section id="initiatives" className="bg-surface-10 py-20 sm:py-28">
       <div className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-10">
         <div className="max-w-2xl">
-          <p className="text-support font-semibold uppercase tracking-[0.16em] text-sky-400">
+          <p className="text-support font-semibold uppercase tracking-[0.16em] text-sky-600 dark:text-sky-400">
             Beyond the platform
           </p>
           <h2 className="mt-3 text-section font-bold text-primary-light sm:text-subtitle">
             Events, partnerships and awareness
           </h2>
-          <p className="mt-5 leading-7 text-primary-light/60">
+          <p className="mt-5 leading-7 text-primary-light/70">
             Aivion Care is used inside clinics and hospitals, but our commitment reaches further —
             into communities, campuses and public health. Gen-Z approved. No boring health brochures.
           </p>
@@ -79,12 +79,12 @@ export default function InitiativesSection() {
                 key={title}
                 className="rounded-2xl border border-tonal-20/70 bg-surface-20/60 p-5 transition hover:-translate-y-1 hover:border-accent/50 sm:p-6 backdrop-blur"
               >
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-sky-500/15 text-sky-400">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-sky-500/15 text-sky-600 dark:text-sky-400">
                   <Icon size={21} aria-hidden="true" />
                 </div>
                 <h3 className="mt-5 font-semibold text-primary-light">{title}</h3>
-                <p className="mt-2 text-sm leading-6 text-primary-light/55">{text}</p>
-                <p className="mt-4 inline-flex items-center gap-1.5 text-support font-semibold text-sky-400">
+                <p className="mt-2 text-sm leading-6 text-primary-light/70">{text}</p>
+                <p className="mt-4 inline-flex items-center gap-1.5 text-support font-semibold text-sky-600 dark:text-sky-400">
                   <MapPin size={13} aria-hidden="true" />
                   {meta}
                 </p>
@@ -97,12 +97,12 @@ export default function InitiativesSection() {
           <div id="panel-mou" role="tabpanel" aria-labelledby="tab-mou" className="mt-8">
             <div className="rounded-2xl border border-sky-500/25 bg-sky-500/10 p-5 sm:p-6 backdrop-blur">
               <div className="flex items-start gap-3">
-                <FileSignature size={21} className="mt-0.5 shrink-0 text-sky-400" aria-hidden="true" />
+                <FileSignature size={21} className="mt-0.5 shrink-0 text-sky-600 dark:text-sky-400" aria-hidden="true" />
                 <div>
                   <h3 className="text-heading font-bold text-primary-light">
                     Memoranda of Understanding
                   </h3>
-                  <p className="mt-2 text-sm leading-6 text-primary-light/60">
+                  <p className="mt-2 text-sm leading-6 text-primary-light/70">
                     We sign MoUs with hospitals, academic institutions and non-profit organisations to
                     formalise collaboration on care delivery, research, education and outreach.
                   </p>
@@ -121,12 +121,12 @@ export default function InitiativesSection() {
                   <div className="flex flex-wrap items-center gap-2">
                     <h4 className="font-semibold text-primary-light">{partner.name}</h4>
                     {partner.focus && (
-                      <span className="rounded-full bg-sky-500/20 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-sky-300">
+                      <span className="rounded-full bg-sky-500/20 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-sky-700 dark:text-sky-300">
                         Focus region
                       </span>
                     )}
                   </div>
-                  <p className="mt-2 text-sm leading-6 text-primary-light/55">{partner.text}</p>
+                  <p className="mt-2 text-sm leading-6 text-primary-light/70">{partner.text}</p>
                 </article>
               ))}
             </div>
@@ -145,11 +145,11 @@ export default function InitiativesSection() {
                 key={item.title}
                 className="rounded-2xl border border-tonal-20/70 bg-surface-20/60 p-5 transition hover:-translate-y-1 hover:border-accent/50 sm:p-6 backdrop-blur"
               >
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-sky-500/15 text-sky-400">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-sky-500/15 text-sky-600 dark:text-sky-400">
                   <Megaphone size={20} aria-hidden="true" />
                 </div>
                 <h3 className="mt-5 font-semibold text-primary-light">{item.title}</h3>
-                <p className="mt-2 text-sm leading-6 text-primary-light/55">{item.text}</p>
+                <p className="mt-2 text-sm leading-6 text-primary-light/70">{item.text}</p>
               </article>
             ))}
           </div>

@@ -25,7 +25,7 @@ export default function CapabilitiesPage() {
           imageSrc="/images/healthcare/smart-monitoring.jpg"
           imageAlt="AI Biometric Surveillance Capabilities"
           badge="Signal-Driven Healthcare"
-          badgeIcon={<Sparkles size={16} className="text-cyan-400" />}
+          badgeIcon={<Sparkles size={16} className="text-cyan-700 dark:text-cyan-400" />}
           heading="Continuous Biometric Intelligence Powered by Hardware & AI"
           paragraph="Traditional checkups capture less than 1% of your physiological reality. Our capabilities platform bridges medical IoT sensors directly into clinical dashboards, transforming intermittent visits into a continuous loop of patient safety."
           className="mt-8 mb-10"
@@ -34,20 +34,20 @@ export default function CapabilitiesPage() {
         <div className="mt-10 grid gap-5 lg:grid-cols-2">
           {capabilities.map(({ title, description, points, Icon }) => (
             <article key={title} className="rounded-2xl border border-sky-500/15 bg-surface-20/60 p-6 backdrop-blur sm:p-7">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-sky-500/15 text-sky-400">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-sky-500/15 text-sky-600 dark:text-sky-400">
                 <Icon size={24} aria-hidden="true" />
               </div>
               <h3 className="mt-5 text-heading font-bold text-primary-light">{title}</h3>
-              <p className="mt-2 text-sm leading-6 text-primary-light/55">{description}</p>
+              <p className="mt-2 text-sm leading-6 text-primary-light/70">{description}</p>
               <ul className="mt-5 space-y-2.5">
                 {points.map((point) => (
                   <li key={point} className="flex items-start gap-2 text-sm text-primary-light/65">
-                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-sky-400" aria-hidden="true" />
+                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-sky-500 dark:bg-sky-400" aria-hidden="true" />
                     {point}
                   </li>
                 ))}
               </ul>
-              <a href="/register" className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-sky-400 hover:text-sky-300">
+              <a href="/register" className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-sky-600 dark:text-sky-400 hover:text-sky-500 dark:hover:text-sky-300">
                 Get started <ArrowRight size={15} />
               </a>
             </article>
