@@ -198,7 +198,7 @@ export default function HeroSection() {
 
       {/* Top Floating Logo & Brand Banner */}
       <div className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-10 mb-8">
-        <div className="flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-white/10 bg-slate-950/70 p-3.5 sm:px-6 shadow-2xl backdrop-blur-xl">
+        <div className="flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-tonal-20 bg-surface-20/90 p-3.5 sm:px-6 shadow-2xl backdrop-blur-xl">
           <div className="flex items-center gap-3">
             {/* Downloaded Aivion Care Logo with heartbeat pulse */}
             <div className="relative h-12 w-12 sm:h-14 sm:w-14 shrink-0 overflow-hidden rounded-2xl border border-sky-400/40 bg-sky-500/10 p-1.5 shadow-lg shadow-sky-500/25">
@@ -213,14 +213,14 @@ export default function HeroSection() {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-display text-base sm:text-lg font-extrabold tracking-tight text-white">
+                <span className="font-display text-base sm:text-lg font-extrabold tracking-tight text-primary-light">
                   Aivion Care
                 </span>
-                <span className="rounded-full bg-teal-500/20 border border-teal-500/40 px-2 py-0.5 text-[10px] font-bold text-teal-300 uppercase tracking-widest">
+                <span className="rounded-full bg-teal-500/20 border border-teal-500/40 px-2 py-0.5 text-[10px] font-bold text-teal-600 dark:text-teal-300 uppercase tracking-widest">
                   AMUIF Incubated
                 </span>
               </div>
-              <p className="text-xs text-slate-300 font-medium">
+              <p className="text-xs text-primary-light/70 font-medium">
                 Connected Clinical Operating System · Pure Signal, Zero Cap
               </p>
             </div>
@@ -228,19 +228,19 @@ export default function HeroSection() {
 
           <div className="flex items-center gap-2 sm:gap-3">
             {/* Live ECG heartbeat ticker */}
-            <div className="hidden sm:flex items-center gap-2.5 rounded-2xl border border-cyan-400/30 bg-slate-950/80 px-4 py-2 text-xs text-cyan-300 shadow-lg shadow-cyan-500/10">
+            <div className="hidden sm:flex items-center gap-2.5 rounded-2xl border border-cyan-400/40 bg-surface-30/90 px-4 py-2 text-xs text-cyan-600 dark:text-cyan-300 shadow-lg shadow-cyan-500/10">
               <span className="relative flex h-2.5 w-2.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-500 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500" />
               </span>
-              <HeartPulse size={16} className="text-rose-400 animate-heartbeat-fast" />
-              <span className="font-mono font-extrabold text-white">{liveBpm} BPM</span>
-              <span className="text-slate-500">|</span>
-              <span className="font-mono font-extrabold text-teal-300">{liveSpo2}% SpO₂</span>
-              <span className="text-slate-500">|</span>
-              <span className="font-mono font-extrabold text-sky-300">{liveBp.sys}/{liveBp.dia} mmHg</span>
-              <span className="text-slate-500">|</span>
-              <span className="font-mono font-extrabold text-emerald-300">{liveResp} rpm</span>
+              <HeartPulse size={16} className="text-rose-500 dark:text-rose-400 animate-heartbeat-fast" />
+              <span className="font-mono font-extrabold text-primary-light">{liveBpm} BPM</span>
+              <span className="text-tonal-40">|</span>
+              <span className="font-mono font-extrabold text-teal-600 dark:text-teal-300">{liveSpo2}% SpO₂</span>
+              <span className="text-tonal-40">|</span>
+              <span className="font-mono font-extrabold text-sky-600 dark:text-sky-300">{liveBp.sys}/{liveBp.dia} mmHg</span>
+              <span className="text-tonal-40">|</span>
+              <span className="font-mono font-extrabold text-emerald-600 dark:text-emerald-300">{liveResp} rpm</span>
             </div>
 
             {/* Slide Controller */}
@@ -276,17 +276,17 @@ export default function HeroSection() {
 
       {/* Main Interactive Hero / Problem & Solution Video-Style Slider */}
       <div className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-10">
-        <div className="relative overflow-hidden rounded-[32px] border border-white/15 bg-slate-950/85 shadow-2xl backdrop-blur-2xl">
+        <div className="relative overflow-hidden rounded-[32px] border border-tonal-20 bg-surface-20/95 shadow-2xl backdrop-blur-2xl">
           
           {/* Ambient Corner Radiance */}
-          <div className="absolute -top-24 -right-24 h-80 w-80 rounded-full bg-cyan-500/25 blur-3xl" />
-          <div className="absolute -bottom-24 -left-24 h-80 w-80 rounded-full bg-teal-500/20 blur-3xl" />
+          <div className="absolute -top-24 -right-24 h-80 w-80 rounded-full bg-cyan-500/20 blur-3xl" />
+          <div className="absolute -bottom-24 -left-24 h-80 w-80 rounded-full bg-teal-500/15 blur-3xl" />
 
           {/* Continuous Moving Heart Rate Monitor Header Strip */}
-          <div className="relative flex items-center justify-between border-b border-white/10 bg-slate-900/60 px-5 py-3 sm:px-8">
+          <div className="relative flex items-center justify-between border-b border-tonal-20 bg-surface-30/70 px-5 py-3 sm:px-8">
             <div className="flex items-center gap-3">
-              <span className="flex h-3 w-3 rounded-full bg-emerald-400 animate-ping" />
-              <span className="text-xs font-bold uppercase tracking-[0.2em] text-cyan-300">
+              <span className="flex h-3 w-3 rounded-full bg-emerald-500 animate-ping" />
+              <span className="text-xs font-bold uppercase tracking-[0.2em] text-cyan-600 dark:text-cyan-300">
                 {slide.tag}
               </span>
             </div>
@@ -449,24 +449,24 @@ export default function HeroSection() {
             {/* Right Narrative Box: Gen-Z Punchlines, Clarity, Call to Action */}
             <div className="flex flex-col justify-center">
               
-              <div className="inline-flex items-center gap-2 rounded-full border border-teal-400/30 bg-teal-500/10 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-teal-300 w-fit">
-                <Zap size={14} className="text-cyan-300 animate-bounce" /> {slide.solutionBadge}
+              <div className="inline-flex items-center gap-2 rounded-full border border-teal-500/40 bg-teal-500/10 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-teal-600 dark:text-teal-300 w-fit">
+                <Zap size={14} className="text-cyan-600 dark:text-cyan-300 animate-bounce" /> {slide.solutionBadge}
               </div>
 
-              <h1 id="hero-title" className="mt-4 font-display text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-[1.15]">
+              <h1 id="hero-title" className="mt-4 font-display text-3xl sm:text-5xl font-extrabold tracking-tight text-primary-light leading-[1.15]">
                 {slide.solutionTitle}
               </h1>
 
               {/* Gen-Z Punchline */}
-              <p className="mt-4 text-xl sm:text-2xl font-black bg-gradient-to-r from-sky-400 via-teal-300 to-cyan-300 bg-clip-text text-transparent">
+              <p className="mt-4 text-xl sm:text-2xl font-black bg-gradient-to-r from-sky-500 via-teal-500 to-cyan-500 dark:from-sky-400 dark:via-teal-300 dark:to-cyan-300 bg-clip-text text-transparent">
                 &ldquo;{slide.solutionPunchline}&rdquo;
               </p>
 
-              <p className="mt-4 text-base sm:text-lg text-slate-200 font-medium leading-relaxed">
+              <p className="mt-4 text-base sm:text-lg text-primary-light/85 font-medium leading-relaxed">
                 {slide.description}
               </p>
 
-              <p className="mt-2 text-sm text-slate-400">
+              <p className="mt-2 text-sm text-primary-light/60">
                 Aivion Care connects patients, doctors, hospitals, labs, and pharmacies into one unified live feed. No cap, no silos, just seamless care.
               </p>
 
@@ -474,7 +474,7 @@ export default function HeroSection() {
               <div className="mt-8 flex flex-wrap items-center gap-3">
                 <Link
                   href={slide.actionHref}
-                  className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-sky-500 to-teal-500 px-7 py-4 text-sm font-bold text-slate-950 shadow-xl shadow-sky-500/25 transition-all duration-300 hover:scale-[1.03] hover:shadow-cyan-400/35"
+                  className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-sky-500 to-teal-500 px-7 py-4 text-sm font-bold text-white shadow-xl shadow-sky-500/25 transition-all duration-300 hover:scale-[1.03] hover:shadow-cyan-400/35"
                 >
                   <span>{slide.actionText}</span>
                   <ArrowRight size={17} className="transition-transform duration-300 group-hover:translate-x-1" />
@@ -484,9 +484,9 @@ export default function HeroSection() {
                   href={process.env.NEXT_PUBLIC_ANDROID_APK_DRIVE_URL || "https://drive.google.com/drive/u/1/folders/1ALfyNroHMqFdpmYDJ-hpWMcndzO4eAd8"}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center justify-center gap-2 rounded-full border border-teal-400/60 bg-gradient-to-r from-teal-500/20 via-cyan-500/20 to-sky-500/20 px-6 py-4 text-sm font-bold text-teal-200 shadow-lg shadow-teal-500/15 backdrop-blur-md transition-all duration-300 hover:scale-[1.03] hover:border-teal-300 hover:shadow-cyan-400/30"
+                  className="inline-flex items-center justify-center gap-2 rounded-full border border-teal-500/50 bg-teal-500/15 px-6 py-4 text-sm font-bold text-teal-700 dark:text-teal-200 shadow-lg shadow-teal-500/10 backdrop-blur-md transition-all duration-300 hover:scale-[1.03] hover:border-teal-400 hover:shadow-cyan-400/20"
                 >
-                  <Smartphone size={17} className="animate-bounce text-cyan-300" /> Download Android App
+                  <Smartphone size={17} className="animate-bounce text-teal-600 dark:text-cyan-300" /> Download Android App
                 </a>
 
 
@@ -494,7 +494,7 @@ export default function HeroSection() {
                   href="https://www.aiconfidencecure.com/"
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center justify-center gap-2 rounded-full border border-white/10 bg-white/5 px-5 py-4 text-sm font-semibold text-slate-300 transition-all duration-300 hover:border-sky-400/40 hover:bg-white/10 hover:text-white"
+                  className="inline-flex items-center justify-center gap-2 rounded-full border border-tonal-20 bg-surface-30/60 px-5 py-4 text-sm font-semibold text-primary-light/80 transition-all duration-300 hover:border-sky-400/50 hover:bg-surface-30 hover:text-primary-light"
                 >
                   <span>Company Site</span>
                   <ArrowRight size={15} />
@@ -502,17 +502,17 @@ export default function HeroSection() {
               </div>
 
               {/* Bottom Quick Feature Highlights with Heartbeat Icon */}
-              <div className="mt-8 pt-6 border-t border-white/10 grid grid-cols-2 sm:grid-cols-3 gap-3">
-                <div className="flex items-center gap-2 text-xs font-semibold text-slate-300">
-                  <HeartPulse size={16} className="text-rose-400 animate-heartbeat" />
+              <div className="mt-8 pt-6 border-t border-tonal-20 grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <div className="flex items-center gap-2 text-xs font-semibold text-primary-light/85">
+                  <HeartPulse size={16} className="text-rose-500 dark:text-rose-400 animate-heartbeat" />
                   <span>24/7 Heartbeat Loop</span>
                 </div>
-                <div className="flex items-center gap-2 text-xs font-semibold text-slate-300">
-                  <Activity size={16} className="text-cyan-400" />
+                <div className="flex items-center gap-2 text-xs font-semibold text-primary-light/85">
+                  <Activity size={16} className="text-cyan-600 dark:text-cyan-400" />
                   <span>Moving ECG Lines</span>
                 </div>
-                <div className="flex items-center gap-2 text-xs font-semibold text-slate-300">
-                  <ShieldCheck size={16} className="text-teal-400" />
+                <div className="flex items-center gap-2 text-xs font-semibold text-primary-light/85">
+                  <ShieldCheck size={16} className="text-teal-600 dark:text-teal-400" />
                   <span>Doctor Verified</span>
                 </div>
               </div>

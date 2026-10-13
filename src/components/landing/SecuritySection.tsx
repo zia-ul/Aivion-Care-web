@@ -113,10 +113,10 @@ export default function SecuritySection() {
         {/* Security Framework Cards Grid */}
         <div className="mb-16">
           <div className="mb-6 flex items-center justify-between">
-            <h4 className="font-display text-xl sm:text-2xl font-bold text-white">
+            <h4 className="font-display text-xl sm:text-2xl font-bold text-primary-light">
               Core Security & Compliance Safeguards
             </h4>
-            <span className="text-xs font-semibold uppercase tracking-wider text-teal-400">
+            <span className="text-xs font-semibold uppercase tracking-wider text-teal-600 dark:text-teal-400">
               Defense In Depth
             </span>
           </div>
@@ -125,20 +125,20 @@ export default function SecuritySection() {
             {securityLayers.map(({ title, description, badge, icon: Icon, gradient }) => (
               <div
                 key={title}
-                className="group relative overflow-hidden rounded-2xl border border-white/10 bg-slate-950/70 p-6 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-cyan-400/50 hover:shadow-xl hover:shadow-cyan-500/10"
+                className="group relative overflow-hidden rounded-2xl border border-tonal-20 bg-surface-20/85 p-6 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-cyan-400/50 hover:shadow-xl hover:shadow-cyan-500/10"
               >
                 <div className={`absolute -right-8 -top-8 h-28 w-28 rounded-full bg-gradient-to-br ${gradient} blur-xl`} />
                 <div className="relative z-10">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-sky-400/30 bg-sky-500/10 text-sky-400 group-hover:scale-110 transition-transform">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-sky-400/30 bg-sky-500/10 text-sky-600 dark:text-sky-400 group-hover:scale-110 transition-transform">
                     <Icon size={24} />
                   </div>
-                  <span className="mt-4 inline-block text-[10px] font-extrabold uppercase tracking-widest text-teal-300">
+                  <span className="mt-4 inline-block text-[10px] font-extrabold uppercase tracking-widest text-teal-700 dark:text-teal-300">
                     {badge}
                   </span>
-                  <h5 className="mt-1 font-display text-base font-bold text-white">
+                  <h5 className="mt-1 font-display text-base font-bold text-primary-light">
                     {title}
                   </h5>
-                  <p className="mt-2 text-xs leading-relaxed text-slate-300">
+                  <p className="mt-2 text-xs leading-relaxed text-primary-light/75">
                     {description}
                   </p>
                 </div>
@@ -151,14 +151,14 @@ export default function SecuritySection() {
         <div>
           <div className="mb-6 flex items-center justify-between">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-cyan-400">
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-cyan-600 dark:text-cyan-400">
                 Mathematical Foundations
               </p>
-              <h4 className="mt-1 font-display text-xl sm:text-2xl font-bold text-white">
+              <h4 className="mt-1 font-display text-xl sm:text-2xl font-bold text-primary-light">
                 Complex Biomedical Algorithms We Deploy
               </h4>
             </div>
-            <span className="rounded-full bg-cyan-500/20 border border-cyan-400/30 px-3 py-1 text-xs font-bold text-cyan-300">
+            <span className="rounded-full bg-cyan-500/20 border border-cyan-400/30 px-3 py-1 text-xs font-bold text-cyan-700 dark:text-cyan-300">
               Live In Production
             </span>
           </div>
@@ -169,24 +169,24 @@ export default function SecuritySection() {
               return (
                 <div
                   key={algo.tag}
-                  className="relative overflow-hidden rounded-2xl border border-white/15 bg-slate-950/85 p-6 backdrop-blur-2xl transition-all duration-300 hover:border-cyan-400/50"
+                  className="relative overflow-hidden rounded-2xl border border-tonal-20 bg-surface-20/90 p-6 backdrop-blur-2xl transition-all duration-300 hover:border-cyan-400/50"
                 >
-                  <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                    <span className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-teal-300">
+                  <div className="flex items-center justify-between border-b border-tonal-20 pb-3">
+                    <span className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider text-teal-700 dark:text-teal-300">
                       <Icon size={15} /> {algo.tag}
                     </span>
-                    <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
+                    <span className="h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
                   </div>
 
-                  <h5 className="mt-4 font-display text-lg font-bold text-white">
+                  <h5 className="mt-4 font-display text-lg font-bold text-primary-light">
                     {algo.title}
                   </h5>
 
-                  <p className="mt-2 text-xs leading-relaxed text-slate-300">
+                  <p className="mt-2 text-xs leading-relaxed text-primary-light/75">
                     {algo.description}
                   </p>
 
-                  <div className="mt-4 rounded-xl border border-white/10 bg-slate-900/90 p-3 font-mono text-[11px] text-cyan-300 overflow-x-auto">
+                  <div className="mt-4 rounded-xl border border-tonal-20 bg-surface-30/80 p-3 font-mono text-[11px] text-cyan-700 dark:text-cyan-300 overflow-x-auto">
                     <code>{algo.formula}</code>
                   </div>
                 </div>
