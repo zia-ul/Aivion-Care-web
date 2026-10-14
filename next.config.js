@@ -29,7 +29,7 @@ function assertApiUrlIsSecure() {
     throw new Error(
       `NEXT_PUBLIC_API_URL is plain HTTP (${value}). The site is served over ` +
         `HTTPS, so the browser will block every request as Mixed Content. Use ` +
-        `https://api.aivioncare.aiconfidencecure.com, then rebuild.`
+        `https://aivioncare.aiconfidencecure.com, then rebuild.`
     );
   }
 }
