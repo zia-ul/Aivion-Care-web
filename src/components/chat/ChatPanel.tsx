@@ -386,8 +386,15 @@ const selectedAppointment = useMemo(() => {
       toast.error('A video call needs a linked appointment, which this conversation does not have.');
       return;
     }
+    if (role === 'PATIENT') {
+      toast('Video consultations are initiated by your doctor at your scheduled appointment time. You will receive an incoming call prompt automatically when your doctor joins.', {
+        icon: 'ℹ️',
+        duration: 6000,
+      });
+      return;
+    }
     router.push(`/video/consultation?id=${selectedAppointment.id}`);
-  }, [router, selectedAppointment]);
+  }, [router, selectedAppointment, role]);
 
   // Open the most recent conversation once loading settles.
   useEffect(() => {

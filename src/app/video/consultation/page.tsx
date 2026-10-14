@@ -54,10 +54,10 @@ function VideoConsultationContent() {
     if (!incomingParam || autoAcceptedRef.current || !isConnected) return;
     if (callState === 'ringing' && incomingCall) {
       autoAcceptedRef.current = true;
-      acceptCall();
+      acceptCall({ video: incomingCall.video !== false });
     } else if (callState === 'idle') {
       autoAcceptedRef.current = true;
-      acceptCall();
+      acceptCall({ video: true });
     }
   }, [incomingParam, isConnected, callState, incomingCall, acceptCall]);
 
@@ -82,7 +82,7 @@ function VideoConsultationContent() {
               <p className="text-xl font-semibold text-primary-light mb-2">Incoming {isVideoCall ? 'Video' : 'Audio'} Call</p>
               <p className="text-body text-primary-light/60 mb-6">{incomingCall.fromRole} is calling...</p>
               <div className="flex gap-4">
-                <button onClick={acceptCall} className="flex-1 px-6 py-3 bg-success-fill text-white font-bold rounded-input hover:bg-success-fill/90 transition-colors">Accept</button>
+                <button onClick={() => acceptCall({ video: isVideoCall })} className="flex-1 px-6 py-3 bg-success-fill text-white font-bold rounded-input hover:bg-success-fill/90 transition-colors">Accept</button>
                 <button onClick={rejectCall} className="flex-1 px-6 py-3 bg-danger-fill text-white font-bold rounded-input hover:bg-danger-fill/90 transition-colors">Reject</button>
               </div>
             </div>
@@ -120,38 +120,49 @@ function VideoConsultationContent() {
         <div className="max-w-5xl mx-auto">
           <div className="relative bg-surface-20/80 rounded-card border border-tonal-20/50 overflow-hidden">
             <div className="aspect-video bg-surface-10 relative flex items-center justify-center">
-              <div className="flex flex-col items-center justify-center px-4 text-center">
+              <div className="flex flex-col items-center justify-center px-4 text-center max-w-md">
                 <Video size={44} className="text-primary-light/25 mb-4" />
-                <p className="text-body text-primary-light/60">
-                  {callState === 'ended' ? 'Call ended' : `Ready to call ${peerName}`}
+                <p className="text-body text-primary-light/80 font-medium">
+                  {callState === 'ended'
+                    ? 'Call ended'
+                    : isDoctor
+                    ? `Ready to call ${peerName}`
+                    : `Waiting for ${peerName} to start the video consultation...`}
                 </p>
+                {!isDoctor && callState !== 'ended' && (
+                  <p className="mt-2 text-support text-primary-light/50">
+                    Your doctor will initiate the consultation at your scheduled appointment time. When they call, you will be connected automatically.
+                  </p>
+                )}
                 {!isConnected && (
                   <p className="mt-3 text-support text-warning-light">Connecting to signaling server...</p>
                 )}
               </div>
 
-              <div className="absolute bottom-4 right-4 flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => handleStartCall({ video: false })}
-                  disabled={!isConnected}
-                  title={`Call ${peerName} with audio`}
-                  aria-label={`Call ${peerName} with audio`}
-                  className="flex h-12 w-12 items-center justify-center rounded-full bg-doctor-blue-fill text-white shadow-lg transition hover:scale-105 hover:bg-doctor-blue/90 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
-                >
-                  <Mic size={20} />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleStartCall({ video: true })}
-                  disabled={!isConnected}
-                  title={`Call ${peerName} with video`}
-                  aria-label={`Call ${peerName} with video`}
-                  className="flex h-14 w-14 items-center justify-center rounded-full bg-success-fill text-white shadow-lg shadow-success/25 transition hover:scale-105 hover:bg-success-fill/90 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
-                >
-                  <Video size={24} />
-                </button>
-              </div>
+              {isDoctor && (
+                <div className="absolute bottom-4 right-4 flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleStartCall({ video: false })}
+                    disabled={!isConnected}
+                    title={`Call ${peerName} with audio`}
+                    aria-label={`Call ${peerName} with audio`}
+                    className="flex h-12 w-12 items-center justify-center rounded-full bg-doctor-blue-fill text-white shadow-lg transition hover:scale-105 hover:bg-doctor-blue/90 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
+                  >
+                    <Mic size={20} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleStartCall({ video: true })}
+                    disabled={!isConnected}
+                    title={`Call ${peerName} with video`}
+                    aria-label={`Call ${peerName} with video`}
+                    className="flex h-14 w-14 items-center justify-center rounded-full bg-success-fill text-white shadow-lg shadow-success/25 transition hover:scale-105 hover:bg-success-fill/90 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
+                  >
+                    <Video size={24} />
+                  </button>
+                </div>
+              )}
             </div>
             {error && <div className="absolute top-4 left-4 right-4 bg-danger/20 border border-danger/30 text-danger-light px-4 py-2 rounded-xl">{error}</div>}
           </div>

@@ -302,11 +302,11 @@ localStreamRef.current?.getTracks().forEach((track) => {
     }
   }, [consultationId, userId, isInitiator, iceServers, sendSignal, cleanup, addCandidate, flushPendingCandidates]);
 
-  const acceptCall = useCallback(async () => {
-    if (!consultationId || !incomingCall) return;
+  const acceptCall = useCallback(async (options?: { video?: boolean }) => {
+    if (!consultationId) return;
     
     try {
-      const useVideo = incomingCall.video !== false;
+      const useVideo = options?.video !== undefined ? options.video : (incomingCall?.video !== false);
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: useVideo });
       const pc = new RTCPeerConnection({ iceServers });
 
