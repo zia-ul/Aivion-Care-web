@@ -38,7 +38,7 @@ export default function FinalCTA() {
         <div className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-72 w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-500/20 blur-3xl" />
 
         {/* Brand Logo with Heartbeat Animation */}
-        <div className="relative mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl border border-sky-500/40 bg-sky-500/15 p-2 shadow-2xl shadow-sky-500/30 backdrop-blur-md">
+        <div className="relative mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl border border-tonal-20 bg-surface-20 p-2 shadow-md">
           <Image
             src="/aivion-care-logo.png"
             alt="Aivion Care Logo"
