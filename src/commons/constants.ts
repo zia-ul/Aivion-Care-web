@@ -1,8 +1,9 @@
 export const APP_NAME = 'Aivion Care';
 
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+import { resolveApiOrigin } from '@/lib/api/config';
+export const API_BASE_URL = resolveApiOrigin();
 
-export const WS_BASE_URL = process.env.NEXT_PUBLIC_WS_URL || 'http://localhost:8080';
+export const WS_BASE_URL = resolveApiOrigin();
 
 export const TURN_CONFIG = {
   url: process.env.NEXT_PUBLIC_TURN_URL || '',

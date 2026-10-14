@@ -8,8 +8,12 @@ import { resolveWsOrigin } from '@/lib/api/config';
 const WS_URL = resolveWsOrigin();
 
 const toHttpUrl = (url: string): string => {
-  if (typeof window === 'undefined') return url;
-  return url.replace(/^ws:/, 'http:').replace(/^wss:/, 'https:');
+  if (typeof window === "undefined") return url;
+  let clean = url.replace(/^ws:/, "http:").replace(/^wss:/, "https:");
+  if (window.location.protocol === "https:" && clean.startsWith("http:")) {
+    clean = clean.replace(/^http:/, "https:");
+  }
+  return clean;
 };
 
 type MessageHandler = (message: any) => void;

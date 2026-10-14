@@ -27,7 +27,16 @@ const stripTrailingSlash = (value: string) => value.replace(/\/+$/, '');
  */
 export function resolveApiOrigin(): string {
   const configured = process.env.NEXT_PUBLIC_API_URL?.trim();
-  return stripTrailingSlash(configured || DEFAULT_DEV_ORIGIN);
+  if (configured) {
+    if (typeof window !== 'undefined' && window.location.protocol === 'https:' && /^http:\/\/localhost/i.test(configured)) {
+      return 'https://aivioncare.aiconfidencecure.com';
+    }
+    return stripTrailingSlash(configured);
+  }
+  if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
+    return 'https://aivioncare.aiconfidencecure.com';
+  }
+  return DEFAULT_DEV_ORIGIN;
 }
 
 /** WebSocket origin: same host as the API. */
