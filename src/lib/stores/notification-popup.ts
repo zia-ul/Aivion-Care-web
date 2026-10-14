@@ -24,13 +24,13 @@ export const useNotificationPopupStore = create<NotificationPopupState>((set) =>
   activeNotification: null,
   unreadCount: 0,
   showPopup: (notification) =>
-    set({
+    set((state) => ({
       activeNotification: {
         ...notification,
         timestamp: Date.now(),
       },
-      unreadCount: (count) => count + 1,
-    }),
+      unreadCount: state.unreadCount + 1,
+    })),
   closePopup: () => set({ activeNotification: null }),
   setUnreadCount: (unreadCount) => set({ unreadCount }),
   incrementUnreadCount: () => set((state) => ({ unreadCount: state.unreadCount + 1 })),

@@ -120,7 +120,7 @@ export default function SupportChatbot() {
         <div
           role="dialog"
           aria-label="MediBot Health Assistant"
-          className="fixed bottom-24 right-4 left-4 sm:right-6 sm:left-auto z-50 flex h-[70vh] max-h-[540px] min-h-[420px] w-auto sm:w-[92vw] max-w-sm flex-col overflow-hidden rounded-[28px] border border-tonal-20 bg-surface-20/95 shadow-2xl backdrop-blur-2xl"
+          className="fixed left-3 right-3 top-3 bottom-24 z-50 flex flex-col overflow-hidden rounded-[28px] border border-tonal-20 bg-surface-20/95 shadow-2xl backdrop-blur-2xl sm:left-auto sm:right-6 sm:top-auto sm:h-[70vh] sm:max-h-[540px] sm:w-[92vw] sm:max-w-sm"
         >
           {/* Header with Hospital/Heart Rate Theme */}
           <div className="relative overflow-hidden border-b border-tonal-20 bg-surface-30/80 p-4">
@@ -175,7 +175,7 @@ export default function SupportChatbot() {
           </div>
 
           {/* Messages Feed */}
-          <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto p-4 text-xs">
+          <div ref={scrollRef} className="flex-1 min-h-0 space-y-3 overflow-y-auto overscroll-contain p-4 text-[13px] sm:text-xs">
             {messages.map((m, index) => (
               <div
                 key={index}

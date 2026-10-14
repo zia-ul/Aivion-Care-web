@@ -258,13 +258,16 @@ localStreamRef.current?.getTracks().forEach((track) => {
           }
           case 'accept': {
             // Call was accepted by the other party
-            if (isInitiator && !callAcceptedRef.current) {
+            if (isInitiator) {
               callAcceptedRef.current = true;
-              // Now create and send the offer
-              const offer = await pc.createOffer();
-              await pc.setLocalDescription(offer);
-              localOfferRef.current = offer;
-              sendSignal('offer', offer);
+              if (current.signalingState === 'stable') {
+                const offer = await current.createOffer();
+                await current.setLocalDescription(offer);
+                localOfferRef.current = offer;
+                sendSignal('offer', offer);
+              } else if (localOfferRef.current) {
+                sendSignal('offer', localOfferRef.current);
+              }
               setCallState('calling');
             }
             break;
@@ -376,6 +379,12 @@ localStreamRef.current?.getTracks().forEach((track) => {
 
       // Send accept signal to let initiator know we're ready
       sendSignal('accept', {});
+      // Send a follow-up accept after a brief delay in case the doctor's listener was subscribing
+      setTimeout(() => {
+        if (peerConnectionRef.current?.signalingState === 'stable' && !peerConnectionRef.current?.remoteDescription) {
+          sendSignal('accept', {});
+        }
+      }, 1000);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to accept call');
       setCallState('ended');
