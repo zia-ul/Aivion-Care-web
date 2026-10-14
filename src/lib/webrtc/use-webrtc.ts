@@ -75,7 +75,15 @@ export function useWebRtc(
     if (TURN_URL) {
       servers.push({ urls: TURN_URL, username: TURN_USERNAME, credential: TURN_PASSWORD });
     }
-    servers.push({ urls: 'stun:stun.l.google.com:19302' });
+    servers.push({
+      urls: [
+        'stun:stun.l.google.com:19302',
+        'stun:stun1.l.google.com:19302',
+        'stun:stun2.l.google.com:19302',
+        'stun:stun.services.mozilla.com',
+        'stun:global.stun.twilio.com:3478',
+      ],
+    });
     return servers;
   }, []);
 

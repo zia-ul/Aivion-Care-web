@@ -88,16 +88,16 @@ export default function MonitoringSection() {
           </span>
         </div>
 
-        <div className="mt-5 grid grid-cols-3 gap-3">
+        <div className="mt-5 grid grid-cols-3 gap-2 sm:gap-3">
           {([
             ['Heart Rate', `${bpm} bpm`, HeartPulse, 'text-rose-500 dark:text-rose-400'],
             ['SpO₂ Oxygen', `${spo2}%`, Waves, 'text-sky-600 dark:text-sky-400'],
             ['Core Temp', `${temp} °C`, Thermometer, 'text-amber-600 dark:text-amber-400'],
           ] as const).map(([label, value, Icon, colorClass]) => (
-            <div key={String(label)} className="rounded-2xl border border-tonal-20 bg-surface-30/60 p-3.5 transition-all duration-300 hover:border-cyan-400/40">
+            <div key={String(label)} className="rounded-2xl border border-tonal-20 bg-surface-30/60 p-2.5 sm:p-3.5 transition-all duration-300 hover:border-cyan-400/40">
               <Icon size={19} className={colorClass} />
-              <p className="mt-2.5 text-[11px] font-semibold text-primary-light/60">{label}</p>
-              <p className="mt-0.5 text-base font-extrabold text-primary-light sm:text-lg font-mono transition-all duration-300">{value}</p>
+              <p className="mt-2 text-[11px] font-semibold leading-tight text-primary-light/60">{label}</p>
+              <p className="mt-0.5 text-sm sm:text-base font-extrabold text-primary-light font-mono transition-all duration-300">{value}</p>
             </div>
           ))}
         </div>

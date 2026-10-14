@@ -324,7 +324,7 @@ export default function HeroSection() {
             
             {/* Visual Screen Box with Background Image and Live Overlay */}
             <div className="flex flex-col gap-3">
-              <div className="relative group overflow-hidden rounded-[30px] border border-cyan-400/30 bg-slate-900/95 shadow-2xl h-[380px] sm:h-[450px]">
+              <div className="relative group overflow-hidden rounded-[30px] border border-cyan-400/30 bg-slate-900/95 shadow-2xl h-[420px] sm:h-[480px]">
                 
                 {/* High-res Clinical Background Image with Enhanced Visibility */}
                 <Image
@@ -353,28 +353,28 @@ export default function HeroSection() {
                 />
 
                 {/* Top Banner inside visual box */}
-                <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/40 bg-surface-20/85 dark:bg-slate-950/80 px-3.5 py-1 text-xs font-bold text-rose-700 dark:text-rose-300 backdrop-blur-md shadow-lg">
-                    <span className="h-2 w-2 rounded-full bg-rose-500 dark:bg-rose-400 animate-ping" /> {slide.problemBadge}
+                <div className="absolute top-4 left-4 right-4 flex flex-wrap items-center gap-2 z-10">
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/40 bg-surface-20/85 dark:bg-slate-950/80 px-3.5 py-1 text-[11px] sm:text-xs font-bold text-rose-700 dark:text-rose-300 backdrop-blur-md shadow-lg">
+                    <span className="h-2 w-2 shrink-0 rounded-full bg-rose-500 dark:bg-rose-400 animate-ping" /> {slide.problemBadge}
                   </span>
 
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-teal-500/50 bg-surface-20/85 dark:bg-slate-950/80 px-3.5 py-1 text-xs font-extrabold text-teal-700 dark:text-teal-300 backdrop-blur-md uppercase tracking-wider shadow-lg">
-                    <CheckCircle2 size={14} className="text-teal-600 dark:text-teal-400" /> Solved by AI
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-teal-500/50 bg-surface-20/85 dark:bg-slate-950/80 px-3.5 py-1 text-[11px] sm:text-xs font-extrabold text-teal-700 dark:text-teal-300 backdrop-blur-md uppercase tracking-wider shadow-lg sm:ml-auto">
+                    <CheckCircle2 size={14} className="shrink-0 text-teal-600 dark:text-teal-400" /> Solved by AI
                   </span>
                 </div>
 
                 {/* Middle Problem Box */}
-                <div className="absolute top-16 left-4 right-4 rounded-2xl border border-tonal-20 bg-surface-20/85 dark:border-white/15 dark:bg-slate-950/85 p-3.5 backdrop-blur-md shadow-xl z-10">
+                <div className="absolute top-20 sm:top-16 left-4 right-4 rounded-2xl border border-tonal-20 bg-surface-20/85 dark:border-white/15 dark:bg-slate-950/85 p-3.5 backdrop-blur-md shadow-xl z-10">
                   <p className="text-xs sm:text-sm font-semibold text-primary-light leading-relaxed">
                     ⚠️ {slide.problemText}
                   </p>
                 </div>
 
                 {/* Bottom Telemetry Card: Live Waveform & Heart Pulse */}
-                <div className="absolute bottom-4 left-4 right-4 rounded-2xl border border-cyan-500/40 dark:border-cyan-400/40 bg-surface-20/95 dark:bg-slate-950/92 p-4 backdrop-blur-xl shadow-2xl z-10">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2.5">
-                      <div className="relative h-10 w-10 rounded-lg border border-tonal-20 bg-surface-10 flex items-center justify-center">
+                <div className="absolute bottom-4 left-4 right-4 rounded-2xl border border-cyan-500/40 dark:border-cyan-400/40 bg-surface-20/95 dark:bg-slate-950/92 p-3 sm:p-4 backdrop-blur-xl shadow-2xl z-10">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="relative h-10 w-10 shrink-0 rounded-lg border border-tonal-20 bg-surface-10 flex items-center justify-center">
                         <Image
                           src="/aivion-care-logo.png"
                           alt="Logo"
@@ -383,18 +383,18 @@ export default function HeroSection() {
                           className="object-contain"
                         />
                       </div>
-                      <div>
+                      <div className="min-w-0">
                         <p className="text-[10px] font-bold uppercase tracking-wider text-cyan-600 dark:text-cyan-400">
                           {slide.solutionBadge}
                         </p>
-                        <p className="text-sm font-extrabold text-primary-light">
+                        <p className="text-xs sm:text-sm font-extrabold text-primary-light leading-snug line-clamp-2">
                           {slide.solutionTitle}
                         </p>
                       </div>
                     </div>
 
-                    <div className="text-right">
-                      <p className="text-lg font-black text-teal-600 dark:text-teal-300 font-mono transition-all duration-300">
+                    <div className="text-right shrink-0">
+                      <p className="text-base sm:text-lg font-black text-teal-600 dark:text-teal-300 font-mono transition-all duration-300">
                         {liveBpm} BPM <span className="text-xs text-cyan-600 dark:text-cyan-400 font-sans">({liveSpo2}%)</span>
                       </p>
                       <p className="text-[10px] font-semibold text-primary-light/70">
@@ -404,7 +404,7 @@ export default function HeroSection() {
                   </div>
 
                   {/* Moving SVG ECG Line */}
-                  <div className="mt-2.5 h-12 w-full text-cyan-300 relative overflow-hidden rounded-xl bg-surface-30/60 dark:bg-slate-900/60 p-1 border border-cyan-500/20">
+                  <div className="mt-2.5 h-9 sm:h-12 w-full text-cyan-300 relative overflow-hidden rounded-xl bg-surface-30/60 dark:bg-slate-900/60 p-1 border border-cyan-500/20">
                     <svg viewBox="0 0 500 50" className="h-full w-full drop-shadow-[0_0_12px_rgba(34,211,238,0.9)]" preserveAspectRatio="none">
                       <path 
                         d="M0 25 h80 l10 -15 l8 32 l8 -22 l10 5 h80 l10 -15 l8 32 l8 -22 l10 5 h80 l10 -15 l8 32 l8 -22 l10 5 h140" 

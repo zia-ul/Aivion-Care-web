@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { usePathmap } from '@/lib/use-pathmap';
 import { useChatUnreadStore } from '@/lib/stores/chat-unread';
+import { useNotificationPopupStore } from '@/lib/stores/notification-popup';
 
 type NavItem = { href: string; label: string; icon: LucideIcon };
 
@@ -84,11 +85,17 @@ export default function BottomNav({ role }: { role: string }) {
   const pathname = usePathmap();
   // Re-renders the bar when a message arrives so the badge appears.
   const unreadByRoom = useChatUnreadStore((state) => state.unreadByRoom);
+  const notificationUnreadCount = useNotificationPopupStore((state) => state.unreadCount);
 
-  /** Unread messages shown on a nav entry; only chat destinations carry a badge. */
+  /** Unread messages or alerts shown on a nav entry. */
   const badgeFor = (href: string) => {
-    if (!href.includes('/chat')) return 0;
-    return Object.values(unreadByRoom).reduce((total, count) => total + count, 0);
+    if (href.includes('/chat')) {
+      return Object.values(unreadByRoom).reduce((total, count) => total + count, 0);
+    }
+    if (href.includes('/notifications')) {
+      return notificationUnreadCount;
+    }
+    return 0;
   };
 
   let items: NavItem[];

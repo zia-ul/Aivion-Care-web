@@ -120,7 +120,7 @@ export default function SupportChatbot() {
         <div
           role="dialog"
           aria-label="MediBot Health Assistant"
-          className="fixed bottom-24 right-6 z-50 flex h-[540px] w-[92vw] max-w-sm flex-col overflow-hidden rounded-[28px] border border-tonal-20 bg-surface-20/95 shadow-2xl backdrop-blur-2xl"
+          className="fixed bottom-24 right-4 left-4 sm:right-6 sm:left-auto z-50 flex h-[70vh] max-h-[540px] min-h-[420px] w-auto sm:w-[92vw] max-w-sm flex-col overflow-hidden rounded-[28px] border border-tonal-20 bg-surface-20/95 shadow-2xl backdrop-blur-2xl"
         >
           {/* Header with Hospital/Heart Rate Theme */}
           <div className="relative overflow-hidden border-b border-tonal-20 bg-surface-30/80 p-4">

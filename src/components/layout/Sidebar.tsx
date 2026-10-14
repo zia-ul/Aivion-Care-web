@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Activity, LayoutDashboard, Calendar, MessageCircle, Bell, User, Users, Building2, UserCheck, BarChart3, Radio, X, FileText, Pill, Wallet, CalendarDays, Sparkles, CreditCard, ShieldCheck, Shield, MapPin, Stethoscope, Building, Microscope, TestTube, ClipboardList, ShieldPlus, type LucideIcon } from 'lucide-react';
 import { usePathmap } from '@/lib/use-pathmap';
 import { useChatUnreadStore } from '@/lib/stores/chat-unread';
+import { useNotificationPopupStore } from '@/lib/stores/notification-popup';
 
 type NavItem = { href: string; label: string; icon: LucideIcon };
 
@@ -111,10 +112,17 @@ export default function Sidebar({ role, onClose }: { role: string; onClose?: () 
   // Re-renders the nav when a message arrives so the badge appears.
   const unreadByRoom = useChatUnreadStore((state) => state.unreadByRoom);
 
-  /** Unread messages shown on a nav entry; only chat destinations carry a badge. */
+  const notificationUnreadCount = useNotificationPopupStore((state) => state.unreadCount);
+
+  /** Unread badge shown on a nav entry. */
   const badgeFor = (href: string) => {
-    if (!href.includes('/chat')) return 0;
-    return Object.values(unreadByRoom).reduce((total, count) => total + count, 0);
+    if (href.includes('/chat')) {
+      return Object.values(unreadByRoom).reduce((total, count) => total + count, 0);
+    }
+    if (href.includes('/notifications')) {
+      return notificationUnreadCount;
+    }
+    return 0;
   };
 
   let items: NavItem[];

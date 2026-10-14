@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { MessageCircle, X } from 'lucide-react';
 import { useChatUnreadStore } from '@/lib/stores/chat-unread';
+import { useAuthStore } from '@/lib/stores/auth';
 
 /**
  * Popup that appears in the corner when a message arrives while the user is
@@ -37,6 +38,9 @@ export function NewMessageToast() {
     // Keyed on the store counter so repeated identical messages still pop.
   }, [lastEventAt, latestMessageByRoom, rooms]);
 
+  const userRole = useAuthStore((state) => state.user?.role);
+  const chatPath = userRole === 'DOCTOR' ? '/doctor/chat' : '/patient/chat';
+
   if (!visible) return null;
 
   return (
@@ -59,7 +63,7 @@ export function NewMessageToast() {
               {visible.preview || 'Sent you a message'}
             </p>
             <a
-              href={`/chat?roomId=${visible.roomId}`}
+              href={`${chatPath}?roomId=${visible.roomId}`}
               onClick={() => clearRoom(visible.roomId)}
               className="mt-2 inline-block text-xs font-semibold text-accent hover:underline"
             >

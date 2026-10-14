@@ -9,6 +9,8 @@ import { Toaster } from 'react-hot-toast';
 import { IncomingCallListener } from '@/components/chat/IncomingCallListener';
 import { ChatNotificationListener } from '@/components/chat/ChatNotificationListener';
 import { NewMessageToast } from '@/components/chat/NewMessageToast';
+import { GlobalNotificationToast } from '@/components/notifications/GlobalNotificationToast';
+import { RealtimeNotificationListener } from '@/components/notifications/RealtimeNotificationListener';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient({
@@ -121,6 +123,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <IncomingCallListener />
       <ChatNotificationListener />
       <NewMessageToast />
+      <GlobalNotificationToast />
+      <RealtimeNotificationListener />
       <Toaster
         position="top-right"
         gutter={10}

@@ -48,22 +48,18 @@ export function IncomingCallListener() {
 
           const off = webrtcWsService.subscribe(destination, (message: any) => {
             if (!message || typeof message !== 'object') return;
+            if (message.type !== 'call') return;
             // Ignore the echo of our own broadcast.
             if (selfIdRef.current != null && message.senderId === selfIdRef.current) return;
-            if (message.type !== 'call') return;
-
-            const isFromDoctor = message.senderRole === 'DOCTOR';
-            if (!isFromDoctor) return;
 
             setIncoming({
               consultationId: Number(message.consultationId ?? appointment.id),
-              fromRole: message.senderRole ?? 'DOCTOR',
+              fromRole: message.senderRole ?? 'Doctor',
               video: message.data?.video !== false,
             });
-            // Ring on arrival, and stop as soon as the overlay appears so the
-            // sound is never left running behind the accept/reject UI.
+            // Keep ringing until user accepts or rejects
             startRing();
-            toast('Incoming video call', { icon: '📞' });
+            toast('Incoming video call', { icon: '📞', duration: 15000 });
           });
 
           unsubscribers.push(off);
