@@ -201,7 +201,7 @@ export default function HeroSection() {
         <div className="flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-tonal-20 bg-surface-20/90 p-3.5 sm:px-6 shadow-2xl backdrop-blur-xl">
           <div className="flex items-center gap-3">
             {/* Downloaded Aivion Care Logo with heartbeat pulse */}
-            <div className="relative h-12 w-12 sm:h-14 sm:w-14 shrink-0 overflow-hidden rounded-2xl border border-sky-400/40 bg-sky-500/10 p-1.5 shadow-lg shadow-sky-500/25">
+            <div className="relative h-12 w-12 sm:h-14 sm:w-14 shrink-0 overflow-hidden rounded-2xl border border-sky-400/40 bg-sky-500/10 p-1.5 shadow-lg shadow-sky-500/25 animate-heartbeat">
               <Image
                 src="/aivion-care-logo.png"
                 alt="Aivion Care Logo"
@@ -374,7 +374,7 @@ export default function HeroSection() {
                 <div className="absolute bottom-4 left-4 right-4 rounded-2xl border border-cyan-500/40 dark:border-cyan-400/40 bg-surface-20/95 dark:bg-slate-950/92 p-4 backdrop-blur-xl shadow-2xl z-10">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2.5">
-                      <div className="relative h-10 w-10 rounded-xl bg-sky-500/20 border border-sky-400/40 flex items-center justify-center">
+                      <div className="relative h-10 w-10 rounded-xl bg-sky-500/20 border border-sky-400/40 flex items-center justify-center animate-heartbeat">
                         <Image
                           src="/aivion-care-logo.png"
                           alt="Logo"
