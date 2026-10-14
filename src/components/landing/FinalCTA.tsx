@@ -43,7 +43,7 @@ export default function FinalCTA() {
             src="/aivion-care-logo.png"
             alt="Aivion Care Logo"
             fill
-            className="object-contain p-2 animate-heartbeat"
+            className="object-contain p-2"
           />
         </div>
 

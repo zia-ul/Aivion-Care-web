@@ -91,7 +91,7 @@ export default function SupportChatbot() {
           ) : (
             <div className="relative flex items-center justify-center">
               {/* MediBot Animated Heart SVG Icon */}
-              <div className="relative flex items-center justify-center h-10 w-10 animate-heartbeat text-rose-500 drop-shadow-[0_0_12px_rgba(244,63,94,0.8)]">
+              <div className="relative flex items-center justify-center h-10 w-10 text-rose-500 drop-shadow-[0_0_8px_rgba(244,63,94,0.4)]">
                 {/* Heart SVG with pulsing medical ecg cross */}
                 <svg viewBox="0 0 24 24" className="h-9 w-9 fill-rose-500 stroke-rose-400 stroke-1" aria-hidden="true">
                   <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
@@ -128,7 +128,7 @@ export default function SupportChatbot() {
               <div className="flex items-center gap-3">
                 <div className="relative flex h-10 w-10 items-center justify-center rounded-2xl border border-rose-500/40 bg-rose-500/15 p-1 shadow-md">
                   {/* Heart SVG with Heartbeat Animation */}
-                  <svg viewBox="0 0 24 24" className="h-7 w-7 fill-rose-500 text-rose-400 animate-heartbeat" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" className="h-7 w-7 fill-rose-500 text-rose-400" aria-hidden="true">
                     <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                   </svg>
                   <Activity size={12} className="absolute text-white" />
