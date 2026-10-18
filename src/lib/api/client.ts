@@ -41,9 +41,14 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError<{ message?: string }>) => {
-    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+    const originalRequest = error.config as (InternalAxiosRequestConfig & { _retry?: boolean }) | undefined;
+    const status = error.response?.status;
+    const isAuthError = Boolean(
+      originalRequest &&
+      (status === 401 || (status === 403 && !originalRequest.url?.includes('/api/v1/subscriptions')))
+    );
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (originalRequest && isAuthError && !originalRequest._retry) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           refreshQueue.push((token) => {

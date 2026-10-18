@@ -471,6 +471,9 @@ export const patientDocumentApi = {
     apiClient.get<PatientDocumentResponse[]>(`/api/v1/patients/me/documents/search`, { params: { q, page, size } }),
   getById: (documentId: number) => apiClient.get<PatientDocumentResponse>(`/api/v1/patients/me/documents/${documentId}`),
   download: (documentId: number) => apiClient.get(`/api/v1/patients/me/documents/${documentId}/download`, { responseType: 'blob' }),
+  analyze: (documentId: number, request?: any) =>
+    apiClient.post<{ documentId: number; documentType: string; status: string; extractedText?: string; summary?: string; findings?: any[]; abnormalValues?: any[]; recommendations?: any[]; warnings?: string[]; confidence?: any; disclaimer?: string }>(
+      `/api/v1/patients/me/documents/${documentId}/analyze`, request || {}),
   update: (documentId: number, request: PatientDocumentUploadRequest) =>
     apiClient.put<PatientDocumentResponse>(`/api/v1/patients/me/documents/${documentId}`, request),
   delete: (documentId: number) => apiClient.delete(`/api/v1/patients/me/documents/${documentId}`),

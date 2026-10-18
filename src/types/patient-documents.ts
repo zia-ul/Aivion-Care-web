@@ -13,6 +13,7 @@ export interface PatientDocumentUploadRequest {
   folderId?: number;
   tags?: string;
   isFavorite?: boolean;
+  documentType?: string;
 }
 
 export interface PatientDocumentResponse {

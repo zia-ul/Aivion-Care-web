@@ -2,6 +2,7 @@ export interface ClinicalAssessmentRequest {
   symptoms: SymptomRequest[];
   vitals?: VitalsRequest;
   clinicalNotes?: string;
+  documentIds?: number[];
 }
 
 export interface SymptomRequest {

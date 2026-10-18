@@ -104,8 +104,11 @@ export default function PatientAppointmentsPage() {
                     <div className="flex items-center gap-2 flex-wrap">
                       <p className="text-primary-light font-semibold">Dr. {a.doctorName ?? '—'}</p>
                       <Pill color={statusColor(a.status)}>{a.status ?? ''}</Pill>
+                      <Pill color={a.type === 'VIDEO' || a.type === 'TELECONSULT' ? FL.cyan : FL.mint}>
+                        {a.type === 'VIDEO' || a.type === 'TELECONSULT' ? 'Online Video' : 'In-Person Visit'}
+                      </Pill>
                     </div>
-                    <p className="text-xs text-doctor-muted mt-1">{a.hospitalName ?? ''}{a.type ? ` • ${a.type}` : ''}</p>
+                    <p className="text-xs text-doctor-muted mt-1">{a.hospitalName ?? ''}</p>
                     <div className="flex items-center gap-4 mt-2 text-xs text-doctor-muted">
                       <span className="inline-flex items-center gap-1"><CalendarDays size={12} /> {a.appointmentDate}</span>
                       <span className="inline-flex items-center gap-1"><Clock size={12} /> {String(a.slotTime ?? '').slice(0, 5)}</span>

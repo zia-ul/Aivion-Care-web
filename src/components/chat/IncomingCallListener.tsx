@@ -83,12 +83,12 @@ export function IncomingCallListener() {
 
   const accept = useCallback(() => {
     if (!incoming) return;
-    const { consultationId } = incoming;
+    const { consultationId, video } = incoming;
     stopRing();
     setIncoming(null);
-    // `incoming=1` tells the page to accept immediately instead of waiting for
-    // the doctor to press the button a second time.
-    router.push(`/video/consultation?id=${consultationId}&incoming=1`);
+    // `incoming=1` tells the page to accept immediately; pass video mode flag so audio call doesn't force camera.
+    const videoFlag = video ? '1' : '0';
+    router.push(`/video/consultation?id=${consultationId}&incoming=1&video=${videoFlag}`);
   }, [incoming, router, stopRing]);
 
   const reject = useCallback(() => {

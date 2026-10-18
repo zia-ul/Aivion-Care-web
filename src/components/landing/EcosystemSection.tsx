@@ -61,7 +61,7 @@ export default function EcosystemSection() {
                 <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-sky-500/25 bg-sky-500/15 text-cyan-600 dark:text-cyan-300 dark:border-sky-400/20 shadow-lg group-hover:scale-105 transition-transform">
                   <Icon size={26} />
                 </span>
-                <h3 className="mt-5 font-display text-lg font-bold text-primary-light group-hover:text-cyan-700 dark:group-hover:text-cyan-300 transition-colors">
+                <h3 className="mt-5 font-display text-lg font-bold text-primary-light group-hover:text-cyan-700 dark:group-hover:text-cyan-300 transition-colors break-words">
                   {role}
                 </h3>
                 <p className="mt-2 text-xs leading-5 text-primary-light/75">

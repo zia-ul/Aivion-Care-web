@@ -21,8 +21,8 @@ interface Availability {
 const WEEKDAYS = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'];
 // Backend ConsultationMode enum is ONLINE|OFFLINE only.
 const MODES = [
-  { value: 'OFFLINE', label: 'Offline' },
-  { value: 'ONLINE', label: 'Online' },
+  { value: 'OFFLINE', label: 'In-Person / Offline Visit' },
+  { value: 'ONLINE', label: 'Online / Video Call' },
 ];
 
 export default function DoctorAvailability() {

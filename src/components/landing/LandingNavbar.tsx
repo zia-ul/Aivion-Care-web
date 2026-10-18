@@ -120,6 +120,30 @@ export default function LandingNavbar() {
               </Link>
             ))}
           </nav>
+
+          {/* Mobile-only controls — Sign In, Android APK, theme toggle */}
+          <div className="flex flex-wrap items-center gap-2 border-t border-tonal-20 px-4 py-3">
+            <a
+              href="https://drive.google.com/drive/u/1/folders/1ALfyNroHMqFdpmYDJ-hpWMcndzO4eAd8"
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => setOpen(false)}
+              className="inline-flex min-w-0 flex-1 items-center justify-center gap-1.5 rounded-full border border-teal-500/40 dark:border-teal-400/40 bg-teal-500/15 dark:bg-gradient-to-r dark:from-teal-500/20 dark:via-cyan-500/20 dark:to-sky-500/20 px-3 py-2 text-xs font-bold text-teal-800 dark:text-teal-200 shadow-sm shadow-teal-500/10 backdrop-blur-md transition-all hover:border-teal-400 dark:hover:border-teal-300"
+            >
+              <Smartphone size={13} className="shrink-0 text-teal-700 dark:text-cyan-300" />
+              <span className="truncate">Android APK</span>
+            </a>
+            <Link
+              href="/login"
+              onClick={() => setOpen(false)}
+              className="inline-flex shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-sky-500 to-teal-500 px-4 py-2 text-xs font-bold text-slate-950 shadow-md shadow-sky-500/20 transition-all hover:scale-105"
+            >
+              Sign In
+            </Link>
+            <div className="shrink-0">
+              <ThemeToggle />
+            </div>
+          </div>
         </div>
       )}
     </header>

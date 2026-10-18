@@ -14,27 +14,42 @@ export function RealtimeNotificationListener() {
   const lastKnownNotifIdRef = useRef<number>(0);
   const checkedRemindersRef = useRef<Set<string>>(new Set());
 
-  // 1. Subscribe to User WebSocket topic if available
+  // 1. Subscribe to User WebSocket topic when connected
   useEffect(() => {
     if (!isAuthenticated || !user?.id) return;
 
     const topicUser = `/topic/notifications/${user.id}`;
-    const offUser = wsService.subscribe(topicUser, (msg: any) => {
-      if (!msg) return;
-      const title = msg.title || 'New Notification';
-      const message = msg.message || 'You have a new update.';
-      playSound('message');
-      showPopup({
-        id: msg.id,
-        title,
-        message,
-        type: msg.type || 'NOTIFICATION',
-        actionUrl: msg.actionUrl,
-      });
-    });
+    let unsub: (() => void) | null = null;
+
+    const trySub = (connected: boolean) => {
+      if (connected && !unsub) {
+        unsub = wsService.subscribe(topicUser, (msg: any) => {
+          if (!msg) return;
+          const title = msg.title || 'New Notification';
+          const message = msg.message || 'You have a new update.';
+          playSound('message');
+          showPopup({
+            id: msg.id,
+            title,
+            message,
+            type: msg.type || 'NOTIFICATION',
+            actionUrl: msg.actionUrl,
+          });
+        });
+      } else if (!connected && unsub) {
+        try { unsub(); } catch { /* ignore */ }
+        unsub = null;
+      }
+    };
+
+    const removeStatusListener = wsService.onStatusChange(trySub);
+    if (wsService.isConnected()) {
+      trySub(true);
+    }
 
     return () => {
-      try { offUser?.(); } catch { /* ignore */ }
+      removeStatusListener();
+      try { unsub?.(); } catch { /* ignore */ }
     };
   }, [isAuthenticated, user?.id, showPopup]);
 

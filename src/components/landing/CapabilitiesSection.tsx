@@ -119,7 +119,7 @@ export default function CapabilitiesSection() {
                   </div>
                 </div>
 
-                <h3 className="mt-6 font-display text-xl font-extrabold text-primary-light group-hover:text-cyan-700 dark:group-hover:text-cyan-200 transition-colors">
+                <h3 className="mt-6 font-display text-xl font-extrabold text-primary-light group-hover:text-cyan-700 dark:group-hover:text-cyan-200 transition-colors break-words">
                   {title}
                 </h3>
                 <p className="mt-1 text-xs font-bold text-teal-600 dark:text-teal-300 uppercase tracking-wider">

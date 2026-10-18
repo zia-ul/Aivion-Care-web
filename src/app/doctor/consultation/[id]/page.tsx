@@ -379,17 +379,19 @@ export default function DoctorConsultationPage({ params }: { params: Promise<{ i
   return (
     <AppLayout role="DOCTOR" title="Consultation" subtitle={`Appointment #${appointmentId}`}>
       <div className="space-y-5">
-        {/* Call + recording */}
-        <ConsultationCallPanel
-          appointmentId={appointmentId}
-          onRecordingReady={(blob) => {
-            if (!blob) return;
-            const file = new File([blob], `consultation-${appointmentId}-call.webm`, {
-              type: blob.type || 'audio/webm',
-            });
-            handlePickAndGenerate(file);
-          }}
-        />
+        {/* Call + recording only for online appointments */}
+        {(consultation.appointmentType === 'VIDEO' || consultation.appointmentType === 'TELECONSULT') && (
+          <ConsultationCallPanel
+            appointmentId={appointmentId}
+            onRecordingReady={(blob) => {
+              if (!blob) return;
+              const file = new File([blob], `consultation-${appointmentId}-call.webm`, {
+                type: blob.type || 'audio/webm',
+              });
+              handlePickAndGenerate(file);
+            }}
+          />
+        )}
 
         {/* Hero */}
         <SectionCard
@@ -402,6 +404,9 @@ export default function DoctorConsultationPage({ params }: { params: Promise<{ i
           ].filter(Boolean).join(' • ')}
           trailing={
             <div className="flex flex-wrap gap-2">
+              <Pill color={consultation.appointmentType === 'VIDEO' || consultation.appointmentType === 'TELECONSULT' ? FL.cyan : FL.mint}>
+                {consultation.appointmentType === 'VIDEO' || consultation.appointmentType === 'TELECONSULT' ? 'Online Video Visit' : 'In-Person Clinic Visit'}
+              </Pill>
               {consultation.finalized === true && <Pill color={FL.mint}>Finalized</Pill>}
               {consultation.prescriptionSent === true && <Pill color={FL.blue}>Sent</Pill>}
               {chatRoomId && <Pill color={FL.cyan}>Chat room #{chatRoomId}</Pill>}

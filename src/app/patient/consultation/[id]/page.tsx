@@ -24,6 +24,7 @@ interface Consultation {
   bpDiastolic?: number | null;
   spo2?: any;
   bodyTemp?: any;
+  appointmentType?: string;
   soapSections?: ConsultationSoapSectionResponse[];
 }
 
@@ -88,16 +89,25 @@ export default function PatientConsultationPage({ params }: { params: Promise<{ 
         <div className="bg-surface-20/80 rounded-card border border-tonal-20/50 p-4 md:p-6">
           <div className="flex items-start justify-between mb-4">
             <div>
-              <h3 className="text-heading font-bold text-primary-light">Consultation #{cid}</h3>
-              <p className="text-body text-primary-light/60">Appointment #{appointmentId}</p>
+              <div className="flex items-center gap-2">
+                <h3 className="text-heading font-bold text-primary-light">Consultation #{cid}</h3>
+                <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${consultation.appointmentType === 'VIDEO' || consultation.appointmentType === 'TELECONSULT' ? 'bg-doctor-cyan/15 text-doctor-cyan' : 'bg-doctor-mint/15 text-doctor-mint'}`}>
+                  {consultation.appointmentType === 'VIDEO' || consultation.appointmentType === 'TELECONSULT' ? 'Online Video Visit' : 'In-Person Clinic Visit'}
+                </span>
+              </div>
+              <p className="text-body text-primary-light/60 mt-1">Appointment #{appointmentId}</p>
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" onClick={() => chatRoomId && router.push(`/patient/chat?roomId=${chatRoomId}`)} disabled={!chatRoomId}>
-                <MessageCircle size={18} className="inline mr-2" /> Chat Doctor
-              </Button>
-              <Button variant="outline" onClick={() => router.push(`/video/consultation?id=${appointmentId}`)}>
-                <Video size={18} className="inline mr-2" /> Video Call
-              </Button>
+              {(consultation.appointmentType === 'VIDEO' || consultation.appointmentType === 'TELECONSULT') && (
+                <>
+                  <Button variant="outline" onClick={() => chatRoomId && router.push(`/patient/chat?roomId=${chatRoomId}`)} disabled={!chatRoomId}>
+                    <MessageCircle size={18} className="inline mr-2" /> Chat Doctor
+                  </Button>
+                  <Button variant="outline" onClick={() => router.push(`/video/consultation?id=${appointmentId}`)}>
+                    <Video size={18} className="inline mr-2" /> Video Call
+                  </Button>
+                </>
+              )}
               {finalized && (
                 <Button variant="success" onClick={handleDownloadPdf}>
                   <Download size={18} className="inline mr-2" /> Download PDF

@@ -103,7 +103,7 @@ export default function RolesSection() {
                       <Icon size={22} className={`${color} group-hover:scale-110 transition-transform`} />
                     </span>
                     <div>
-                      <h3 className="font-display text-lg font-extrabold tracking-wide text-primary-light">
+                      <h3 className="font-display text-lg font-extrabold tracking-wide text-primary-light break-words">
                         {title}
                       </h3>
                       <p className="text-xs font-bold text-teal-600 dark:text-teal-300">

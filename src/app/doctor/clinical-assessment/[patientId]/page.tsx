@@ -6,10 +6,11 @@ import {
   Brain, Stethoscope, AlertTriangle, Info, 
   RefreshCw, Download, ChevronLeft, ChevronRight,
   Clock, FileText, Plus, History, Shield,
-  ChevronUp, ChevronDown
+  ChevronUp, ChevronDown, Upload, Scan, CheckCircle2, Loader2,
+  AlertCircle, BarChart3, Mic, File
 } from 'lucide-react';
 import AppLayout from '@/components/layout/AppLayout';
-import { clinicalAssessmentApi } from '@/lib/api/endpoints';
+import { clinicalAssessmentApi, patientDocumentApi } from '@/lib/api/endpoints';
 import { useAuthStore } from '@/lib/stores/auth';
 import { 
   FL, DarkCard, InnerCard, Pill, ActionButton, SectionTitle,
@@ -98,10 +99,102 @@ export default function ClinicalAssessmentPage({
     medicalHistory: false,
     medications: false,
     diagnoses: false,
-    vitals: true,
-    consultations: true,
-    clinicalNotes: true,
+    vitals: false,
+    documents: false,
   });
+
+  /* ---------- Document Scan / Upload state ---------- */
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [docCategory, setDocCategory] = useState<string>('LAB_REPORT');
+  const [docTitle, setDocTitle] = useState('');
+  const [docDescription, setDocDescription] = useState('');
+  const [uploadedDocuments, setUploadedDocuments] = useState<{
+    id: number; title: string; category: string; fileName: string;
+    status: string; extractedText?: string; summary?: string;
+    findings?: any[]; abnormalValues?: any[]; recommendations?: any[];
+    warnings?: string[]; confidence?: any; analyzedAt?: string;
+  }[]>([]);
+  const [uploadingDoc, setUploadingDoc] = useState(false);
+  const [analyzingDoc, setAnalyzingDoc] = useState<number | null>(null);
+
+  const DOCUMENT_CATEGORIES: { value: string; label: string; icon: string; color: string }[] = [
+    { value: 'LAB_REPORT', label: 'Lab Report', icon: '🧪', color: 'text-doctor-blue' },
+    { value: 'PRESCRIPTION', label: 'Prescription', icon: '💊', color: 'text-doctor-green' },
+    { value: 'DIAGNOSTIC_IMAGE', label: 'Diagnostic Image', icon: '🖼️', color: 'text-doctor-purple' },
+    { value: 'CONSULTATION_NOTE', label: 'Consultation Note', icon: '📝', color: 'text-doctor-teal' },
+    { value: 'DISCHARGE_SUMMARY', label: 'Discharge Summary', icon: '🏥', color: 'text-doctor-orange' },
+    { value: 'RADIOLOGY_REPORT', label: 'Radiology Report', icon: '🩻', color: 'text-doctor-pink' },
+    { value: 'PATHOLOGY_REPORT', label: 'Pathology Report', icon: '🔬', color: 'text-doctor-indigo' },
+    { value: 'VACCINATION_RECORD', label: 'Vaccination Record', icon: '💉', color: 'text-doctor-coral' },
+    { value: 'IMAGING_REPORT', label: 'Imaging Report', icon: '📡', color: 'text-doctor-lime' },
+    { value: 'ECG_REPORT', label: 'ECG Report', icon: '❤️', color: 'text-doctor-red' },
+    { value: 'REFERRAL_LETTER', label: 'Referral Letter', icon: '📋', color: 'text-doctor-cyan' },
+    { value: 'OPERATIVE_NOTE', label: 'Operative Note', icon: '🔪', color: 'text-doctor-amber' },
+    { value: 'PROGRESS_NOTE', label: 'Progress Note', icon: '📓', color: 'text-doctor-slate' },
+    { value: 'OTHER', label: 'Other', icon: '📄', color: 'text-doctor-gray' },
+  ];
+
+  const handleUploadDocument = async () => {
+    if (!selectedFile || !patientId) return;
+    setUploadingDoc(true);
+    try {
+
+      const { data } = await patientDocumentApi.upload(selectedFile, {
+        category: docCategory,
+        title: docTitle || undefined,
+        description: docDescription || undefined,
+        documentType: docCategory,
+      });
+
+      const newDoc = {
+        id: data.id,
+        title: data.title,
+        category: data.category?.value || docCategory,
+        fileName: data.fileName,
+        status: data.analysisStatus || 'NOT_ANALYZED',
+      };
+      setUploadedDocuments(prev => [...prev, newDoc]);
+      setSelectedFile(null);
+      setDocTitle('');
+      setDocDescription('');
+
+      // Auto-run analysis on the uploaded document
+      await handleAnalyzeDocument(data.id);
+    } catch (err: any) {
+      console.error('Document upload failed:', err);
+      setError(err.response?.data?.message || 'Document upload failed');
+    } finally {
+      setUploadingDoc(false);
+    }
+  };
+
+  const handleAnalyzeDocument = async (documentId: number) => {
+    setAnalyzingDoc(documentId);
+    try {
+      const res = await patientDocumentApi.analyze(documentId, {
+        documentType: docCategory,
+        extractionMode: 'structured',
+      });
+      const data = res.data;
+
+      setUploadedDocuments(prev => prev.map(d =>
+        d.id === documentId
+          ? { ...d, ...data, status: data.status || 'completed' }
+          : d
+      ));
+    } catch (err: any) {
+      console.error('Document analysis failed:', err);
+      setUploadedDocuments(prev => prev.map(d =>
+        d.id === documentId ? { ...d, status: 'failed' } : d
+      ));
+    } finally {
+      setAnalyzingDoc(null);
+    }
+  };
+
+  const handleRemoveDocument = (documentId: number) => {
+    setUploadedDocuments(prev => prev.filter(d => d.id !== documentId));
+  };
 
   const handleToggleSection = useCallback((section: string) => {
     setCollapsedSections(prev => ({ ...prev, [section]: !prev[section] }));
@@ -198,7 +291,8 @@ export default function ClinicalAssessmentPage({
           notes: s.notes,
         })),
         vitals: Object.keys(vitals).some(k => vitals[k as keyof VitalsInput] !== undefined) ? vitals : undefined,
-        clinicalNotes: clinicalNotes || undefined,
+          clinicalNotes: clinicalNotes || undefined,
+          documentIds: uploadedDocuments.map(d => d.id),
       };
 
       const response = await clinicalAssessmentApi.create(patientId, request);
@@ -331,6 +425,130 @@ export default function ClinicalAssessmentPage({
             </ActionButton>
           )}
         </div>
+
+        {/* Document Scan & Analysis */}
+        <DarkCard className="space-y-4 border-doctor-purple/30">
+          <div className="flex items-center justify-between flex-wrap gap-3">
+            <div>
+              <h4 className="text-primary-light font-semibold">📄 Document Scan & AI Analysis</h4>
+              <p className="text-xs text-doctor-muted">Upload lab reports, prescriptions, radiology, discharge summaries &amp; more for AI-powered clinical extraction</p>
+            </div>
+            {uploadedDocuments.length > 0 && (
+              <ActionButton variant="outline" size="sm" onClick={() => setCollapsedSections(c => ({ ...c, documents: !c.documents }))}>
+                {collapsedSections.documents ? <ChevronDown size={14} /> : <ChevronUp size={14} />}
+                {collapsedSections.documents ? 'Collapse' : 'Documents'}
+              </ActionButton>
+            )}
+          </div>
+
+          {!collapsedSections.documents && (
+            <div className="space-y-3">
+              <Field label="Select Document">
+                <div className="flex items-center gap-3">
+                  <input type="file" accept=".pdf,.jpg,.jpeg,.png,.webp,.tiff,.heic" onChange={(e) => { if (e.target.files?.[0]) setSelectedFile(e.target.files[0]); }} className="sr-only" />
+                  <ActionButton variant="outline" size="sm" onClick={() => (document.querySelector('input[type=file]') as HTMLInputElement)?.click()} disabled={uploadingDoc}>
+                    <Upload size={14} className="mr-1" /> {uploadingDoc ? 'Uploading...' : 'Choose File'}
+                  </ActionButton>
+                </div>
+                {selectedFile && <span className="text-xs text-doctor-muted">{selectedFile.name} ({Math.round(selectedFile.size / 1024)} KB)</span>}
+              </Field>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <Field label="Document Type">
+                  <select value={docCategory} onChange={(e) => setDocCategory(e.target.value)} className="w-full bg-doctor-input border-doctor-border rounded-xl px-3 py-2 text-sm text-doctor-text focus:border-doctor-primary">{DOCUMENT_CATEGORIES.map(c => <option key={c.value} value={c.value}>{c.icon} {c.label}</option>)}</select>
+                </Field>
+                <Field label="Title">
+                  <input type="text" value={docTitle} onChange={(e) => setDocTitle(e.target.value)} placeholder="e.g. CBC Blood Test" className="w-full bg-doctor-input border-doctor-border rounded-xl px-3 py-2 text-sm text-doctor-text focus:border-doctor-primary" />
+                </Field>
+                <Field label="Description">
+                  <input type="text" value={docDescription} onChange={(e) => setDocDescription(e.target.value)} placeholder="Optional notes" className="w-full bg-doctor-input border-doctor-border rounded-xl px-3 py-2 text-sm text-doctor-text focus:border-doctor-primary" />
+                </Field>
+              </div>
+
+              <div className="flex gap-2">
+                <ActionButton onClick={handleUploadDocument} disabled={!selectedFile || uploadingDoc} className="flex-1">
+                  <Scan size={14} className="mr-1" /> {uploadingDoc ? 'Scanning...' : 'Upload & Analyze'}
+                </ActionButton>
+              </div>
+            </div>
+          )}
+          {uploadedDocuments.length > 0 && (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-medium text-doctor-muted uppercase tracking-wider">Analyzed Documents</span>
+                <span className="text-xs text-doctor-dim">{uploadedDocuments.length} document{uploadedDocuments.length !== 1 ? 's' : ''}</span>
+              </div>
+              <div className="space-y-1">
+                {uploadedDocuments.map((doc) => (
+                  <div key={doc.id} className="flex items-center justify-between gap-2 px-3 py-2 rounded-xl border border-doctor-border-soft bg-doctor-surface/30">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs">{doc.category === 'LAB_REPORT' ? '🧪' : doc.category === 'PRESCRIPTION' ? '💊' : doc.category === 'DIAGNOSTIC_IMAGE' ? '🖼️' : '📄'}</span>
+                      <span className="text-sm text-doctor-text truncate max-w-[180px]">{doc.title}</span>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-doctor-border/50 text-doctor-muted">{doc.category}</span>
+                      {doc.status === 'completed' && <span className="text-[10px] text-doctor-mint">✓ Analyzed</span>}
+                      {doc.status === 'failed' && <span className="text-[10px] text-doctor-pink">✗ Failed</span>}
+                      {doc.status === 'NOT_ANALYZED' && <span className="text-[10px] text-doctor-gray">Pending</span>}
+                      <button onClick={() => handleRemoveDocument(doc.id)} className="text-doctor-pink hover:text-doctor-pink/70"><File size={12} /></button>
+                    </div>
+                    {analyzingDoc === doc.id && (
+                      <div className="col-span-full flex items-center gap-2 text-xs text-doctor-muted mt-1">
+                        <Loader2 className="w-3 h-3 animate-spin" /> Analyzing document...
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {uploadedDocuments.some(d => d.status === 'completed') && (
+            <div className="space-y-3 mt-4">
+              <h4 className="text-xs font-medium text-doctor-muted uppercase tracking-wider">AI Analysis Results</h4>
+              <div className="space-y-3">
+                {uploadedDocuments.filter(d => d.status === 'completed').map((doc) => (
+                  <DarkCard key={doc.id} className="border-doctor-purple/30 bg-doctor-surface/30 p-3 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs">{doc.category === 'LAB_REPORT' ? '🧪' : doc.category === 'PRESCRIPTION' ? '💊' : doc.category === 'DIAGNOSTIC_IMAGE' ? '🖼️' : '📄'}</span>
+                        <h5 className="text-sm font-medium text-doctor-text">{doc.title}</h5>
+                        <Pill color={FL.lavender} size="xs">{doc.confidence?.level || 'MEDIUM'} Confidence</Pill>
+                      </div>
+                      <span className="text-[10px] text-doctor-muted">{new Date(doc.analyzedAt || Date.now()).toLocaleDateString()}</span>
+                    </div>
+                    {doc.extractedText && (
+                      <div className="border border-doctor-border-soft rounded-lg p-2 bg-doctor-input text-xs text-doctor-text/80 max-h-32 overflow-y-auto font-mono">{doc.extractedText.slice(0, 500)}{doc.extractedText.length > 500 ? '...' : ''}</div>
+                    )}
+                    {doc.summary && (
+                      <div className="text-xs text-doctor-text"><span className="text-doctor-muted font-medium">Summary:</span> {doc.summary}</div>
+                    )}
+                    {doc.findings && doc.findings.length > 0 && (
+                      <div><p className="text-xs text-doctor-muted font-medium mb-1">Clinical Findings</p>
+                        <div className="flex flex-wrap gap-1">{doc.findings.map((f: any, i: number) => <Pill key={i} color={f.severity === 'CRITICAL' || f.severity === 'HIGH' ? FL.pink : FL.gold} size="xs">{f.description}</Pill>)}</div>
+                      </div>
+                    )}
+                    {doc.abnormalValues && doc.abnormalValues.length > 0 && (
+                      <div><p className="text-xs text-doctor-muted font-medium mb-1">Abnormal Values</p>
+                        <div className="space-y-0.5">{doc.abnormalValues.map((v: any, i: number) => (
+                          <div key={i} className="flex justify-between text-xs"><span className="text-doctor-muted">{v.parameter}</span><span className="text-doctor-text">{v.value} {v.unit}</span><span className={`text-[10px] px-1.5 py-0 rounded font-bold ${v.direction === 'HIGH' ? 'text-doctor-pink' : 'text-doctor-mint'}`}>{v.direction}</span></div>
+                        ))}</div>
+                      </div>
+                    )}
+                    {doc.recommendations && doc.recommendations.length > 0 && (
+                      <div><p className="text-xs text-doctor-muted font-medium mb-1">Recommendations</p>
+                        <ul className="text-xs text-doctor-text list-disc list-inside space-y-0.5">{doc.recommendations.map((r: any, i: number) => <li key={i}>{r.description}</li>)}</ul>
+                      </div>
+                    )}
+                    {doc.warnings && doc.warnings.length > 0 && (
+                      <div className="text-xs text-doctor-pink"><AlertTriangle size={10} className="mr-1" />{doc.warnings.map((w: any, i: number) => <div key={i}>⚠ {w}</div>)}</div>
+                    )}
+                    {'disclaimer' in doc && (doc as any).disclaimer && <p className="text-[10px] text-doctor-dim italic">{(doc as any).disclaimer}</p>}
+                  </DarkCard>
+                ))}
+              </div>
+            </div>
+          )}
+        </DarkCard>
+
 
         {/* Assessment Results */}
         {assessment && (

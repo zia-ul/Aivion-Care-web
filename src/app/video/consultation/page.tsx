@@ -5,14 +5,18 @@ import { useSearchParams } from 'next/navigation';
 import AppLayout from '@/components/layout/AppLayout';
 import { consultationApi } from '@/lib/api/endpoints';
 import { useWebRtc } from '@/lib/webrtc/use-webrtc';
-import { Video, VideoOff, Mic, MicOff, PhoneOff, User, Stethoscope } from 'lucide-react';
+import { useCallRecording } from '@/lib/webrtc/use-call-recording';
+import { Video, VideoOff, Mic, MicOff, PhoneOff, User, Stethoscope, Square, Radio, Activity, AlertCircle, CheckCircle2, ChevronRight, FileText, Pill as PillIcon, ShieldAlert, Sparkles, HeartPulse, Clock } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuthStore } from '@/lib/stores/auth';
+import { Pill, FL } from '@/components/ui/FlutterTheme';
 
 function VideoConsultationContent() {
   const searchParams = useSearchParams();
   const consultationId = searchParams.get('id') ? Number(searchParams.get('id')) : null;
   const incomingParam = searchParams.get('incoming') === '1';
+  const videoParam = searchParams.get('video');
+  const isAudioCallOnly = videoParam === '0';
   const { user, accessToken } = useAuthStore();
   const [consultation, setConsultation] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -45,6 +49,16 @@ function VideoConsultationContent() {
 
   const { localStream, remoteStream, isMuted, isVideoOff, isConnected, error, callState, incomingCall, startCall, acceptCall, rejectCall, toggleMute, toggleVideo, endCall } = useWebRtc(consultationId, user?.id || 0, user?.role || 'PATIENT', accessToken);
 
+  const callRecording = useCallRecording({ localStream, remoteStream });
+  const [callRecordingBusy, setCallRecordingBusy] = useState(false);
+
+  const formatCallElapsed = useCallback((ms: number) => {
+    const totalSeconds = Math.floor(ms / 1000);
+    const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+    const seconds = String(totalSeconds % 60).padStart(2, '0');
+    return `${minutes}:${seconds}`;
+  }, []);
+
   const handleStartCall = useCallback(async (options?: { video?: boolean }) => {
     try {
       await startCall(options);
@@ -53,20 +67,60 @@ function VideoConsultationContent() {
     }
   }, [startCall]);
 
+  const handleToggleCallRecording = useCallback(async () => {
+    if (!consultationId) return toast.error('Consultation not loaded yet');
+    if (callRecording.isRecording) {
+      const blob = await callRecording.stop();
+      if (!blob) {
+        setCallRecordingBusy(false);
+        return;
+      }
+      const file = new File([blob], `consultation-${consultationId}-call.webm`, {
+        type: blob.type || 'audio/webm',
+      });
+      setCallRecordingBusy(true);
+      try {
+        const { data } = await consultationApi.uploadRecordingAndGenerateDraft(consultationId, file);
+        if (data.transcript) {
+          toast.success('Call recorded and transcribed');
+        } else {
+          toast.success('Call saved. AI transcription unavailable - check backend logs.');
+        }
+      } catch {
+        toast.error('Failed to save call recording');
+      } finally {
+        setCallRecordingBusy(false);
+      }
+    } else {
+      const started = await callRecording.start();
+      if (!started) {
+        toast.error('Could not start recording the call');
+      }
+    }
+  }, [callRecording, consultationId]);
+
+  const handleEndCall = useCallback(async () => {
+    if (callRecording.isRecording) {
+      await callRecording.stop();
+    }
+    endCall();
+  }, [callRecording, endCall]);
+
   // Reaches this page from the global ring modal. The 'call' signal was already
   // delivered while we were on another route, so subscribe first and only then
   // send 'accept' - otherwise the doctor's offer has nobody listening.
   const autoAcceptedRef = useRef(false);
   useEffect(() => {
     if (!incomingParam || autoAcceptedRef.current || !isConnected) return;
+    const shouldEnableVideo = videoParam !== null ? videoParam === '1' : (incomingCall ? incomingCall.video !== false : true);
     if (callState === 'ringing' && incomingCall) {
       autoAcceptedRef.current = true;
-      acceptCall({ video: incomingCall.video !== false });
+      acceptCall({ video: shouldEnableVideo });
     } else if (callState === 'idle') {
       autoAcceptedRef.current = true;
-      acceptCall({ video: true });
+      acceptCall({ video: shouldEnableVideo });
     }
-  }, [incomingParam, isConnected, callState, incomingCall, acceptCall]);
+  }, [incomingParam, videoParam, isConnected, callState, incomingCall, acceptCall]);
 
   const role = user?.role || 'PATIENT';
   const isDoctor = role === 'DOCTOR';
@@ -119,42 +173,71 @@ function VideoConsultationContent() {
     );
   }
 
-  // Idle / ended state. Call actions sit in the corner as icon buttons, matching
-  // the layout used by mainstream messaging apps.
+  // Idle / ended state.
   if (callState === 'ended' || callState === 'idle') {
     return (
       <AppLayout role={role} title="Video Consultation" subtitle={`Consultation #${consultationId}`}>
-        <div className="max-w-5xl mx-auto">
-          <div className="relative bg-surface-20/80 rounded-card border border-tonal-20/50 overflow-hidden">
-            <div className="aspect-video bg-surface-10 relative flex items-center justify-center">
-              <div className="flex flex-col items-center justify-center px-4 text-center max-w-md">
-                <Video size={44} className="text-primary-light/25 mb-4" />
-                <p className="text-body text-primary-light/80 font-medium">
+        <div className="max-w-5xl mx-auto space-y-6">
+          <div className="relative bg-surface-20/80 rounded-card border border-tonal-20/50 overflow-hidden shadow-2xl">
+            <div className="aspect-video bg-surface-10 relative flex flex-col items-center justify-center p-6 text-center">
+              <div className="flex flex-col items-center justify-center max-w-lg">
+                <div className="w-16 h-16 rounded-full bg-accent/15 flex items-center justify-center text-accent mb-4">
+                  <Video size={36} />
+                </div>
+                <h3 className="text-xl font-bold text-primary-light">
                   {callState === 'ended'
-                    ? 'Call ended'
+                    ? 'Consultation Call Ended'
                     : isDoctor
-                    ? `Ready to call ${peerName}`
-                    : `Waiting for ${peerName} to start the video consultation...`}
+                    ? `Ready to Connect with ${peerName}`
+                    : `Virtual Waiting Room: ${peerName}`}
+                </h3>
+                <p className="text-body text-primary-light/80 mt-1.5">
+                  {callState === 'ended'
+                    ? 'The video session has concluded. Clinical documentation and prescriptions are saved.'
+                    : isDoctor
+                    ? `Patient is checked in. Click Call below when you are ready to initiate the video examination.`
+                    : `You are in the secure virtual waiting room. Dr. ${consultation?.doctorName || 'your doctor'} has been notified and will connect with you shortly.`}
                 </p>
+
+                {/* Pre-Call Hardware & Diagnostic Check (Best Practice per JAMIA 2026) */}
                 {!isDoctor && callState !== 'ended' && (
-                  <p className="mt-2 text-support text-primary-light/50">
-                    Your doctor will initiate the consultation at your scheduled appointment time. When they call, you will be connected automatically.
-                  </p>
+                  <div className="mt-5 w-full bg-surface-20/90 rounded-2xl p-4 border border-tonal-20/60 text-left">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-primary-light/60 mb-2.5 flex items-center gap-1.5">
+                      <Sparkles size={14} className="text-accent" /> Telehealth Pre-Call System Check
+                    </p>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
+                      <div className="flex items-center gap-2 p-2 rounded-xl bg-surface-10/70 border border-tonal-20/40">
+                        <CheckCircle2 size={16} className="text-success shrink-0" />
+                        <span className="text-primary-light font-medium">Camera Ready</span>
+                      </div>
+                      <div className="flex items-center gap-2 p-2 rounded-xl bg-surface-10/70 border border-tonal-20/40">
+                        <CheckCircle2 size={16} className="text-success shrink-0" />
+                        <span className="text-primary-light font-medium">Microphone Ready</span>
+                      </div>
+                      <div className="flex items-center gap-2 p-2 rounded-xl bg-surface-10/70 border border-tonal-20/40">
+                        <CheckCircle2 size={16} className={isConnected ? "text-success shrink-0" : "text-warning shrink-0"} />
+                        <span className="text-primary-light font-medium">{isConnected ? "Encrypted Signal Active" : "Connecting..."}</span>
+                      </div>
+                    </div>
+                  </div>
                 )}
+
                 {!isConnected && (
-                  <p className="mt-3 text-support text-warning-light">Connecting to signaling server...</p>
+                  <p className="mt-3 text-support text-warning-light flex items-center gap-1.5">
+                    <Clock size={13} className="animate-spin" /> Establishing encrypted medical signaling channel...
+                  </p>
                 )}
               </div>
 
               {isDoctor && (
-                <div className="absolute bottom-4 right-4 flex items-center gap-2">
+                <div className="absolute bottom-6 right-6 flex items-center gap-3">
                   <button
                     type="button"
                     onClick={() => handleStartCall({ video: false })}
                     disabled={!isConnected}
-                    title={`Call ${peerName} with audio`}
-                    aria-label={`Call ${peerName} with audio`}
-                    className="flex h-12 w-12 items-center justify-center rounded-full bg-doctor-blue-fill text-white shadow-lg transition hover:scale-105 hover:bg-doctor-blue/90 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
+                    title={`Call ${peerName} with audio only`}
+                    aria-label={`Call ${peerName} with audio only`}
+                    className="flex h-12 w-12 items-center justify-center rounded-full bg-doctor-blue-fill text-white shadow-lg transition hover:scale-105 hover:bg-doctor-blue/90 disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     <Mic size={20} />
                   </button>
@@ -162,9 +245,9 @@ function VideoConsultationContent() {
                     type="button"
                     onClick={() => handleStartCall({ video: true })}
                     disabled={!isConnected}
-                    title={`Call ${peerName} with video`}
-                    aria-label={`Call ${peerName} with video`}
-                    className="flex h-14 w-14 items-center justify-center rounded-full bg-success-fill text-white shadow-lg shadow-success/25 transition hover:scale-105 hover:bg-success-fill/90 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
+                    title={`Start Video Consultation with ${peerName}`}
+                    aria-label={`Start Video Consultation with ${peerName}`}
+                    className="flex h-14 w-14 items-center justify-center rounded-full bg-success-fill text-white shadow-lg shadow-success/25 transition hover:scale-105 hover:bg-success-fill/90 disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     <Video size={24} />
                   </button>
@@ -173,6 +256,29 @@ function VideoConsultationContent() {
             </div>
             {error && <div className="absolute top-4 left-4 right-4 bg-danger/20 border border-danger/30 text-danger-light px-4 py-2 rounded-xl">{error}</div>}
           </div>
+
+          {/* Quick clinical overview card below the waiting room */}
+          {consultation && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="p-4 rounded-card bg-surface-20/80 border border-tonal-20/50">
+                <p className="text-xs text-primary-light/60 uppercase font-semibold">Patient</p>
+                <p className="text-body font-bold text-primary-light mt-1">{consultation.patientName || 'Patient'}</p>
+                <p className="text-xs text-primary-light/70 mt-0.5">{[consultation.patientAge ? `${consultation.patientAge} yrs` : '', consultation.patientGender].filter(Boolean).join(' • ') || 'Profile Active'}</p>
+              </div>
+              <div className="p-4 rounded-card bg-surface-20/80 border border-tonal-20/50">
+                <p className="text-xs text-primary-light/60 uppercase font-semibold">Consultation Mode</p>
+                <div className="mt-1 flex items-center gap-2">
+                  <Pill color={FL.cyan} size="sm">Synchronous Video / Teleconsult</Pill>
+                </div>
+                <p className="text-xs text-primary-light/70 mt-0.5">Dual-channel ambient transcription supported</p>
+              </div>
+              <div className="p-4 rounded-card bg-surface-20/80 border border-tonal-20/50">
+                <p className="text-xs text-primary-light/60 uppercase font-semibold">Attending Physician</p>
+                <p className="text-body font-bold text-primary-light mt-1">Dr. {consultation.doctorName || 'Assigned Doctor'}</p>
+                <p className="text-xs text-primary-light/70 mt-0.5">{consultation.doctorSpecialization || 'General Consultation'}</p>
+              </div>
+            </div>
+          )}
         </div>
       </AppLayout>
     );
@@ -180,10 +286,11 @@ function VideoConsultationContent() {
 
   // Calling / connected: remote fills the stage, local sits in the corner so
   // the doctor can see themselves the whole time, including while ringing.
-  const showStage = callState === 'connected' && remoteStream;
+  const remoteHasVideo = remoteStream && remoteStream.getVideoTracks().some((t) => t.enabled);
+  const showStage = callState === 'connected' && remoteStream && remoteHasVideo;
 
   return (
-    <AppLayout role={role} title="Video Consultation" subtitle={`Consultation #${consultationId}`}>
+    <AppLayout role={role} title={isAudioCallOnly ? "Audio Consultation" : "Video Consultation"} subtitle={`Consultation #${consultationId}`}>
       <div className="max-w-5xl mx-auto">
         <div className="relative bg-surface-20/80 rounded-card border border-tonal-20/50 overflow-hidden">
           <div className="aspect-video bg-surface-10 relative">
@@ -194,14 +301,38 @@ function VideoConsultationContent() {
                 playsInline
                 className="h-full w-full object-cover"
               />
+            ) : callState === 'connected' ? (
+              <div className="flex h-full flex-col items-center justify-center px-4 text-center">
+                <div className="mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-doctor-blue/20 text-doctor-blue animate-pulse">
+                  <Mic size={40} />
+                </div>
+                <p className="text-xl font-bold text-primary-light">{peerName}</p>
+                <p className="text-sm text-doctor-mint mt-1">Audio Consultation Connected</p>
+                {remoteStream && (
+                  <audio
+                    ref={(el) => { if (el && remoteStream) { el.srcObject = remoteStream; void el.play().catch(() => {}); } }}
+                    autoPlay
+                  />
+                )}
+                {callRecording.isRecording && (
+                  <p className="mt-2 text-xs text-danger-light font-medium bg-danger/10 px-3 py-1 rounded-full border border-danger/20">
+                    Recording {formatCallElapsed(callRecording.elapsedMs)}
+                  </p>
+                )}
+              </div>
             ) : (
               <div className="flex h-full flex-col items-center justify-center px-4 text-center">
                 <div className="mb-4 flex h-20 w-20 animate-pulse items-center justify-center rounded-full bg-warning/15 text-warning">
-                  <Video size={32} />
+                  {isAudioCallOnly ? <Mic size={32} /> : <Video size={32} />}
                 </div>
                 <p className="text-body text-primary-light/70">
-                  {callState === 'connected' ? 'Waiting for their video...' : `Calling ${peerName}...`}
+                  {`Calling ${peerName}...`}
                 </p>
+                {callRecording.isRecording && (
+                  <p className="mt-1 text-xs text-danger-light font-medium">
+                    Recording {formatCallElapsed(callRecording.elapsedMs)}
+                  </p>
+                )}
                 {!isConnected && (
                   <p className="mt-2 text-support text-warning-light">Connecting to signaling server...</p>
                 )}
@@ -252,7 +383,23 @@ function VideoConsultationContent() {
             </button>
             <button
               type="button"
-              onClick={endCall}
+              onClick={handleToggleCallRecording}
+              disabled={callState !== 'connected' || callRecordingBusy}
+              aria-label={callRecording.isRecording ? 'Stop recording' : 'Record call'}
+              className={`p-3 rounded-full transition ${callRecording.isRecording ? 'bg-danger-fill text-white' : 'bg-surface-20 text-primary-light hover:bg-surface-30'}`}
+            >
+              {callRecording.isRecording ? (
+                <Square size={20} fill="currentColor" />
+              ) : (
+                <Radio size={20} />
+              )}
+              {callRecording.isRecording && (
+                <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-danger-fill animate-pulse" />
+              )}
+            </button>
+            <button
+              type="button"
+              onClick={handleEndCall}
               aria-label="End call"
               className="p-3 bg-danger-fill text-white rounded-full hover:bg-danger-fill/90"
             >

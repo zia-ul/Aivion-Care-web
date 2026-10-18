@@ -364,8 +364,8 @@ export default function HeroSection() {
                 </div>
 
                 {/* Middle Problem Box */}
-                <div className="absolute top-20 sm:top-16 left-4 right-4 rounded-2xl border border-tonal-20 bg-surface-20/85 dark:border-white/15 dark:bg-slate-950/85 p-3.5 backdrop-blur-md shadow-xl z-10">
-                  <p className="text-xs sm:text-sm font-semibold text-primary-light leading-relaxed">
+                <div className="absolute top-16 sm:top-16 left-4 right-4 rounded-2xl border border-tonal-20 bg-surface-20/85 dark:border-white/15 dark:bg-slate-950/85 p-3.5 backdrop-blur-md shadow-xl z-10">
+                  <p className="text-xs sm:text-sm font-semibold text-primary-light leading-relaxed line-clamp-3 sm:line-clamp-4">
                     ⚠️ {slide.problemText}
                   </p>
                 </div>
@@ -453,12 +453,12 @@ export default function HeroSection() {
                 <Zap size={14} className="text-cyan-600 dark:text-cyan-300 animate-bounce" /> {slide.solutionBadge}
               </div>
 
-              <h1 id="hero-title" className="mt-4 font-display text-3xl sm:text-5xl font-extrabold tracking-tight text-primary-light leading-[1.15]">
+              <h1 id="hero-title" className="mt-4 font-display text-3xl sm:text-5xl font-extrabold tracking-tight text-primary-light leading-[1.15] break-words hyphens-auto">
                 {slide.solutionTitle}
               </h1>
 
               {/* Gen-Z Punchline */}
-              <p className="mt-4 text-xl sm:text-2xl font-black bg-gradient-to-r from-sky-500 via-teal-500 to-cyan-500 dark:from-sky-400 dark:via-teal-300 dark:to-cyan-300 bg-clip-text text-transparent">
+              <p className="mt-4 text-xl sm:text-2xl font-black bg-gradient-to-r from-sky-500 via-teal-500 to-cyan-500 dark:from-sky-400 dark:via-teal-300 dark:to-cyan-300 bg-clip-text text-transparent break-words">
                 &ldquo;{slide.solutionPunchline}&rdquo;
               </p>
 
@@ -503,17 +503,17 @@ export default function HeroSection() {
 
               {/* Bottom Quick Feature Highlights with Heartbeat Icon */}
               <div className="mt-8 pt-6 border-t border-tonal-20 grid grid-cols-2 sm:grid-cols-3 gap-3">
-                <div className="flex items-center gap-2 text-xs font-semibold text-primary-light/85">
-                  <HeartPulse size={16} className="text-rose-500 dark:text-rose-400 animate-heartbeat" />
-                  <span>24/7 Heartbeat Loop</span>
+                <div className="flex items-center gap-2 min-w-0 text-xs font-semibold text-primary-light/85">
+                  <HeartPulse size={16} className="shrink-0 text-rose-500 dark:text-rose-400 animate-heartbeat" />
+                  <span className="leading-tight">24/7 Heartbeat Loop</span>
                 </div>
-                <div className="flex items-center gap-2 text-xs font-semibold text-primary-light/85">
-                  <Activity size={16} className="text-cyan-600 dark:text-cyan-400" />
-                  <span>Moving ECG Lines</span>
+                <div className="flex items-center gap-2 min-w-0 text-xs font-semibold text-primary-light/85">
+                  <Activity size={16} className="shrink-0 text-cyan-600 dark:text-cyan-400" />
+                  <span className="leading-tight">Moving ECG Lines</span>
                 </div>
-                <div className="flex items-center gap-2 text-xs font-semibold text-primary-light/85">
-                  <ShieldCheck size={16} className="text-teal-600 dark:text-teal-400" />
-                  <span>Doctor Verified</span>
+                <div className="flex items-center gap-2 min-w-0 text-xs font-semibold text-primary-light/85">
+                  <ShieldCheck size={16} className="shrink-0 text-teal-600 dark:text-teal-400" />
+                  <span className="leading-tight">Doctor Verified</span>
                 </div>
               </div>
 

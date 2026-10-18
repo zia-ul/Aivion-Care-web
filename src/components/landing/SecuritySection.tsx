@@ -178,7 +178,7 @@ export default function SecuritySection() {
                     <span className="h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
                   </div>
 
-                  <h5 className="mt-4 font-display text-lg font-bold text-primary-light">
+                  <h5 className="mt-4 font-display text-lg font-bold text-primary-light break-words">
                     {algo.title}
                   </h5>
 

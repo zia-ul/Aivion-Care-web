@@ -73,8 +73,11 @@ export default function DoctorAppointments() {
           <div className="flex items-center gap-2 flex-wrap">
             <p className="font-semibold inline-flex items-center gap-2 text-primary-light"><User size={16} className="text-doctor-blue" /> {a.patientName ?? '—'}</p>
             <Pill color={statusColor(a.status)}>{a.status ?? ''}</Pill>
+            <Pill color={a.type === 'VIDEO' || a.type === 'TELECONSULT' ? FL.cyan : FL.mint}>
+              {a.type === 'VIDEO' || a.type === 'TELECONSULT' ? 'Online Video' : 'In-Person Visit'}
+            </Pill>
           </div>
-          <p className="text-xs text-doctor-muted mt-1">{a.hospitalName ?? ''}{a.type ? ` • ${a.type}` : ''}</p>
+          <p className="text-xs text-doctor-muted mt-1">{a.hospitalName ?? ''}</p>
           <p className="text-xs text-doctor-muted mt-1">{a.appointmentDate} at {String(a.slotTime ?? '').slice(0, 5)}</p>
         </div>
         <div className="flex flex-wrap gap-2">

@@ -180,7 +180,11 @@ export function useConsultation({ appointmentId, onLoadComplete }: UseConsultati
       });
       setSuggestions(allGroups);
       
-      toast.success('Recording transcribed and AI draft generated');
+      toast.success(
+        data.transcript
+          ? 'Recording transcribed and AI draft generated'
+          : 'Recording saved. AI transcription unavailable - check backend logs.'
+      );
 } catch (err: unknown) {
       stopRecordingTracks(mediaStreamRef, recordingTimerRef, mediaRecorderRef);
       setIsRecording(false);
@@ -210,7 +214,11 @@ export function useConsultation({ appointmentId, onLoadComplete }: UseConsultati
       });
       setSuggestions(allGroups);
       
-      toast.success('Recording transcribed and AI draft generated');
+      toast.success(
+        data.transcript
+          ? 'Recording transcribed and AI draft generated'
+          : 'Recording saved. AI transcription unavailable - check backend logs.'
+      );
     } catch (err: unknown) {
       toast.error(readableError(err, 'Failed to process the recording. Please try again.'));
     } finally {

@@ -365,7 +365,7 @@ export default function GallerySection() {
               {/* Card Body with Radiant Effect */}
               <div className="flex flex-1 flex-col justify-between p-6">
                 <div>
-                  <h3 className="font-display text-lg font-bold text-primary-light group-hover:text-cyan-700 dark:group-hover:text-cyan-300 transition-colors">
+                  <h3 className="font-display text-lg font-bold text-primary-light group-hover:text-cyan-700 dark:group-hover:text-cyan-300 transition-colors break-words">
                     {item.title}
                   </h3>
                   <p className="mt-1 text-xs font-semibold text-teal-600 dark:text-teal-300 uppercase tracking-wider">

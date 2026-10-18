@@ -21,7 +21,13 @@ function BookContent() {
   const today = useMemo(() => new Date().toISOString().split('T')[0], []);
   const [date, setDate] = useState(today);
   const [type, setType] = useState<'VIDEO' | 'TELECONSULT' | 'IN_PERSON'>('VIDEO');
-  const [slots, setSlots] = useState<string[]>([]);
+  interface SlotItem {
+    time: string;
+    status: 'AVAILABLE' | 'BOOKED' | 'PAST';
+    bookable: boolean;
+  }
+
+  const [slotItems, setSlotItems] = useState<SlotItem[]>([]);
   const [slotsError, setSlotsError] = useState<string | null>(null);
   const [selectedSlot, setSelectedSlot] = useState('');
   const [loadingSlots, setLoadingSlots] = useState(false);
@@ -36,13 +42,25 @@ function BookContent() {
     setSlotsError(null);
     setSelectedSlot('');
     try {
-      // Backend: GET /doctors/{id}/slots?date=YYYY-MM-DD -> { slots: ["HH:mm"...], error, message }
+      // Backend: GET /doctors/{id}/slots?date=YYYY-MM-DD -> { slots: ["HH:mm"...], detailedSlots: [{ time, status, bookable }] }
       const { data } = await doctorApi.getSlots(doctorId, date);
-      const raw: unknown[] = Array.isArray(data?.slots) ? data.slots : [];
-      setSlots(raw.map((s) => String(s).slice(0, 5)));
+      if (Array.isArray(data?.detailedSlots) && data.detailedSlots.length > 0) {
+        setSlotItems(data.detailedSlots.map((d: any) => ({
+          time: String(d.time).slice(0, 5),
+          status: d.status || 'AVAILABLE',
+          bookable: Boolean(d.bookable),
+        })));
+      } else {
+        const raw: unknown[] = Array.isArray(data?.slots) ? data.slots : [];
+        setSlotItems(raw.map((s) => ({
+          time: String(s).slice(0, 5),
+          status: 'AVAILABLE',
+          bookable: true,
+        })));
+      }
       if (data?.error) setSlotsError(String(data.error));
     } catch (err: any) {
-      setSlots([]);
+      setSlotItems([]);
       setSlotsError(err?.response?.data?.error || err?.response?.data?.message || 'Failed to load slots');
     } finally {
       setLoadingSlots(false);
@@ -129,30 +147,51 @@ function BookContent() {
         </DarkCard>
 
         <div>
-          <SectionTitle action={<Pill color={FL.blue}>{slots.length} slots</Pill>}>
-            <span className="inline-flex items-center gap-2"><CalendarDays size={18} /> Available slots — {date}</span>
+          <SectionTitle action={<Pill color={FL.blue}>{slotItems.filter(s => s.bookable).length} available</Pill>}>
+            <span className="inline-flex items-center gap-2"><CalendarDays size={18} /> Daily Schedule — {date}</span>
           </SectionTitle>
           {loadingSlots ? (
             <p className="text-sm text-doctor-dim">Loading slots...</p>
           ) : slotsError ? (
             <div className="rounded-3xl bg-surface-20 border border-doctor-gold/50 p-5 text-sm text-warning-light">{slotsError}</div>
-          ) : slots.length === 0 ? (
+          ) : slotItems.length === 0 ? (
             <div className="rounded-3xl bg-surface-20 border border-doctor-border-soft p-6 text-center text-sm text-doctor-dim">
-              No available slots on this date. Try another date.
+              No slots scheduled for this doctor on this date. Try another date.
             </div>
           ) : (
-            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5">
-              {slots.map((s) => {
-                const selected = selectedSlot === s;
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {slotItems.map((slot) => {
+                const selected = selectedSlot === slot.time;
+                const isBooked = slot.status === 'BOOKED';
+                const isPast = slot.status === 'PAST';
+                const isAvailable = slot.bookable;
+
                 return (
                   <button
-                    key={s}
-                    onClick={() => setSelectedSlot(s)}
-                    className={`py-2.5 rounded-2xl text-sm font-semibold border transition-colors inline-flex items-center justify-center gap-1.5 ${
-                      selected ? 'bg-doctor-mint-fill text-white border-doctor-mint-fill' : 'bg-surface-20 text-primary-light border-doctor-border-input hover:border-accent'
+                    key={slot.time}
+                    disabled={!isAvailable || booking}
+                    onClick={() => setSelectedSlot(slot.time)}
+                    className={`p-3 rounded-2xl text-left border transition-all flex flex-col justify-between ${
+                      selected
+                        ? 'bg-doctor-mint-fill text-white border-doctor-mint-fill shadow-lg shadow-doctor-mint/25'
+                        : isBooked
+                        ? 'bg-surface-10/40 text-primary-light/40 border-tonal-20/40 cursor-not-allowed opacity-60'
+                        : isPast
+                        ? 'bg-surface-10/30 text-primary-light/30 border-tonal-20/20 cursor-not-allowed opacity-40'
+                        : 'bg-surface-20 text-primary-light border-doctor-border-input hover:border-doctor-mint hover:bg-surface-30'
                     }`}
                   >
-                    <Clock size={14} /> {s}
+                    <div className="flex items-center justify-between w-full mb-1">
+                      <span className="text-xs font-semibold px-2 py-0.5 rounded-full inline-flex items-center gap-1 bg-black/20">
+                        {isBooked ? '🔒 Booked' : isPast ? '⏰ Past' : '✓ Available'}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1.5 font-bold text-base mt-1">
+                      <Clock size={15} /> {slot.time}
+                    </div>
+                    <span className="text-[11px] text-doctor-muted mt-1">
+                      {isBooked ? 'Already reserved' : isPast ? 'Slot expired' : 'Tap to select'}
+                    </span>
                   </button>
                 );
               })}

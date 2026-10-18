@@ -12,7 +12,7 @@ export function SectionHeader({ eyebrow, title, description, align = 'left' }: S
   return (
     <div className={`max-w-2xl ${alignClass}`}>
       <p className="text-support font-semibold uppercase tracking-[0.16em] text-sky-600 dark:text-sky-400">{eyebrow}</p>
-      <h2 className="mt-3 text-section font-bold text-primary-light sm:text-subtitle">{title}</h2>
+      <h2 className="mt-3 text-section font-bold text-primary-light sm:text-subtitle break-words">{title}</h2>
       {description && <p className="mt-5 leading-7 text-primary-light/70">{description}</p>}
     </div>
   );
