@@ -197,38 +197,38 @@ export default function HeroSection() {
       <div className="pointer-events-none absolute -top-40 left-1/2 -z-10 h-[500px] w-[900px] -translate-x-1/2 transform-gpu rounded-full bg-gradient-to-r from-sky-500/20 via-teal-500/20 to-cyan-500/15 blur-3xl" />
 
       {/* Top Floating Logo & Brand Banner */}
-      <div className="mx-auto max-w-[1400px] px-5 sm:px-8 lg:px-10 mb-8">
-        <div className="flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-tonal-20 bg-surface-20/90 p-3.5 sm:px-6 shadow-2xl backdrop-blur-xl">
-          <div className="flex items-center gap-3">
+      <div className="mx-auto max-w-[1400px] px-4 sm:px-8 lg:px-10 mb-6 sm:mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 rounded-3xl border border-tonal-20 bg-surface-20/90 p-3 sm:p-4 sm:px-6 shadow-2xl backdrop-blur-xl">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
             {/* Downloaded Aivion Care Logo with heartbeat pulse */}
-            <div className="relative h-12 w-12 sm:h-14 sm:w-14 shrink-0 overflow-hidden rounded-xl border border-tonal-20 bg-surface-10 p-1">
+            <div className="relative h-10 w-10 sm:h-14 sm:w-14 shrink-0 overflow-hidden rounded-xl border border-tonal-20 bg-surface-10 p-1">
               <Image
                 src="/aivion-care-logo.png"
                 alt="Aivion Care Logo"
                 fill
-                sizes="(max-width: 640px) 48px, 56px"
+                sizes="(max-width: 640px) 40px, 56px"
                 className="object-contain p-1"
                 priority
               />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-display text-base sm:text-lg font-extrabold tracking-tight text-primary-light">
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                <span className="font-display text-sm sm:text-lg font-extrabold tracking-tight text-primary-light truncate">
                   Aivion Care
                 </span>
-                <span className="rounded-full bg-teal-500/20 border border-teal-500/40 px-2 py-0.5 text-[10px] font-bold text-teal-600 dark:text-teal-300 uppercase tracking-widest">
+                <span className="rounded-full bg-teal-500/20 border border-teal-500/40 px-2 py-0.5 text-[9px] sm:text-[10px] font-bold text-teal-700 dark:text-teal-300 uppercase tracking-widest shrink-0">
                   AMUIF Incubated
                 </span>
               </div>
-              <p className="text-xs text-primary-light/70 font-medium">
+              <p className="text-[11px] sm:text-xs text-primary-light/70 font-medium line-clamp-1 sm:line-clamp-none break-words">
                 Connected Clinical Operating System · Pure Signal, Zero Cap
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3">
             {/* Live ECG heartbeat ticker */}
-            <div className="hidden sm:flex items-center gap-2.5 rounded-2xl border border-cyan-400/40 bg-surface-30/90 px-4 py-2 text-xs text-cyan-600 dark:text-cyan-300 shadow-lg shadow-cyan-500/10">
+            <div className="hidden sm:flex flex-wrap items-center gap-x-2.5 gap-y-1 rounded-2xl border border-cyan-400/40 bg-surface-30/90 px-4 py-2 text-xs text-cyan-600 dark:text-cyan-300 shadow-lg shadow-cyan-500/10">
               <span className="relative flex h-2.5 w-2.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-500 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500" />
@@ -284,9 +284,9 @@ export default function HeroSection() {
 
           {/* Continuous Moving Heart Rate Monitor Header Strip */}
           <div className="relative flex items-center justify-between border-b border-tonal-20 bg-surface-30/70 px-5 py-3 sm:px-8">
-            <div className="flex items-center gap-3">
-              <span className="flex h-3 w-3 rounded-full bg-emerald-500 animate-ping" />
-              <span className="text-xs font-bold uppercase tracking-[0.2em] text-cyan-600 dark:text-cyan-300">
+            <div className="flex min-w-0 items-center gap-3">
+              <span className="h-3 w-3 shrink-0 rounded-full bg-emerald-500 animate-ping" />
+              <span className="truncate text-xs font-bold uppercase tracking-[0.2em] text-cyan-600 dark:text-cyan-300">
                 {slide.tag}
               </span>
             </div>
@@ -305,7 +305,7 @@ export default function HeroSection() {
             </div>
 
             {/* Slide Index Indicators */}
-            <div className="flex items-center gap-1.5">
+            <div className="flex shrink-0 items-center gap-1.5">
               {slides.map((s, idx) => (
                 <button
                   key={s.id}
@@ -320,11 +320,11 @@ export default function HeroSection() {
           </div>
 
           {/* Grid Layout: Visual Showcase (Video & Hospital Scene) + Gen-Z Punchline Narrative */}
-          <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-8 p-6 sm:p-10 lg:p-12 items-center">
+          <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-6 sm:gap-8 p-4 sm:p-10 lg:p-12 items-center">
             
             {/* Visual Screen Box with Background Image and Live Overlay */}
-            <div className="flex flex-col gap-3">
-              <div className="relative group overflow-hidden rounded-[30px] border border-cyan-400/30 bg-slate-900/95 shadow-2xl h-[420px] sm:h-[480px]">
+            <div className="flex flex-col gap-3 min-w-0">
+              <div className="relative group overflow-hidden rounded-[24px] sm:rounded-[30px] border border-cyan-400/30 bg-slate-900/95 shadow-2xl h-[360px] sm:h-[480px]">
                 
                 {/* High-res Clinical Background Image with Enhanced Visibility */}
                 <Image
@@ -353,58 +353,58 @@ export default function HeroSection() {
                 />
 
                 {/* Top Banner inside visual box */}
-                <div className="absolute top-4 left-4 right-4 flex flex-wrap items-center gap-2 z-10">
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/40 bg-surface-20/85 dark:bg-slate-950/80 px-3.5 py-1 text-[11px] sm:text-xs font-bold text-rose-700 dark:text-rose-300 backdrop-blur-md shadow-lg">
-                    <span className="h-2 w-2 shrink-0 rounded-full bg-rose-500 dark:bg-rose-400 animate-ping" /> {slide.problemBadge}
+                <div className="absolute top-2.5 sm:top-4 left-2.5 sm:left-4 right-2.5 sm:right-4 flex flex-wrap items-center gap-1.5 sm:gap-2 z-10">
+                  <span className="inline-flex max-w-[70%] sm:max-w-none items-center gap-1 sm:gap-1.5 truncate rounded-full border border-rose-500/40 bg-surface-20/85 dark:bg-slate-950/80 px-2.5 sm:px-3.5 py-0.5 sm:py-1 text-[10px] sm:text-xs font-bold text-rose-700 dark:text-rose-300 backdrop-blur-md shadow-lg">
+                    <span className="h-1.5 w-1.5 sm:h-2 sm:w-2 shrink-0 rounded-full bg-rose-500 dark:bg-rose-400 animate-ping" /> {slide.problemBadge}
                   </span>
 
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-teal-500/50 bg-surface-20/85 dark:bg-slate-950/80 px-3.5 py-1 text-[11px] sm:text-xs font-extrabold text-teal-700 dark:text-teal-300 backdrop-blur-md uppercase tracking-wider shadow-lg sm:ml-auto">
-                    <CheckCircle2 size={14} className="shrink-0 text-teal-600 dark:text-teal-400" /> Solved by AI
+                  <span className="inline-flex items-center gap-1 sm:gap-1.5 rounded-full border border-teal-500/50 bg-surface-20/85 dark:bg-slate-950/80 px-2.5 sm:px-3.5 py-0.5 sm:py-1 text-[10px] sm:text-xs font-extrabold text-teal-700 dark:text-teal-300 backdrop-blur-md uppercase tracking-wider shadow-lg ml-auto shrink-0">
+                    <CheckCircle2 size={13} className="shrink-0 text-teal-600 dark:text-teal-400" /> Solved
                   </span>
                 </div>
 
                 {/* Middle Problem Box */}
-                <div className="absolute top-16 sm:top-16 left-4 right-4 rounded-2xl border border-tonal-20 bg-surface-20/85 dark:border-white/15 dark:bg-slate-950/85 p-3.5 backdrop-blur-md shadow-xl z-10">
-                  <p className="text-xs sm:text-sm font-semibold text-primary-light leading-relaxed line-clamp-3 sm:line-clamp-4">
+                <div className="absolute top-12 sm:top-16 left-2.5 sm:left-4 right-2.5 sm:right-4 rounded-xl sm:rounded-2xl border border-tonal-20 bg-surface-20/85 dark:border-white/15 dark:bg-slate-950/85 p-2.5 sm:p-3.5 backdrop-blur-md shadow-xl z-10">
+                  <p className="text-[11px] sm:text-sm font-semibold text-primary-light leading-snug sm:leading-relaxed line-clamp-2 sm:line-clamp-4 break-words">
                     ⚠️ {slide.problemText}
                   </p>
                 </div>
 
                 {/* Bottom Telemetry Card: Live Waveform & Heart Pulse */}
-                <div className="absolute bottom-4 left-4 right-4 rounded-2xl border border-cyan-500/40 dark:border-cyan-400/40 bg-surface-20/95 dark:bg-slate-950/92 p-3 sm:p-4 backdrop-blur-xl shadow-2xl z-10">
+                <div className="absolute bottom-2.5 sm:bottom-4 left-2.5 sm:left-4 right-2.5 sm:right-4 rounded-xl sm:rounded-2xl border border-cyan-500/40 dark:border-cyan-400/40 bg-surface-20/95 dark:bg-slate-950/92 p-2.5 sm:p-4 backdrop-blur-xl shadow-2xl z-10">
                   <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <div className="relative h-10 w-10 shrink-0 rounded-lg border border-tonal-20 bg-surface-10 flex items-center justify-center">
+                    <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+                      <div className="relative h-8 w-8 sm:h-10 sm:w-10 shrink-0 rounded-lg border border-tonal-20 bg-surface-10 flex items-center justify-center">
                         <Image
                           src="/aivion-care-logo.png"
                           alt="Logo"
-                          width={28}
-                          height={28}
+                          width={24}
+                          height={24}
                           className="object-contain"
                         />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-cyan-600 dark:text-cyan-400">
+                        <p className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-cyan-600 dark:text-cyan-400 truncate">
                           {slide.solutionBadge}
                         </p>
-                        <p className="text-xs sm:text-sm font-extrabold text-primary-light leading-snug line-clamp-2">
+                        <p className="text-[11px] sm:text-sm font-extrabold text-primary-light leading-tight sm:leading-snug line-clamp-1 sm:line-clamp-2 break-words">
                           {slide.solutionTitle}
                         </p>
                       </div>
                     </div>
 
                     <div className="text-right shrink-0">
-                      <p className="text-base sm:text-lg font-black text-teal-600 dark:text-teal-300 font-mono transition-all duration-300">
-                        {liveBpm} BPM <span className="text-xs text-cyan-600 dark:text-cyan-400 font-sans">({liveSpo2}%)</span>
+                      <p className="text-xs sm:text-lg font-black text-teal-600 dark:text-teal-300 font-mono transition-all duration-300">
+                        {liveBpm} BPM <span className="text-[10px] sm:text-xs text-cyan-600 dark:text-cyan-400 font-sans">({liveSpo2}%)</span>
                       </p>
-                      <p className="text-[10px] font-semibold text-primary-light/70">
+                      <p className="text-[9px] sm:text-[10px] font-semibold text-primary-light/70 hidden sm:block">
                         Live Sinus Telemetry
                       </p>
                     </div>
                   </div>
 
                   {/* Moving SVG ECG Line */}
-                  <div className="mt-2.5 h-9 sm:h-12 w-full text-cyan-300 relative overflow-hidden rounded-xl bg-surface-30/60 dark:bg-slate-900/60 p-1 border border-cyan-500/20">
+                  <div className="mt-1.5 sm:mt-2.5 h-6 sm:h-12 w-full text-cyan-300 relative overflow-hidden rounded-lg sm:rounded-xl bg-surface-30/60 dark:bg-slate-900/60 p-0.5 sm:p-1 border border-cyan-500/20">
                     <svg viewBox="0 0 500 50" className="h-full w-full drop-shadow-[0_0_12px_rgba(34,211,238,0.9)]" preserveAspectRatio="none">
                       <path 
                         d="M0 25 h80 l10 -15 l8 32 l8 -22 l10 5 h80 l10 -15 l8 32 l8 -22 l10 5 h80 l10 -15 l8 32 l8 -22 l10 5 h140" 
@@ -449,8 +449,8 @@ export default function HeroSection() {
             {/* Right Narrative Box: Gen-Z Punchlines, Clarity, Call to Action */}
             <div className="flex flex-col justify-center">
               
-              <div className="inline-flex items-center gap-2 rounded-full border border-teal-500/40 bg-teal-500/10 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-teal-600 dark:text-teal-300 w-fit">
-                <Zap size={14} className="text-cyan-600 dark:text-cyan-300 animate-bounce" /> {slide.solutionBadge}
+              <div className="inline-flex max-w-full flex-wrap items-center gap-2 rounded-full border border-teal-500/40 bg-teal-500/10 px-4 py-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-[0.08em] sm:tracking-[0.2em] text-teal-600 dark:text-teal-300 w-fit">
+                <Zap size={14} className="shrink-0 text-cyan-600 dark:text-cyan-300 animate-bounce" /> <span className="min-w-0 break-words">{slide.solutionBadge}</span>
               </div>
 
               <h1 id="hero-title" className="mt-4 font-display text-3xl sm:text-5xl font-extrabold tracking-tight text-primary-light leading-[1.15] break-words hyphens-auto">

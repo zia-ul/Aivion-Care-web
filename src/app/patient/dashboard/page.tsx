@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import AppLayout from '@/components/layout/AppLayout';
 import { appointmentApi, notificationApi } from '@/lib/api/endpoints';
 import { useAuthStore } from '@/lib/stores/auth';
-import { DarkCard, InnerCard, SectionTitle, Pill, ActionButton, FL } from '@/components/ui/FlutterTheme';
+import { DarkCard, InnerCard, SectionTitle, Pill, ActionButton, FL, tint } from '@/components/ui/FlutterTheme';
 import { Building2, CalendarDays, FileText, Pill as PillIcon, MessageCircle, Wallet, Bell, Stethoscope, Clock, FolderOpen } from 'lucide-react';
 
 interface Appt { id: number; doctorName?: string; hospitalName?: string; appointmentDate?: string; slotTime?: string; status?: string; type?: string; }
@@ -69,7 +69,7 @@ export default function PatientDashboard() {
             <button key={href} onClick={() => router.push(href)} className="text-left">
               <DarkCard tone="patient" className="h-full">
                 <div className="flex items-start gap-3">
-                  <div className="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0" style={{ backgroundColor: `${color}22`, color }}>
+                  <div className="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0" style={{ backgroundColor: tint(color, 14), color }}>
                     <Icon size={20} />
                   </div>
                   <div className="min-w-0">

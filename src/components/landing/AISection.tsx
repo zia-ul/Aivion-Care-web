@@ -11,8 +11,8 @@ export default function AISection() {
 
       <div className="mx-auto grid max-w-[1400px] items-center gap-12 px-5 sm:px-8 lg:grid-cols-2 lg:px-10">
         <div>
-          <div className="inline-flex items-center gap-2 rounded-full border border-sky-400/40 bg-sky-500/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-sky-600 dark:text-sky-300">
-            <BrainCircuit size={14} className="text-teal-600 dark:text-teal-300" /> Clinical AI Inference
+          <div className="inline-flex max-w-full items-center gap-2 rounded-full border border-sky-400/40 bg-sky-500/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-sky-600 dark:text-sky-300">
+            <BrainCircuit size={14} className="shrink-0 text-teal-600 dark:text-teal-300" /> <span className="min-w-0 break-words">Clinical AI Inference</span>
           </div>
           <h2 className="mt-4 font-display text-3xl font-extrabold tracking-tight text-primary-light sm:text-4xl lg:text-5xl">
             Autonomous Clinical Intelligence <span className="bg-gradient-to-r from-sky-500 via-teal-500 to-cyan-500 dark:from-sky-400 dark:via-teal-300 dark:to-cyan-400 bg-clip-text text-transparent">That Actually Cooked.</span>

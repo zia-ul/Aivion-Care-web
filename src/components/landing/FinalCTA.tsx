@@ -47,8 +47,8 @@ export default function FinalCTA() {
           />
         </div>
 
-        <div className="inline-flex items-center gap-2 rounded-full border border-teal-500/30 dark:border-teal-400/30 bg-teal-500/10 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-teal-700 dark:text-teal-300">
-          <Zap size={14} className="text-cyan-600 dark:text-cyan-300 animate-bounce" /> The Proactive Healthcare Shift
+        <div className="inline-flex max-w-full items-center gap-2 rounded-full border border-teal-500/30 dark:border-teal-400/30 bg-teal-500/10 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-teal-700 dark:text-teal-300">
+          <Zap size={14} className="shrink-0 text-cyan-600 dark:text-cyan-300 animate-bounce" /> <span className="min-w-0 break-words">The Proactive Healthcare Shift</span>
         </div>
 
         <h2 className="mt-4 font-display text-3xl font-extrabold text-primary-light sm:text-5xl lg:text-6xl tracking-tight">

@@ -29,8 +29,8 @@ export default function MonitoringSection() {
   return (
     <section className="relative mx-auto grid max-w-[1400px] items-center gap-12 px-5 py-20 sm:px-8 lg:grid-cols-[0.85fr_1.15fr] lg:px-10 lg:py-28">
       <div>
-        <p className="inline-flex items-center gap-2 rounded-full border border-sky-400/40 bg-sky-500/10 px-3.5 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-sky-600 dark:text-sky-300">
-          <Sparkles size={13} className="text-teal-600 dark:text-teal-300" /> Continuous Biomarker Stream
+        <p className="inline-flex max-w-full items-center gap-2 rounded-full border border-sky-400/40 bg-sky-500/10 px-3.5 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-sky-600 dark:text-sky-300">
+          <Sparkles size={13} className="shrink-0 text-teal-600 dark:text-teal-300" /> <span className="min-w-0 break-words">Continuous Biomarker Stream</span>
         </p>
         <h2 className="mt-4 font-display text-3xl font-extrabold tracking-tight text-primary-light sm:text-4xl lg:text-5xl">
           Turn Raw Vitals Into <span className="bg-gradient-to-r from-sky-500 via-teal-500 to-cyan-500 dark:from-sky-400 dark:via-teal-300 dark:to-cyan-400 bg-clip-text text-transparent">Instant Clinical Intel.</span>

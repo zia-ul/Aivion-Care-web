@@ -1,25 +1,30 @@
 'use client';
 
 // Flutter-app visual language: dark navy cards on light minted backgrounds.
-// Values are CSS custom properties (channels as "R G B") so they follow the
-// active theme. Inline styles cannot take an opacity modifier, so components
-// that build inline colours resolve them through resolveVar().
+// Values are CSS custom properties (channels as "R G B") wrapped in rgb() so
+// they are complete, valid colours that still follow the active theme. Inline
+// styles cannot take an opacity modifier, so components that build inline
+// colours resolve them through tint().
 export const FL = {
-  mint: 'var(--accent)',
-  blue: 'var(--c-blue)',
-  pink: 'var(--c-pink)',
-  lavender: 'var(--c-lavender)',
-  gold: 'var(--c-gold)',
-  cyan: 'var(--c-slate)',
-  muted: 'var(--c-muted)',
-  gray: 'var(--c-muted)',
-  coral: 'var(--c-pink)',
+  mint: 'rgb(var(--accent))',
+  blue: 'rgb(var(--c-blue))',
+  pink: 'rgb(var(--c-pink))',
+  lavender: 'rgb(var(--c-lavender))',
+  gold: 'rgb(var(--c-gold))',
+  cyan: 'rgb(var(--c-slate))',
+  muted: 'rgb(var(--c-muted))',
+  gray: 'rgb(var(--c-muted))',
+  coral: 'rgb(var(--c-pink))',
 } as const;
 
 export const FormField = Field;
 
-/** Tinted background that works for both hex literals and theme tokens. */
-function tint(token: string, alpha: number): string {
+/**
+ * Tinted background for a theme token colour. Accepts the FL tokens (which are
+ * complete rgb(var(--x)) colours) as well as hex literals, and works in inline
+ * styles where Tailwind opacity modifiers (e.g. bg-accent/15) cannot.
+ */
+export function tint(token: string, alpha: number): string {
   return `color-mix(in srgb, ${token} ${alpha}%, transparent)`;
 }
 

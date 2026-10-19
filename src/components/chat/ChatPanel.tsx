@@ -509,7 +509,7 @@ const selectedAppointment = useMemo(() => {
             ))}
           </div>
         </div>
-        <div className="flex-1 flex flex-col bg-surface-20/80">
+        <div className="hidden md:flex flex-1 flex-col bg-surface-20/80">
           <div className="p-4 border-b border-tonal-20/50">
             <div className="h-6 bg-surface-10/50 rounded w-1/4"></div>
           </div>
@@ -524,8 +524,10 @@ const selectedAppointment = useMemo(() => {
 
   return (
     <div className="flex h-[calc(100vh-180px)] max-w-full">
-      {/* Conversations Sidebar */}
-      <aside className={`w-full md:w-80 border-r border-tonal-20/50 bg-surface-20/80 flex flex-col transition-all duration-300 ${!sidebarOpen ? 'md:w-0 md:overflow-hidden' : ''}`}>
+      {/* Conversations Sidebar — full-width on mobile while open, hidden once a
+          thread is picked so the messages (which live in the sibling flex child)
+          can take the whole screen. Desktop keeps the collapsible rail. */}
+      <aside className={`flex-col border-r border-tonal-20/50 bg-surface-20/80 transition-all duration-300 ${sidebarOpen ? 'flex w-full md:w-80' : 'hidden md:flex md:w-0 md:overflow-hidden'}`}>
         <div className="p-4 border-b border-tonal-20/50 flex items-center justify-between">
           <h2 className="text-heading font-bold text-primary-light">Messages</h2>
           <button
@@ -594,8 +596,9 @@ const selectedAppointment = useMemo(() => {
         </div>
       </aside>
 
-      {/* Chat Area */}
-      <div className="flex-1 flex flex-col bg-surface-20/80 min-w-0">
+      {/* Chat Area — mirrors the sidebar visibility on mobile so only one pane
+          is on screen at a time below the md breakpoint. */}
+      <div className={`${sidebarOpen ? 'hidden md:flex' : 'flex'} flex-1 flex-col bg-surface-20/80 min-w-0`}>
         <div className="p-4 border-b border-tonal-20/50 flex items-center justify-between gap-3">
           <button
             onClick={() => setSidebarOpen(true)}
@@ -632,7 +635,7 @@ const selectedAppointment = useMemo(() => {
                 Video Call
               </button>
             )}
-            <span className={`text-support ${connected ? 'text-success-light' : 'text-danger-light'}`}>{connected ? 'Connected' : 'Disconnected'}</span>
+            <span className={`hidden sm:inline text-support ${connected ? 'text-success-light' : 'text-danger-light'}`}>{connected ? 'Connected' : 'Disconnected'}</span>
           </div>
         </div>
 
@@ -668,7 +671,7 @@ const selectedAppointment = useMemo(() => {
                   </div>
                 )}
                 <div className={`flex ${mine ? 'justify-end' : 'justify-start'}`}>
-                <div className={`max-w-[70%] p-3 rounded-xl ${mine ? 'bg-accent/20 text-primary-light' : 'bg-surface-10/50 text-primary-light'}`}>
+                <div className={`max-w-[70%] p-3 rounded-xl break-words ${mine ? 'bg-accent/20 text-primary-light' : 'bg-surface-10/50 text-primary-light'}`}>
                   {msg.senderName && (
                     <div className="flex items-center gap-1.5 text-support text-primary-light/50 mb-1">
                       {msg.senderRole === 'DOCTOR' && <Stethoscope size={12} />}
