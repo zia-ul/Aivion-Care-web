@@ -32,8 +32,9 @@ export function ChatNotificationListener() {
 
   // Track which room is open so its messages do not double-count.
   useEffect(() => {
-    const match = pathname?.match(/\/(?:patient|doctor|pharmacy)?chat\/(\d+)/);
-    activeRoomRef.current = match ? Number(match[1]) : null;
+    const match = pathname?.match(/\/(?:patient|doctor|pharmacist|pharmacy|pathology)\/chat(?:\/(\d+))?/) ||
+      pathname?.match(/\/(?:patient|doctor|pharmacist|pharmacy|pathology)?chat\/(\d+)/);
+    activeRoomRef.current = match && match[1] ? Number(match[1]) : null;
   }, [pathname]);
 
   useEffect(() => {

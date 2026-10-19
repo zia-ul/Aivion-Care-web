@@ -42,7 +42,7 @@ const pharmacistNavItems: NavItem[] = [
   { href: '/pharmacist/dashboard', label: 'Home', icon: LayoutDashboard },
   { href: '/pharmacist/inventory', label: 'Inventory', icon: Pill },
   { href: '/pharmacist/orders', label: 'Orders', icon: ClipboardList },
-  { href: '/pharmacist/prescriptions', label: 'Rx', icon: Pill },
+  { href: '/pharmacist/chat', label: 'Chat', icon: MessageCircle },
   { href: '/notifications', label: 'Alerts', icon: Bell },
   { href: '/profile', label: 'Profile', icon: User },
 ];
@@ -51,6 +51,7 @@ const pathologyNavItems: NavItem[] = [
   { href: '/pathology/dashboard', label: 'Home', icon: LayoutDashboard },
   { href: '/pathology/workflow', label: 'Workflow', icon: TestTube },
   { href: '/pathology/labs', label: 'Labs', icon: Microscope },
+  { href: '/pathology/chat', label: 'Chat', icon: MessageCircle },
   { href: '/notifications', label: 'Alerts', icon: Bell },
   { href: '/profile', label: 'Profile', icon: User },
 ];

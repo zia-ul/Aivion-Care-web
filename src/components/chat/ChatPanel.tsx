@@ -16,6 +16,7 @@ import { useClearRoomOnOpen } from './ChatNotificationListener';
 interface ChatRoom {
   id: number;
   appointmentId?: number | null;
+  providerType?: string | null;
   unreadCount?: number | null;
   participantUserIds?: number[] | null;
   lastMessage?: string | null;
@@ -145,11 +146,13 @@ function hasAttachmentText(preview: string): boolean {
   return preview.includes('📎') || preview.includes('📄');
 }
 
+export type ChatRole = 'DOCTOR' | 'PATIENT' | 'PHARMACY' | 'PATHOLOGY';
+
 interface Conversation {
   /** Stable identity for the counterpart, so one thread per person. */
   key: string;
   name: string;
-  role: 'DOCTOR' | 'PATIENT';
+  role: string;
   /** Every room created with this counterpart, oldest first. */
   roomIds: number[];
   /** Room new messages are written to (the most recent one). */
@@ -164,12 +167,21 @@ interface Conversation {
 function counterpartName(
   room: ChatRoom,
   appointments: AppointmentLike[],
-  role: 'DOCTOR' | 'PATIENT'
+  role: ChatRole
 ): string {
   const appointment = appointments.find((a) => a.id === room.appointmentId);
   if (role === 'DOCTOR') return appointment?.patientName || 'Patient';
-  const doctorName = appointment?.doctorName;
-  return doctorName ? `Dr. ${doctorName}` : 'Doctor';
+  if (role === 'PATIENT') {
+    const doctorName = appointment?.doctorName;
+    return doctorName ? `Dr. ${doctorName}` : (room.providerType || 'Doctor');
+  }
+  if (role === 'PHARMACY') {
+    return appointment?.patientName || (room.providerType ? `${room.providerType}` : 'Customer / Patient');
+  }
+  if (role === 'PATHOLOGY') {
+    return appointment?.patientName || (room.providerType ? `${room.providerType}` : 'Client / Patient');
+  }
+  return 'User';
 }
 
 /**
@@ -181,7 +193,7 @@ function counterpartName(
 function buildConversations(
   rooms: ChatRoom[],
   appointments: AppointmentLike[],
-  role: 'DOCTOR' | 'PATIENT',
+  role: ChatRole,
   selfId?: number
 ): Conversation[] {
   const groups = new Map<string, Conversation>();
@@ -212,10 +224,13 @@ function buildConversations(
       continue;
     }
 
+    const counterpartRole =
+      role === 'DOCTOR' ? 'PATIENT' : role === 'PATIENT' ? 'DOCTOR' : 'PATIENT';
+
     groups.set(key, {
       key,
       name,
-      role: role === 'DOCTOR' ? 'PATIENT' : 'DOCTOR',
+      role: counterpartRole,
       roomIds: [room.id],
       activeRoomId: room.id,
       appointmentId: room.appointmentId,
@@ -250,19 +265,25 @@ function renderMessage(message: string): { text: string; encrypted: boolean } {
   return { text: message, encrypted: false };
 }
 
-function useChatRooms(_role: 'DOCTOR' | 'PATIENT') {
+function useChatRooms(role: ChatRole) {
   const [rooms, setRooms] = useState<ChatRoom[]>([]);
   const [appointments, setAppointments] = useState<AppointmentLike[]>([]);
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
     try {
-      const [{ data: roomData }, { data: aptData }] = await Promise.all([
-        chatApi.getRooms(),
-        appointmentApi.getMyAppointments(),
-      ]);
-      setRooms(Array.isArray(roomData) ? roomData : []);
-      setAppointments(Array.isArray(aptData) ? aptData : []);
+      if (role === 'DOCTOR' || role === 'PATIENT') {
+        const [{ data: roomData }, { data: aptData }] = await Promise.all([
+          chatApi.getRooms(),
+          appointmentApi.getMyAppointments(),
+        ]);
+        setRooms(Array.isArray(roomData) ? roomData : []);
+        setAppointments(Array.isArray(aptData) ? aptData : []);
+      } else {
+        const { data: roomData } = await chatApi.getRooms();
+        setRooms(Array.isArray(roomData) ? roomData : []);
+        setAppointments([]);
+      }
     } catch (error) {
       // Previously console-only, so an expired session looked like an empty inbox.
       notifyError(error, 'Could not load your conversations. Please refresh and try again.');
@@ -271,7 +292,7 @@ function useChatRooms(_role: 'DOCTOR' | 'PATIENT') {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [role]);
 
   useEffect(() => { load(); }, [load]);
   return { rooms, appointments, loading };
@@ -339,7 +360,7 @@ function useChatMessages(roomIds: number[]) {
   return { messages, setMessages, messagesEndRef, loadMessages };
 }
 
-export function ChatPanel({ role }: { role: 'DOCTOR' | 'PATIENT' }) {
+export function ChatPanel({ role }: { role: ChatRole }) {
   const { user } = useAuthStore();
   const router = useRouter();
   const { rooms, appointments, loading } = useChatRooms(role);
@@ -551,7 +572,13 @@ const selectedAppointment = useMemo(() => {
           {conversations.length === 0 ? (
             <div className="text-center py-8 text-primary-light/40">
               <MessageCircle size={32} className="mx-auto mb-2 text-primary-light/20" />
-              <p className="text-sm">{role === 'PATIENT' ? 'Book a VIDEO appointment to start chatting' : 'Your VIDEO appointments create conversations automatically'}</p>
+              <p className="text-sm">
+                {role === 'PATIENT'
+                  ? 'Book a VIDEO appointment to start chatting'
+                  : role === 'DOCTOR'
+                  ? 'Your VIDEO appointments create conversations automatically'
+                  : 'No conversations found yet. Messages with patients and providers will appear here.'}
+              </p>
             </div>
           ) : (
             conversations.map((conv) => (
@@ -615,7 +642,13 @@ const selectedAppointment = useMemo(() => {
               <div className="min-w-0">
                 <h3 className="font-semibold text-primary-light truncate">{selectedConversation.name}</h3>
                 <p className="text-xs text-primary-light/50">
-                  {selectedConversation.role === 'DOCTOR' ? 'Doctor' : 'Patient'}
+                  {selectedConversation.role === 'DOCTOR'
+                    ? 'Doctor'
+                    : selectedConversation.role === 'PHARMACY'
+                    ? 'Pharmacy'
+                    : selectedConversation.role === 'PATHOLOGY'
+                    ? 'Pathology Lab'
+                    : 'Patient'}
                 </p>
               </div>
             </div>
