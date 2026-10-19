@@ -7,7 +7,7 @@ import { authApi } from '@/lib/api/endpoints';
 import { Card, Button } from '@/components/ui';
 import { ShieldCheck, Hourglass, ArrowRight, LogOut, RefreshCw } from 'lucide-react';
 
-type Role = 'patient' | 'doctor' | 'hospital' | 'pharmacist' | 'pathology';
+type Role = 'patient' | 'doctor' | 'hospital' | 'pharmacist' | 'pharmacy' | 'pathology';
 
 interface ApprovalStatus {
   role: Role;
@@ -26,6 +26,7 @@ export default function ApprovalPendingPage() {
     doctor: 'Doctor',
     hospital: 'Hospital / Clinic',
     pharmacist: 'Pharmacist',
+    pharmacy: 'Pharmacy / Pharmacist',
     pathology: 'Pathology / Lab',
   };
 
@@ -41,12 +42,41 @@ export default function ApprovalPendingPage() {
     const checkStatus = async () => {
       try {
         const { data } = await authApi.getMyProfile?.() || { data: null };
-        if (data) {
+        // The API returns AuthResponse where user info is inside data.user or directly in data
+        const userObj = data?.user || data;
+
+        if (userObj) {
+          const rawRole = (userObj.role || '').toUpperCase();
+          let normalizedRole: Role = 'patient';
+          if (rawRole === 'PHARMACY' || rawRole === 'PHARMACIST') normalizedRole = 'pharmacy';
+          else if (rawRole === 'DOCTOR') normalizedRole = 'doctor';
+          else if (rawRole === 'HOSPITAL_HEAD' || rawRole === 'HOSPITAL') normalizedRole = 'hospital';
+          else if (rawRole === 'PATHOLOGY' || rawRole === 'PATHOLOGIST') normalizedRole = 'pathology';
+
+          // Extract approval status depending on the role
+          let resolvedStatus = 'PENDING';
+          if (rawRole === 'PHARMACY' || rawRole === 'PHARMACIST') {
+            resolvedStatus = userObj.pharmacistApprovalStatus || userObj.pharmacyApprovalStatus || userObj.approvalStatus || 'PENDING';
+          } else if (rawRole === 'DOCTOR') {
+            resolvedStatus = userObj.doctorApprovalStatus || userObj.approvalStatus || 'PENDING';
+          } else if (rawRole === 'PATHOLOGY' || rawRole === 'PATHOLOGIST') {
+            resolvedStatus = userObj.pathologyApprovalStatus || userObj.pathologistApprovalStatus || userObj.approvalStatus || 'PENDING';
+          } else if (rawRole === 'HOSPITAL_HEAD') {
+            resolvedStatus = userObj.hospitalStatus || userObj.approvalStatus || 'PENDING';
+          } else {
+            resolvedStatus = userObj.approvalStatus || userObj.status || 'PENDING';
+          }
+
+          // Map DRAFT or UNDER_REVIEW to PENDING
+          if (resolvedStatus === 'DRAFT' || resolvedStatus === 'UNDER_REVIEW') {
+            resolvedStatus = 'PENDING';
+          }
+
           setApproval({
-            role: (data.role?.toLowerCase() as Role) || 'patient',
-            status: (data.approvalStatus || data.status || 'PENDING').toUpperCase() as ApprovalStatus['status'],
-            message: data.message,
-            rejectionReason: data.rejectionReason,
+            role: normalizedRole,
+            status: resolvedStatus.toUpperCase() as ApprovalStatus['status'],
+            message: userObj.message,
+            rejectionReason: userObj.rejectionReason,
           });
         }
       } catch (error: any) {
