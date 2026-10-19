@@ -77,6 +77,7 @@ interface PharmacistDetail {
 
 const STATUS_FILTERS = [
   { value: 'PENDING', label: 'Pending', iconName: 'AlertCircle' },
+  { value: 'RESUBMIT_REQUIRED', label: 'Resubmit', iconName: 'RotateCcw' },
   { value: 'APPROVED', label: 'Approved', iconName: 'CheckCircle' },
   { value: 'REJECTED', label: 'Rejected', iconName: 'XCircle' },
   { value: 'ALL', label: 'All', iconName: 'ShieldCheck' },
@@ -84,6 +85,7 @@ const STATUS_FILTERS = [
 
 const FilterIcons: Record<string, React.ReactNode> = {
   AlertCircle: <AlertCircle className="h-4 w-4" />,
+  RotateCcw: <RotateCcw className="h-4 w-4" />,
   CheckCircle: <CheckCircle className="h-4 w-4" />,
   XCircle: <XCircle className="h-4 w-4" />,
   ShieldCheck: <ShieldCheck className="h-4 w-4" />,

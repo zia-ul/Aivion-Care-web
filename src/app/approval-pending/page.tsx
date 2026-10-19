@@ -11,6 +11,8 @@ type Role = 'patient' | 'doctor' | 'hospital' | 'pharmacist' | 'pharmacy' | 'pat
 
 interface ApprovalStatus {
   role: Role;
+  pharmacyStatus?: string;
+  pharmacistStatus?: string;
   status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'RESUBMIT_REQUIRED' | 'SUBMITTED';
   message?: string;
   rejectionReason?: string;
@@ -26,7 +28,7 @@ export default function ApprovalPendingPage() {
     doctor: 'Doctor',
     hospital: 'Hospital / Clinic',
     pharmacist: 'Pharmacist',
-    pharmacy: 'Pharmacy / Pharmacist',
+    pharmacy: 'Pharmacy',
     pathology: 'Pathology / Lab',
   };
 
@@ -48,15 +50,22 @@ export default function ApprovalPendingPage() {
         if (userObj) {
           const rawRole = (userObj.role || '').toUpperCase();
           let normalizedRole: Role = 'patient';
-          if (rawRole === 'PHARMACY' || rawRole === 'PHARMACIST') normalizedRole = 'pharmacy';
+          if (rawRole === 'PHARMACY') normalizedRole = 'pharmacy';
+          else if (rawRole === 'PHARMACIST') normalizedRole = 'pharmacist';
           else if (rawRole === 'DOCTOR') normalizedRole = 'doctor';
           else if (rawRole === 'HOSPITAL_HEAD' || rawRole === 'HOSPITAL') normalizedRole = 'hospital';
           else if (rawRole === 'PATHOLOGY' || rawRole === 'PATHOLOGIST') normalizedRole = 'pathology';
 
           // Extract approval status depending on the role
           let resolvedStatus = 'PENDING';
+          let pharmacyStatus: string | undefined = undefined;
+          let pharmacistStatus: string | undefined = undefined;
+
           if (rawRole === 'PHARMACY' || rawRole === 'PHARMACIST') {
-            resolvedStatus = userObj.pharmacistApprovalStatus || userObj.pharmacyApprovalStatus || userObj.approvalStatus || 'PENDING';
+            pharmacyStatus = userObj.pharmacyApprovalStatus;
+            pharmacistStatus = userObj.pharmacistApprovalStatus;
+            // Use pharmacy approval status as primary for PHARMACY role, or pharmacist status
+            resolvedStatus = userObj.pharmacyApprovalStatus || userObj.pharmacistApprovalStatus || userObj.approvalStatus || 'PENDING';
           } else if (rawRole === 'DOCTOR') {
             resolvedStatus = userObj.doctorApprovalStatus || userObj.approvalStatus || 'PENDING';
           } else if (rawRole === 'PATHOLOGY' || rawRole === 'PATHOLOGIST') {
@@ -74,6 +83,8 @@ export default function ApprovalPendingPage() {
 
           setApproval({
             role: normalizedRole,
+            pharmacyStatus,
+            pharmacistStatus,
             status: resolvedStatus.toUpperCase() as ApprovalStatus['status'],
             message: userObj.message,
             rejectionReason: userObj.rejectionReason,
@@ -137,6 +148,22 @@ export default function ApprovalPendingPage() {
           </div>
           <h1 className="text-headline font-extrabold text-accent mb-2">Approval {config.label}</h1>
           <p className="text-body text-primary-light/70 mb-2">Account type: <span className="font-semibold">{roleNames[approval.role]}</span></p>
+
+          {(approval.pharmacyStatus || approval.pharmacistStatus) && (
+            <div className="mb-4 flex items-center justify-center gap-2 text-xs">
+              {approval.pharmacyStatus && (
+                <span className="rounded-full bg-blue-500/10 px-2.5 py-1 text-blue-400 border border-blue-500/20">
+                  Pharmacy: <strong>{approval.pharmacyStatus.replace(/_/g, ' ')}</strong>
+                </span>
+              )}
+              {approval.pharmacistStatus && (
+                <span className="rounded-full bg-purple-500/10 px-2.5 py-1 text-purple-400 border border-purple-500/20">
+                  Pharmacist: <strong>{approval.pharmacistStatus.replace(/_/g, ' ')}</strong>
+                </span>
+              )}
+            </div>
+          )}
+
           <p className="text-support text-primary-light/60 mb-6">{config.description}</p>
 
           {approval.rejectionReason && (
