@@ -98,6 +98,8 @@ const receptionistNavItems: NavItem[] = [
 const adminNavItems: NavItem[] = [
   { href: '/super-admin/hospitals', label: 'Hospitals', icon: Building2 },
   { href: '/super-admin/doctors/verification', label: 'Doctors', icon: UserCheck },
+  { href: '/super-admin/pharmacy/approval', label: 'Pharmacy', icon: Pill },
+  { href: '/super-admin/pathology/approval', label: 'Pathology', icon: Microscope },
   { href: '/super-admin/analytics', label: 'Analytics', icon: BarChart3 },
   { href: '/super-admin/broadcast', label: 'Broadcast', icon: Radio },
   { href: '/super-admin/subscriptions', label: 'Subscriptions', icon: CreditCard },

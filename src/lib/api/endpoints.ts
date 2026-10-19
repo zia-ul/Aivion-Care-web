@@ -43,6 +43,8 @@ import {
   PrescriptionShareResponse,
   MedicineScanLookupResponse,
   InventoryReservationResponse,
+  PharmacyApprovalSummary,
+  PharmacistApprovalSummary,
 } from '@/types/pharmacy';
 import {
   PathologyLabDiscoveryResponse,
@@ -55,6 +57,7 @@ import {
   PathologyReportShareRequest,
   PathologyReportDraftRequest,
   PathologyDashboardStatsResponse,
+  PathologyApprovalSummary,
 } from '@/types/pathology';
 import { ClinicalAssessmentRequest, ClinicalAssessmentResponse } from '@/types/clinical-assessment';
 import {
@@ -307,6 +310,48 @@ export const superAdminApi = {
     apiClient.post('/api/v1/super-admin/broadcast-notification', data),
   getAnalytics: () => apiClient.get('/api/v1/super-admin/analytics'),
   generateLoginId: (data: any) => apiClient.post('/api/v1/super-admin/generate-login-id', data),
+
+  // ---- Pharmacy onboarding approvals ----
+  getPharmaciesForApproval: (params?: { status?: string; page?: number; size?: number }) =>
+    apiClient.get<PaginatedResponse<PharmacyApprovalSummary>>(
+      '/api/v1/pharmacists/admin/pharmacies/approval',
+      { params }
+    ),
+  getPharmacyApprovalWorkflow: (pharmacyId: number) =>
+    apiClient.get(`/api/v1/pharmacists/admin/pharmacies/approval/${pharmacyId}/workflow`),
+  decidePharmacyApprovalWorkflow: (
+    pharmacyId: number,
+    data: { action: 'APPROVE_ALL' | 'REJECT' | 'RESUBMIT_REQUIRED'; reviewNotes?: string }
+  ) =>
+    apiClient.patch(`/api/v1/pharmacists/admin/pharmacies/approval/${pharmacyId}/workflow`, data),
+
+  // ---- Pharmacist onboarding approvals ----
+  getPharmacistsForApproval: (params?: { status?: string; page?: number; size?: number }) =>
+    apiClient.get<PaginatedResponse<PharmacistApprovalSummary>>(
+      '/api/v1/pharmacists/admin/approval',
+      { params }
+    ),
+  reviewPharmacist: (
+    pharmacistId: number,
+    data: { action: 'APPROVE' | 'REJECT' | 'RESUBMIT'; reviewNotes?: string }
+  ) => apiClient.patch(`/api/v1/pharmacists/admin/approval/${pharmacistId}`, data),
+
+  // ---- Pathology onboarding approvals ----
+  getPathologySubmissions: (params?: { status?: string; page?: number; size?: number }) =>
+    apiClient.get<PaginatedResponse<PathologyApprovalSummary>>(
+      '/api/v1/admin/pathology/submissions',
+      { params }
+    ),
+  getPathologySubmission: (id: number) =>
+    apiClient.get(`/api/v1/admin/pathology/${id}`),
+  approvePathology: (id: number) =>
+    apiClient.post(`/api/v1/admin/pathology/${id}/approve`),
+  rejectPathology: (id: number, data?: { reason?: string; notes?: string }) =>
+    apiClient.post(`/api/v1/admin/pathology/${id}/reject`, data ?? {}),
+  resubmitPathology: (id: number, data?: { reason?: string; notes?: string }) =>
+    apiClient.post(`/api/v1/admin/pathology/${id}/resubmit`, data ?? {}),
+  suspendPathology: (id: number, data?: { reason?: string; notes?: string }) =>
+    apiClient.post(`/api/v1/admin/pathology/${id}/suspend`, data ?? {}),
 };
 
 export const subscriptionApi = {

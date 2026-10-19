@@ -35,7 +35,10 @@ export function IncomingCallListener() {
 
     webrtcWsService.connect(accessToken);
     const unsubscribers: Array<() => void> = [() => webrtcWsService.disconnect()];
-    cleanupRef.current = unsubscribers;
+    // Only roles with an appointment scope (PATIENT, DOCTOR, or staff with hospital assigned) can load my-appointments.
+    const role = user?.role;
+    const hasAppointmentScope = role === 'PATIENT' || role === 'DOCTOR' || user?.hospitalId != null;
+    if (!hasAppointmentScope) return;
 
     const watch = async () => {
       try {
@@ -64,9 +67,11 @@ export function IncomingCallListener() {
 
           unsubscribers.push(off);
         });
-      } catch (error) {
-        // Silent: this is a background listener, not a user-initiated action.
-        console.warn('Incoming call listener could not load appointments:', error);
+      } catch (error: any) {
+        // Silent: this is a background listener for incoming calls, not a user-initiated action.
+        if (error?.response?.status !== 403) {
+          console.warn('Incoming call listener could not load appointments:', error);
+        }
       }
     };
 
@@ -79,7 +84,7 @@ export function IncomingCallListener() {
       cleanupRef.current = [];
       stopRing();
     };
-  }, [accessToken, startRing, stopRing]);
+  }, [accessToken, user?.role, user?.hospitalId, startRing, stopRing]);
 
   const accept = useCallback(() => {
     if (!incoming) return;
