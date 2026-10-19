@@ -153,8 +153,47 @@ export default function PharmacyApprovalPage() {
     try {
       const res = await superAdminApi.getPharmacyApprovalWorkflow(item.pharmacyId!);
       const data = res.data ?? {};
-      setDetail(data.pharmacy ?? null);
-      setPharmacistDetail(data.pharmacist ?? null);
+      const profile = data.profile ?? {};
+      const pharmacyNode = data.pharmacy ?? {};
+      const pharmacistNode = data.pharmacist ?? {};
+
+      // Map pharmacy fields from profile and pharmacy node
+      setDetail({
+        pharmacyId: item.pharmacyId,
+        pharmacyName: profile.pharmacyName || item.pharmacyName,
+        displayName: profile.displayName || item.displayName,
+        address: [profile.addressLine1, profile.addressLine2].filter(Boolean).join(', ') || item.address,
+        city: profile.city || item.city,
+        state: profile.state || item.state,
+        pincode: profile.pincode || item.pincode,
+        phone: profile.phone || item.phone,
+        email: profile.email || item.email,
+        licenseNumber: profile.drugLicenseNumber || item.licenseNumber,
+        gstNumber: profile.gstNumber || item.gstNumber,
+        openingHours: profile.openingHours || item.openingHours,
+        deliveryAvailable: profile.homeDeliveryAvailable ?? item.deliveryAvailable,
+        submittedAt: pharmacyNode.submittedAt || profile.pharmacySubmittedAt,
+        approvalStatus: pharmacyNode.approvalStatus || item.approvalStatus,
+        verificationStatus: pharmacyNode.verificationStatus || item.verificationStatus,
+        rejectionReason: pharmacyNode.reviewNotes || profile.pharmacyReviewNotes,
+        documents: pharmacyNode.documents || profile.documents || [],
+      });
+
+      // Map pharmacist fields from profile and pharmacist node
+      setPharmacistDetail({
+        pharmacistId: profile.pharmacistId,
+        fullName: profile.fullName || item.ownerName,
+        qualification: profile.qualification || item.qualification,
+        specialization: profile.roleType || item.specialization,
+        registrationNumber: profile.registrationNumber || item.registrationNumber,
+        registrationCouncil: profile.registrationAuthority || item.registrationCouncil,
+        yearsExperience: profile.experienceYears ?? item.yearsExperience,
+        email: profile.email || item.email,
+        phone: profile.phone || item.phone,
+        approvalStatus: pharmacistNode.approvalStatus || profile.pharmacistApprovalStatus,
+        verificationStatus: pharmacistNode.verificationStatus || profile.pharmacistVerificationStatus,
+        rejectionReason: pharmacistNode.reviewNotes || profile.pharmacistReviewNotes,
+      });
     } catch (error) {
       toast.error('Failed to load the submission');
     } finally {
