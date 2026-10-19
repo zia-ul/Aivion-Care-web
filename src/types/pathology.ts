@@ -178,3 +178,18 @@ export interface PathologyDashboardStatsResponse {
   completedToday?: number;
   totalRevenue?: number;
 }
+
+/** Super admin pathology onboarding approval queue entry (PathologyApprovalSummaryResponse). */
+export interface PathologyApprovalSummary {
+  pathologyProfileId: number;
+  pathologyLabId?: number;
+  pathologistId?: number;
+  labName?: string;
+  city?: string;
+  ownerName?: string;
+  pathologyApprovalStatus?: string;
+  pathologistApprovalStatus?: string;
+  approved?: boolean;
+  active?: boolean;
+  submittedAt?: string;
+}

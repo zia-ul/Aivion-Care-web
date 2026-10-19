@@ -17,6 +17,8 @@ import { InvestigationEditor } from '@/components/doctor/InvestigationEditor';
 import { AISuggestionsPanel } from '@/components/doctor/AISuggestionsPanel';
 import { PrescriptionPreview } from '@/components/doctor/PrescriptionPreview';
 import { SoapSummary } from '@/components/doctor/SoapSummary';
+import { MedicalHighlightedText } from '@/components/doctor/MedicalHighlightedText';
+import { countMedicalTerms } from '@/lib/medical-terms';
 import { 
   ConsultationResponse, 
   ConsultationReviewResponse, 
@@ -54,6 +56,7 @@ export default function DoctorConsultationPage({ params }: { params: Promise<{ i
   const resolvedParams = use(params);
   const appointmentId = Number(resolvedParams.id);
   const [chatRoomId, setChatRoomId] = useState<number | null>(null);
+  const [transcriptViewMode, setTranscriptViewMode] = useState<'edit' | 'highlighted'>('highlighted');
 
   // Clinical fields
   const [f, setF] = useState({
@@ -503,15 +506,88 @@ export default function DoctorConsultationPage({ params }: { params: Promise<{ i
             </InnerTile>
           )}
 
-          <Field label="Transcript / Dictation">
-            <textarea
-              value={transcript}
-              onChange={(e) => setTranscript(e.target.value)}
-              rows={4}
-              className={inputClass}
-              placeholder="Paste the consultation transcript, then generate AI notes (fills chief complaints, investigations and suggested medicines)..."
-            />
-          </Field>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-semibold uppercase tracking-[0.12em] text-doctor-muted">
+                Transcript / Dictation
+              </label>
+              {transcript.trim() && (
+                <div className="flex items-center gap-1.5 bg-doctor-subtle/40 p-1 rounded-lg border border-doctor-border/40 text-xs">
+                  <button
+                    type="button"
+                    onClick={() => setTranscriptViewMode('highlighted')}
+                    className={`px-2.5 py-1 rounded-md font-medium transition-all ${
+                      transcriptViewMode === 'highlighted'
+                        ? 'bg-doctor-blue text-white shadow-sm'
+                        : 'text-doctor-muted hover:text-primary-light'
+                    }`}
+                  >
+                    Medical Keywords
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setTranscriptViewMode('edit')}
+                    className={`px-2.5 py-1 rounded-md font-medium transition-all ${
+                      transcriptViewMode === 'edit'
+                        ? 'bg-doctor-blue text-white shadow-sm'
+                        : 'text-doctor-muted hover:text-primary-light'
+                    }`}
+                  >
+                    Edit Raw
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {transcript.trim() && transcriptViewMode === 'highlighted' ? (
+              <div className="rounded-xl border border-doctor-border bg-doctor-surface/80 p-3.5 space-y-2.5">
+                <div className="max-h-60 overflow-y-auto leading-relaxed text-sm text-primary-light whitespace-pre-wrap">
+                  <MedicalHighlightedText text={transcript} />
+                </div>
+                {(() => {
+                  const stats = countMedicalTerms(transcript);
+                  return (
+                    <div className="pt-2 border-t border-doctor-border/40 flex flex-wrap items-center gap-2 text-[11px]">
+                      <span className="text-doctor-muted font-medium">Recognized terms:</span>
+                      {stats.byCategory.drug > 0 && (
+                        <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 font-semibold border border-emerald-500/30">
+                          {stats.byCategory.drug} Drugs & Formulations
+                        </span>
+                      )}
+                      {stats.byCategory.symptom > 0 && (
+                        <span className="px-2 py-0.5 rounded-full bg-rose-500/15 text-rose-700 dark:text-rose-300 font-semibold border border-rose-500/30">
+                          {stats.byCategory.symptom} Symptoms
+                        </span>
+                      )}
+                      {stats.byCategory.test > 0 && (
+                        <span className="px-2 py-0.5 rounded-full bg-sky-500/15 text-sky-700 dark:text-sky-300 font-semibold border border-sky-500/30">
+                          {stats.byCategory.test} Tests & Scans
+                        </span>
+                      )}
+                      {stats.byCategory.vital > 0 && (
+                        <span className="px-2 py-0.5 rounded-full bg-purple-500/15 text-purple-700 dark:text-purple-300 font-semibold border border-purple-500/30">
+                          {stats.byCategory.vital} Vitals
+                        </span>
+                      )}
+                      {stats.byCategory.instruction > 0 && (
+                        <span className="px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300 font-semibold border border-amber-500/30">
+                          {stats.byCategory.instruction} Instructions
+                        </span>
+                      )}
+                    </div>
+                  );
+                })()}
+              </div>
+            ) : (
+              <textarea
+                value={transcript}
+                onChange={(e) => setTranscript(e.target.value)}
+                rows={4}
+                className={inputClass}
+                placeholder="Paste the consultation transcript, then generate AI notes (fills chief complaints, investigations and suggested medicines)..."
+              />
+            )}
+          </div>
           
           <ActionButton variant="ghost" className="mt-4" disabled={saving || !transcript.trim()} onClick={handleRefreshSummary}>
             <span className="inline-flex items-center gap-1.5"><Sparkles size={14} /> {saving ? 'Working...' : 'Generate AI Notes from Transcript'}</span>

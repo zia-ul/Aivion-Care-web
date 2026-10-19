@@ -1,6 +1,8 @@
 'use client';
 
 import { ConsultationSoapSectionResponse } from '@/types/consultation';
+import { MedicalHighlightedText } from '@/components/doctor/MedicalHighlightedText';
+import { Pill as PillIcon } from 'lucide-react';
 
 /* ------------------------------------------------------------------------ */
 /* SOAP palette                                                              */
@@ -198,7 +200,7 @@ function parseFields(text: string): { head: string; fields: Field[] } {
   return { head, fields: structured ? fields : [] };
 }
 
-function StructuredItem({
+export function StructuredItem({
   text,
   accent,
   surface,
@@ -211,20 +213,29 @@ function StructuredItem({
 }) {
   const { head, fields } = parseFields(text);
 
-  if (fields.length === 0) return <span>{text}</span>;
+  if (fields.length === 0) {
+    return (
+      <span>
+        <MedicalHighlightedText text={text} />
+      </span>
+    );
+  }
 
   return (
-    <div>
-      <p className="font-semibold">{head}</p>
-      <ul className="mt-1 flex flex-wrap gap-1">
+    <div className="py-0.5">
+      <p className="inline-flex items-center gap-1.5 font-bold tracking-tight text-emerald-800 dark:text-emerald-300">
+        <PillIcon size={14} className="text-emerald-600 dark:text-emerald-400 shrink-0" />
+        <span>{head}</span>
+      </p>
+      <ul className="mt-1 flex flex-wrap gap-1.5">
         {fields.map((field, index) => (
           <li
             key={`${field.key ?? 'f'}-${index}`}
-            className="rounded-[5px] px-1.5 py-[1px] text-[11px] leading-[1.5]"
-            style={{ backgroundColor: surface, border: `1px solid ${accent}` }}
+            className="rounded-[6px] px-2 py-[2px] text-[11px] leading-[1.5] shadow-sm font-medium border"
+            style={{ backgroundColor: surface, borderColor: `${accent}40` }}
           >
             {field.key && (
-              <span className="font-semibold" style={{ color: accent }}>
+              <span className="font-semibold opacity-90" style={{ color: accent }}>
                 {field.key}:{' '}
               </span>
             )}

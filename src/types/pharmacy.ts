@@ -208,3 +208,25 @@ export interface InventoryReservationResponse {
   medicineName?: string;
   quantity?: number;
 }
+
+/** Super admin pharmacy onboarding approval queue entry (PharmacyApprovalSummaryResponse). */
+export interface PharmacyApprovalSummary {
+  pharmacyId: number;
+  ownerUserId?: number;
+  pharmacyName?: string;
+  displayName?: string;
+  approvalStatus?: string;
+  verificationStatus?: string;
+  active?: boolean;
+}
+
+/** Super admin pharmacist onboarding approval queue entry (PharmacistApprovalSummaryResponse). */
+export interface PharmacistApprovalSummary {
+  pharmacistId: number;
+  userId?: number;
+  fullName?: string;
+  pharmacyName?: string;
+  approvalStatus?: string;
+  verificationStatus?: string;
+  active?: boolean;
+}
