@@ -136,3 +136,104 @@ export interface ClinicalAssessmentHistoryItem {
   topScore?: number;
   topConfidence?: string;
 }
+
+export interface StandaloneDocumentAnalysisResponse {
+  analysisId: string;
+  fileName: string;
+  documentType: string;
+  status: 'COMPLETED' | 'PARTIAL' | 'FAILED';
+  engineVersion: string;
+  analyzedAt: string;
+  disclaimer: string;
+  extractedData: {
+    summary: string;
+    rawText: string;
+    keyValues: Array<{
+      key: string;
+      value: string;
+      unit?: string;
+      referenceRange?: string;
+      isAbnormal?: boolean;
+      direction?: 'HIGH' | 'LOW' | 'NORMAL';
+    }>;
+    tables: Array<{
+      tableName?: string;
+      headers: string[];
+      rows: string[][];
+    }>;
+    extractionMethod: string;
+    totalPages: number;
+    pagesWithText: number;
+    extractionWarnings: string[];
+  };
+  abnormalValues: Array<{
+    parameter: string;
+    value: string;
+    unit?: string;
+    referenceRange?: string;
+    direction?: string;
+    severity: 'CRITICAL' | 'HIGH' | 'MODERATE' | 'LOW';
+    clinicalSignificance: string;
+  }>;
+  findings: Array<{
+    code: string;
+    codeSystem: string;
+    description: string;
+    category?: string;
+    severity?: string;
+    evidence?: string;
+  }>;
+  contraindications: string[];
+  drugInteractions: string[];
+  triageRisk: {
+    riskLevel: 'LOW' | 'MODERATE' | 'HIGH' | 'CRITICAL';
+    riskScore: number;
+    confidence: number;
+    organSystem: string;
+    primaryAlerts: string[];
+  };
+  diseasePredictions?: Array<{
+    conditionName: string;
+    icdCode: string;
+    category: string;
+    probabilityPercent: number;
+    relativeRiskRatio: number;
+    aucRoc: number;
+    riskTier: 'CRITICAL' | 'HIGH' | 'MODERATE' | 'LOW';
+    keyContributingBiomarkers: string[];
+    clinicalRationale: string;
+  }>;
+  biomarkerRatios?: Array<{
+    ratioName: string;
+    calculatedValue: string;
+    referenceRange: string;
+    interpretation: string;
+    status: 'ELEVATED' | 'OPTIMAL' | 'REDUCED';
+    associatedPathology: string;
+  }>;
+  biomarkerCombinations?: Array<{
+    combinationName: string;
+    parametersInvolved: string[];
+    patternMatched: boolean;
+    confidencePercent: number;
+    clinicalSignificance: string;
+    suggestedAction: string;
+  }>;
+  recommendations: Array<{
+    type: string;
+    description: string;
+    priority: 'URGENT' | 'HIGH' | 'ROUTINE';
+    rationale?: string;
+    timeframe?: string;
+  }>;
+  agentExecution: {
+    agent1Completed: boolean;
+    agent1Status: string;
+    agent2Completed: boolean;
+    agent2Status: string;
+    agent3Completed: boolean;
+    agent3Status: string;
+    durationMs: number;
+    modelUsed: string;
+  };
+}

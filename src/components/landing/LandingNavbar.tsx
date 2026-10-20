@@ -9,6 +9,7 @@ import Image from 'next/image';
 
 const links = [
   { label: 'Home', href: '/' },
+  { label: 'Clinical Assessment', href: '/clinical-assessment' },
   { label: 'Capabilities', href: '/capabilities' },
   { label: 'Initiatives', href: '/initiatives' },
   { label: 'Team', href: '/team' },

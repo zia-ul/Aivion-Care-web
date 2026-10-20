@@ -20,7 +20,9 @@ import {
   Bell, Clock, CheckCircle, XCircle, RefreshCw, ChevronRight, File,
   FlaskConical, Scan, Stethoscope, Shield, Contact, Syringe, History,
   Receipt, Share2, Award, AlertTriangle, Image as ImageIcon, Pill as PillIcon,
+  BrainCircuit, Sparkles,
 } from 'lucide-react';
+import StandaloneDocumentStudio from '@/components/doctor/StandaloneDocumentStudio';
 
 const CATEGORIES = [
   { value: 'LAB_REPORT', label: 'Lab Report', icon: 'FlaskConical', color: '#3b82f6' },
@@ -107,6 +109,7 @@ export default function PatientDocumentsPage() {
   const router = useRouter();
   const { user } = useAuthStore();
   const currentRole = user?.role || 'PATIENT';
+  const [activeView, setActiveView] = useState<'records' | 'clinicalStudio'>('records');
   const [documents, setDocuments] = useState<PatientDocumentResponse[]>([]);
   const [folders, setFolders] = useState<PatientDocumentFolderResponse[]>([]);
   const [stats, setStats] = useState<DocumentStatsResponse | null>(null);
@@ -369,6 +372,55 @@ export default function PatientDocumentsPage() {
   return (
     <AppLayout role={currentRole} title="My Documents" subtitle="Medical records, reports & prescriptions">
       <div className="space-y-5">
+        {/* Top Tab Switcher */}
+        <div className="flex items-center gap-3 p-1.5 bg-surface-20/80 border border-tonal-20 rounded-2xl w-fit">
+          <button
+            onClick={() => setActiveView('records')}
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
+              activeView === 'records'
+                ? 'bg-sky-500 text-white shadow-md'
+                : 'text-primary-light/60 hover:text-primary-light hover:bg-surface-30'
+            }`}
+          >
+            <FileText size={15} />
+            My Health Records & Files
+          </button>
+          <button
+            onClick={() => setActiveView('clinicalStudio')}
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
+              activeView === 'clinicalStudio'
+                ? 'bg-gradient-to-r from-teal-500 to-cyan-500 text-white shadow-md shadow-teal-500/20'
+                : 'text-primary-light/60 hover:text-primary-light hover:bg-surface-30'
+            }`}
+          >
+            <BrainCircuit size={15} />
+            AI Clinical Assessment & Dashboards
+          </button>
+        </div>
+
+        {activeView === 'clinicalStudio' ? (
+          <div className="rounded-3xl border border-teal-500/30 bg-surface-10/95 p-6 backdrop-blur-xl">
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-tonal-20 pb-4">
+              <div>
+                <h3 className="text-lg font-bold text-primary-light flex items-center gap-2">
+                  <Sparkles size={18} className="text-teal-400" />
+                  Autonomous Medical Document Studio
+                </h3>
+                <p className="text-xs text-primary-light/60">
+                  Analyze lab reports & vitals in real-time. Compute biomarker ratios, organ-system profiles, and multi-disease risk projections.
+                </p>
+              </div>
+              <button
+                onClick={() => setActiveView('records')}
+                className="text-xs text-teal-400 hover:text-teal-300 font-semibold px-3 py-1.5 rounded-xl bg-teal-500/10 border border-teal-500/20"
+              >
+                Back to Document Vault
+              </button>
+            </div>
+            <StandaloneDocumentStudio />
+          </div>
+        ) : (
+          <>
         {error && (
           <div className="rounded-3xl bg-surface-20 border border-doctor-danger-soft/40 p-5 text-sm text-doctor-red">{error}</div>
         )}
@@ -535,6 +587,8 @@ export default function PatientDocumentsPage() {
             )}
           </div>
         </div>
+        </>
+      )}
       </div>
 
       {/* Upload modal */}

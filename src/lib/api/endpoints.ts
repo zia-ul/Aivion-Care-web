@@ -59,7 +59,11 @@ import {
   PathologyDashboardStatsResponse,
   PathologyApprovalSummary,
 } from '@/types/pathology';
-import { ClinicalAssessmentRequest, ClinicalAssessmentResponse } from '@/types/clinical-assessment';
+import {
+  ClinicalAssessmentRequest,
+  ClinicalAssessmentResponse,
+  StandaloneDocumentAnalysisResponse,
+} from '@/types/clinical-assessment';
 import {
   PatientDocumentResponse,
   PatientDocumentUploadRequest,
@@ -132,6 +136,7 @@ export const doctorApi = {
   getSlots: (doctorId: number, date: string) =>
     apiClient.get(`/api/v1/doctors/${doctorId}/slots`, { params: { date } }),
   getMyPatients: () => apiClient.get('/api/v1/doctors/my-patients'),
+  getPatientDetails: (patientId: number) => apiClient.get(`/api/v1/doctors/patients/${patientId}`),
   listForApproval: (status?: string) =>
     apiClient.get('/api/v1/super-admin/doctors/verification', { params: status ? { status } : {} }),
   getProfileForAdmin: (doctorId: number) =>
@@ -492,6 +497,18 @@ export const clinicalAssessmentApi = {
     apiClient.get<ClinicalAssessmentResponse[]>(`/api/v1/patients/${patientId}/clinical-assessments`),
   getById: (patientId: number, assessmentId: number) =>
     apiClient.get<ClinicalAssessmentResponse>(`/api/v1/patients/${patientId}/clinical-assessments/${assessmentId}`),
+  analyzeStandaloneDocument: (file: File, category: string = 'LAB_REPORT', extractionMode: string = 'structured', notes?: string) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return apiClient.post<StandaloneDocumentAnalysisResponse>(
+      '/api/v1/doctor/clinical-assessment/analyze-document',
+      formData,
+      {
+        params: { category, extractionMode, notes },
+        headers: { 'Content-Type': 'multipart/form-data' },
+      }
+    );
+  },
 };
 
 export const patientDocumentApi = {

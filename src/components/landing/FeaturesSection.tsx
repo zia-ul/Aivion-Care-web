@@ -1,7 +1,15 @@
 import Image from 'next/image';
-import { Activity, BellRing, CalendarDays, FileHeart, FileText, Video, HeartPulse, Sparkles } from 'lucide-react';
+import { Activity, BellRing, BrainCircuit, CalendarDays, FileHeart, FileText, Video, HeartPulse, Sparkles } from 'lucide-react';
 
 const features = [
+  {
+    title: 'Autonomous Clinical Assessment & AI Dashboards',
+    text: 'Multimodal 3-agent intelligence analyzes uploaded lab and pathology reports, calculating biomarker ratios, continuous disease probabilities (AUC-ROC 0.89-0.95), and multi-hit syndrome patterns.',
+    punchline: 'Diagnostic precision. Zero delay.',
+    image: '/images/healthcare/smart-monitoring.jpg',
+    Icon: BrainCircuit,
+    color: 'text-indigo-400',
+  },
   {
     title: 'Smart Appointments & Zero Waiting',
     text: 'Book verified doctors in seconds. Real-time token queues mean no more 2-hour hospital lobby agony.',

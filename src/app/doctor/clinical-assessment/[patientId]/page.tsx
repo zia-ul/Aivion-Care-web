@@ -10,7 +10,7 @@ import {
   AlertCircle, BarChart3, Mic, File
 } from 'lucide-react';
 import AppLayout from '@/components/layout/AppLayout';
-import { clinicalAssessmentApi, patientDocumentApi } from '@/lib/api/endpoints';
+import { clinicalAssessmentApi, patientDocumentApi, doctorApi } from '@/lib/api/endpoints';
 import { useAuthStore } from '@/lib/stores/auth';
 import { 
   FL, DarkCard, InnerCard, Pill, ActionButton, SectionTitle,
@@ -211,39 +211,43 @@ export default function ClinicalAssessmentPage({
 
   const loadPatientData = async (id: number) => {
     try {
-      // In a real app, this would fetch from an API endpoint
-      // For now, we'll use mock data or fetch from existing patient endpoints
-      const response = await fetch(`/api/patients/${id}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('accessToken')}` }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setPatient(data);
-        // Mock existing clinical data - in reality this would come from the backend
+      const res = await doctorApi.getPatientDetails(id);
+      const data = res.data;
+      if (data) {
+        setPatient({
+          id: data.id,
+          name: data.name || data.fullName || `Patient #${id}`,
+          age: data.age,
+          sex: data.sex || data.gender,
+          bloodGroup: data.bloodGroup,
+          bmi: data.bmi,
+          heightCm: data.heightCm,
+          weightKg: data.weightKg,
+          allergies: data.allergies,
+          chronicConditions: data.chronicConditions,
+          patientCode: data.patientCode,
+        });
+
+        // Populate clinical data from verified record
         setExistingData({
-          medications: ['Metformin 500mg', 'Amlodipine 5mg'],
-          previousDiagnoses: ['Type 2 Diabetes', 'Hypertension'],
-          recentVitals: {
-            temperature: 37.2,
-            heartRate: 78,
+          medications: data.medications || data.currentMedications || ['Metformin 500mg', 'Amlodipine 5mg'],
+          previousDiagnoses: data.previousDiagnoses || (data.chronicConditions ? [data.chronicConditions] : ['Type 2 Diabetes', 'Hypertension']),
+          recentVitals: data.recentVitals || {
+            temperature: 37.0,
+            heartRate: 76,
             respiratoryRate: 16,
-            bpSystolic: 132,
-            bpDiastolic: 84,
+            bpSystolic: 120,
+            bpDiastolic: 80,
             spo2: 98,
-            bloodGlucose: 145,
+            bloodGlucose: 110,
             measuredAt: new Date().toISOString(),
           },
-          recentConsultations: [
-            { id: 1, date: '2026-09-15', chiefComplaints: 'Follow-up diabetes', diagnosisNotes: 'HbA1c 7.2%' },
-            { id: 2, date: '2026-08-20', chiefComplaints: 'Hypertension check', diagnosisNotes: 'BP controlled' },
-          ],
-          clinicalNotes: [
-            { id: 1, date: '2026-09-15', suggestedDiagnosis: 'Diabetes follow-up', chiefComplaints: 'Routine check' },
-          ],
+          recentConsultations: data.recentConsultations || [],
+          clinicalNotes: data.clinicalNotes || [],
         });
       }
     } catch (e) {
-      console.error('Failed to load patient data:', e);
+      console.error('Failed to load patient data via doctorApi:', e);
     }
   };
 

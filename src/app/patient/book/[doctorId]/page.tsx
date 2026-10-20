@@ -47,19 +47,39 @@ function BookContent() {
     try {
       // Backend: GET /doctors/{id}/slots?date=YYYY-MM-DD -> { slots: ["HH:mm"...], detailedSlots: [{ time, status, bookable }] }
       const { data } = await doctorApi.getSlots(doctorId, date);
+      const now = new Date();
+      const isSelectedDateToday = date === today;
+      const currentHoursMinutes = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
       if (Array.isArray(data?.detailedSlots) && data.detailedSlots.length > 0) {
-        setSlotItems(data.detailedSlots.map((d: any) => ({
-          time: String(d.time).slice(0, 5),
-          status: d.status || 'AVAILABLE',
-          bookable: Boolean(d.bookable),
-        })));
+        setSlotItems(
+          data.detailedSlots
+            .filter((d: any) => {
+              if (d.status === 'PAST') return false;
+              if (isSelectedDateToday && String(d.time).slice(0, 5) <= currentHoursMinutes) return false;
+              return true;
+            })
+            .map((d: any) => ({
+              time: String(d.time).slice(0, 5),
+              status: d.status || 'AVAILABLE',
+              bookable: Boolean(d.bookable),
+            }))
+        );
       } else {
         const raw: unknown[] = Array.isArray(data?.slots) ? data.slots : [];
-        setSlotItems(raw.map((s) => ({
-          time: String(s).slice(0, 5),
-          status: 'AVAILABLE',
-          bookable: true,
-        })));
+        setSlotItems(
+          raw
+            .map((s) => String(s).slice(0, 5))
+            .filter((timeStr) => {
+              if (isSelectedDateToday && timeStr <= currentHoursMinutes) return false;
+              return true;
+            })
+            .map((timeStr) => ({
+              time: timeStr,
+              status: 'AVAILABLE',
+              bookable: true,
+            }))
+        );
       }
       if (data?.error) setSlotsError(String(data.error));
     } catch (err: any) {
