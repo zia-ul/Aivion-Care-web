@@ -19,8 +19,6 @@ type MessageHandler = (message: any) => void;
 class WebRtcWebSocketService {
   private client: Client | null = null;
   private subscriptions: Map<string, StompSubscription> = new Map();
-  /** Subscriptions requested before the socket was ready, replayed on connect. */
-  private pending: Map<string, MessageHandler> = new Map();
   /** Signals published before the socket was ready, replayed on connect. */
   private pendingSends: Array<{ destination: string; body: any }> = [];
   private statusListeners = new Set<(connected: boolean) => void>();
@@ -92,15 +90,16 @@ onConnect: () => {
     this.client.activate();
   }
 
+  private handlers: Map<string, Set<MessageHandler>> = new Map();
+  private pendingHandlers: Map<string, Set<MessageHandler>> = new Map();
+
   /** Re-subscribes anything requested while the socket was still connecting. */
   private flushPending() {
-    if (this.pending.size === 0) return;
-    // Take ownership first: leaving entries behind re-subscribed them on every
-    // reconnect, stacking duplicate subscriptions per destination.
-    const queued = new Map(this.pending);
-    this.pending.clear();
-    for (const [destination, handler] of queued) {
-      this.subscribe(destination, handler);
+    if (this.pendingHandlers.size === 0) return;
+    const queued = new Map(this.pendingHandlers);
+    this.pendingHandlers.clear();
+    for (const [destination, handlerSet] of queued) {
+      handlerSet.forEach((h) => this.subscribe(destination, h));
     }
   }
 
@@ -111,27 +110,64 @@ onConnect: () => {
   }
 
   subscribe(destination: string, handler: MessageHandler): () => void {
+    if (!this.handlers.has(destination)) {
+      this.handlers.set(destination, new Set());
+    }
+    this.handlers.get(destination)!.add(handler);
+
+    const unsubscribe = () => {
+      const set = this.handlers.get(destination);
+      if (set) {
+        set.delete(handler);
+        if (set.size === 0) {
+          this.handlers.delete(destination);
+          const sub = this.subscriptions.get(destination);
+          if (sub) {
+            try { sub.unsubscribe(); } catch {}
+            this.subscriptions.delete(destination);
+          }
+        }
+      }
+      const pendingSet = this.pendingHandlers.get(destination);
+      if (pendingSet) {
+        pendingSet.delete(handler);
+        if (pendingSet.size === 0) {
+          this.pendingHandlers.delete(destination);
+        }
+      }
+    };
+
     if (!this.client?.connected) {
-      // Queue instead of dropping, otherwise an early subscribe() is a silent
-      // no-op and the peer never receives signaling.
-      this.pending.set(destination, handler);
-      return () => this.pending.delete(destination);
+      if (!this.pendingHandlers.has(destination)) {
+        this.pendingHandlers.set(destination, new Set());
+      }
+      this.pendingHandlers.get(destination)!.add(handler);
+      return unsubscribe;
     }
 
-    const subscription = this.client.subscribe(destination, (message) => {
-      try {
-        handler(JSON.parse(message.body));
-      } catch {
-        handler(message.body);
-      }
-    });
+    if (!this.subscriptions.has(destination)) {
+      const subscription = this.client.subscribe(destination, (message) => {
+        let payload: any;
+        try {
+          payload = JSON.parse(message.body);
+        } catch {
+          payload = message.body;
+        }
+        const currentHandlers = this.handlers.get(destination);
+        if (currentHandlers) {
+          currentHandlers.forEach((h) => {
+            try {
+              h(payload);
+            } catch (err) {
+              console.error('WebRTC message handler error on', destination, err);
+            }
+          });
+        }
+      });
+      this.subscriptions.set(destination, subscription);
+    }
 
-    this.subscriptions.set(destination, subscription);
-
-    return () => {
-      subscription.unsubscribe();
-      this.subscriptions.delete(destination);
-    };
+    return unsubscribe;
   }
 
   /**
@@ -167,9 +203,12 @@ onConnect: () => {
     if (this.refCount > 0) return;
 
     this.isManualDisconnect = true;
-    this.subscriptions.forEach((sub) => sub.unsubscribe());
+    this.subscriptions.forEach((sub) => {
+      try { sub.unsubscribe(); } catch {}
+    });
     this.subscriptions.clear();
-    this.pending.clear();
+    this.handlers.clear();
+    this.pendingHandlers.clear();
     this.pendingSends = [];
     this.client?.deactivate();
     this.client = null;

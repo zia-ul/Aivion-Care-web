@@ -58,6 +58,20 @@ export function useConsultation({ appointmentId, onLoadComplete }: UseConsultati
     };
   }, []);
 
+  // Reset state when switching appointments to prevent data bleed
+  useEffect(() => {
+    setConsultation(null);
+    setConsultationId(null);
+    setReview(null);
+    setTranscript('');
+    setRecordingUrlInput('');
+    setSuggestions([]);
+    setSelectedSuggestionIds(new Set());
+    setCorrectionReasons({});
+    setError(null);
+    setReviewError('');
+  }, [appointmentId]);
+
   // Load consultation
   const loadConsultation = useCallback(async () => {
     setLoading(true);

@@ -31,15 +31,31 @@ export default function PatientAppointmentsPage() {
 
   useEffect(() => { load(); }, [load]);
 
-  const today = new Date().toISOString().split('T')[0];
+  const now = new Date();
+  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
   const upcomingIds = new Set(
     appointments
-      .filter((a) => (a.appointmentDate ?? '') >= today && a.status !== 'CANCELLED' && a.status !== 'COMPLETED')
+      .filter((a) => {
+        if (a.status === 'CANCELLED' || a.status === 'COMPLETED') return false;
+        const apptDate = a.appointmentDate ?? '';
+        if (apptDate > today) return true;
+        if (apptDate === today) {
+          const slot = String(a.slotTime ?? '').slice(0, 5);
+          return !slot || slot >= currentTime;
+        }
+        return false;
+      })
       .map((a) => a.id)
   );
-  const upcoming = appointments.filter((a) => upcomingIds.has(a.id))
+
+  const upcoming = appointments
+    .filter((a) => upcomingIds.has(a.id))
     .sort((a, b) => (a.appointmentDate ?? '').localeCompare(b.appointmentDate ?? ''));
-  const history = appointments.filter((a) => !upcomingIds.has(a.id))
+
+  const history = appointments
+    .filter((a) => !upcomingIds.has(a.id))
     .sort((a, b) => (b.appointmentDate ?? '').localeCompare(a.appointmentDate ?? ''));
 
   const cancel = async (id: number) => {
@@ -77,16 +93,21 @@ export default function PatientAppointmentsPage() {
   return (
     <AppLayout role="PATIENT" title="My Appointments" subtitle="Upcoming and past visits">
       <div className="space-y-5">
-        <div className="inline-flex rounded-2xl bg-surface-20 border border-doctor-border-input p-1">
-          {(['upcoming', 'history'] as const).map((t) => (
-            <button
-              key={t}
-              onClick={() => setTab(t)}
-              className={`px-5 py-2 rounded-xl text-sm font-semibold transition-colors ${tab === t ? 'bg-doctor-mint-fill text-white' : 'text-doctor-dim hover:text-doctor-ink'}`}
-            >
-              {t === 'upcoming' ? 'Upcoming' : 'History'}
-            </button>
-          ))}
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="inline-flex rounded-2xl bg-surface-20 border border-doctor-border-input p-1">
+            {(['upcoming', 'history'] as const).map((t) => (
+              <button
+                key={t}
+                onClick={() => setTab(t)}
+                className={`px-5 py-2 rounded-xl text-sm font-semibold transition-colors ${tab === t ? 'bg-doctor-mint-fill text-white' : 'text-doctor-dim hover:text-doctor-ink'}`}
+              >
+                {t === 'upcoming' ? 'Upcoming' : 'History'}
+              </button>
+            ))}
+          </div>
+          <ActionButton variant="outline" onClick={() => window.location.assign('/patient/records')}>
+            Medical Records & Prescriptions
+          </ActionButton>
         </div>
 
         {loading ? (
@@ -97,39 +118,56 @@ export default function PatientAppointmentsPage() {
           </div>
         ) : (
           <div className="space-y-3">
-            {list.map((a) => (
-              <DarkCard key={a.id} tone="patient">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <p className="text-primary-light font-semibold">Dr. {a.doctorName ?? '—'}</p>
-                      <Pill color={statusColor(a.status)}>{a.status ?? ''}</Pill>
-                      <Pill color={a.type === 'VIDEO' || a.type === 'TELECONSULT' ? FL.cyan : FL.mint}>
-                        {a.type === 'VIDEO' || a.type === 'TELECONSULT' ? 'Online Video' : 'In-Person Visit'}
-                      </Pill>
+            {list.map((a) => {
+              const isVideo = a.type === 'VIDEO' || a.type === 'TELECONSULT';
+              return (
+                <DarkCard key={a.id} tone="patient">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="text-primary-light font-semibold">Dr. {a.doctorName ?? '—'}</p>
+                        <Pill color={statusColor(a.status)}>{a.status ?? ''}</Pill>
+                        <Pill color={isVideo ? FL.cyan : FL.mint}>
+                          {isVideo ? 'Online Video' : 'In-Person Visit'}
+                        </Pill>
+                      </div>
+                      <p className="text-xs text-doctor-muted mt-1">{a.hospitalName ?? ''}</p>
+                      <div className="flex items-center gap-4 mt-2 text-xs text-doctor-muted">
+                        <span className="inline-flex items-center gap-1"><CalendarDays size={12} /> {a.appointmentDate}</span>
+                        <span className="inline-flex items-center gap-1"><Clock size={12} /> {String(a.slotTime ?? '').slice(0, 5)}</span>
+                        {a.tokenNumber && <span>Token #{a.tokenNumber}</span>}
+                      </div>
                     </div>
-                    <p className="text-xs text-doctor-muted mt-1">{a.hospitalName ?? ''}</p>
-                    <div className="flex items-center gap-4 mt-2 text-xs text-doctor-muted">
-                      <span className="inline-flex items-center gap-1"><CalendarDays size={12} /> {a.appointmentDate}</span>
-                      <span className="inline-flex items-center gap-1"><Clock size={12} /> {String(a.slotTime ?? '').slice(0, 5)}</span>
-                      {a.tokenNumber && <span>Token #{a.tokenNumber}</span>}
+                    <div className="flex gap-2 flex-wrap">
+                      {isVideo && a.status !== 'CANCELLED' && (
+                        <ActionButton
+                          onClick={() => window.location.assign(`/video/consultation?id=${a.id}`)}
+                        >
+                          <span className="inline-flex items-center gap-1.5">Join Call</span>
+                        </ActionButton>
+                      )}
+                      {isVideo && a.status !== 'CANCELLED' && (
+                        <ActionButton variant="ghost" onClick={() => openChat(a)}>
+                          <span className="inline-flex items-center gap-1.5"><MessageCircle size={15} /> Chat</span>
+                        </ActionButton>
+                      )}
+                      {/* View Consultation / Prescription details */}
+                      <ActionButton
+                        variant="outline"
+                        onClick={() => window.location.assign(`/patient/consultation/${a.id}`)}
+                      >
+                        Consultation Details
+                      </ActionButton>
+                      {tab === 'upcoming' && a.status !== 'CANCELLED' && (
+                        <ActionButton variant="danger" disabled={cancellingId === a.id} onClick={() => cancel(a.id)}>
+                          <span className="inline-flex items-center gap-1.5"><XCircle size={15} /> {cancellingId === a.id ? 'Cancelling...' : 'Cancel'}</span>
+                        </ActionButton>
+                      )}
                     </div>
                   </div>
-                  <div className="flex gap-2 flex-wrap">
-                    {(a.type === 'VIDEO' || a.type === 'TELECONSULT') && a.status !== 'CANCELLED' && (
-                      <ActionButton variant="ghost" onClick={() => openChat(a)}>
-                        <span className="inline-flex items-center gap-1.5"><MessageCircle size={15} /> Chat</span>
-                      </ActionButton>
-                    )}
-                    {tab === 'upcoming' && a.status !== 'CANCELLED' && (
-                      <ActionButton variant="danger" disabled={cancellingId === a.id} onClick={() => cancel(a.id)}>
-                        <span className="inline-flex items-center gap-1.5"><XCircle size={15} /> {cancellingId === a.id ? 'Cancelling...' : 'Cancel'}</span>
-                      </ActionButton>
-                    )}
-                  </div>
-                </div>
-              </DarkCard>
-            ))}
+                </DarkCard>
+              );
+            })}
           </div>
         )}
       </div>

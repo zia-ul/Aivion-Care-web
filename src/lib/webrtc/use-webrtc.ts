@@ -152,251 +152,265 @@ localStreamRef.current?.getTracks().forEach((track) => {
     };
   }, [accessToken]);
 
-  const startCall = useCallback(async (options?: { video?: boolean }) => {
-    if (!consultationId) return;
+  const handleSignal = useCallback(
+    async (message: any) => {
+      if (!message || typeof message !== 'object') return;
+      if (message.senderId === userId) return;
 
-    if (!webrtcWsService.isConnected()) {
-      let attempts = 0;
-      while (!webrtcWsService.isConnected() && attempts < 15) {
-        await new Promise((r) => setTimeout(r, 200));
-        attempts++;
-      }
-      if (!webrtcWsService.isConnected()) {
-        setError('Signaling connection not ready. Please try again in a moment.');
-        return;
-      }
-    }
+      const current = peerConnectionRef.current;
 
-    const useVideo = options?.video !== false; // default true
-
-    // Release any stream from a previous attempt before requesting a new one,
-    // otherwise a second press leaves the first camera track running.
-    cleanup();
-
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: useVideo });
-      const pc = new RTCPeerConnection({ iceServers });
-
-      peerConnectionRef.current = pc;
-      localStreamRef.current = stream;
-      stream.getTracks().forEach((track) => pc.addTrack(track, stream));
-
-      setLocalStream(stream);
-      setError(null);
-
-      pc.ontrack = (event) => {
-        const incoming = event.streams?.[0];
-        if (incoming) setRemoteStream(incoming);
-      };
-
-      pc.onicecandidate = (event) => {
-        if (event.candidate) sendSignal('ice-candidate', event.candidate.toJSON());
-      };
-
-      pc.oniceconnectionstatechange = () => {
-        if (pc.iceConnectionState === 'failed') {
-          setError(
-            TURN_URL
-              ? 'Media connection failed. Check your network or TURN configuration.'
-              : 'Media connection failed. No TURN relay is configured, so calls will not connect on most mobile and campus networks. Ask an administrator to set NEXT_PUBLIC_TURN_URL.'
-          );
-        } else if (pc.iceConnectionState === 'connected' || pc.iceConnectionState === 'completed') {
-          setCallState('connected');
+      switch (message.type) {
+        case 'call': {
+          if (!isInitiator) {
+            setIncomingCall({
+              fromId: message.senderId,
+              fromRole: message.senderRole,
+              video: message.data?.video !== false,
+            });
+            setCallState('ringing');
+          }
+          break;
         }
-      };
-
-      const handleSignal = async (message: any) => {
-        if (!message || typeof message !== 'object') return;
-        // Ignore the echo of our own broadcast (the topic fans out to all peers).
-        if (message.senderId === userId) return;
-
-        const current = peerConnectionRef.current;
-        if (!current) return;
-
-        switch (message.type) {
-          case 'offer': {
-            const offer = message.data as RTCSessionDescriptionInit;
-            localOfferRef.current = offer;
-            await current.setRemoteDescription(new RTCSessionDescription(offer));
-            await flushPendingCandidates(current);
-            const answer = await current.createAnswer();
-            await current.setLocalDescription(answer);
-            sendSignal('answer', answer);
-            if (!isInitiator) {
-              setCallState('connected');
-            }
-            break;
-          }
-          case 'answer': {
-            // Only the offerer accepts an answer, and only while awaiting one.
-            if (current.signalingState !== 'have-local-offer') return;
-            await current.setRemoteDescription(
-              new RTCSessionDescription(message.data as RTCSessionDescriptionInit)
-            );
-            await flushPendingCandidates(current);
-            if (isInitiator) {
-              setCallState('connected');
-            }
-            break;
-          }
-          case 'ice-candidate': {
-            // Buffer if the description has not landed yet.
-            await addCandidate(current, message.data);
-            break;
-          }
-          case 'join': {
-            // Someone joined after our offer went out; re-send so they connect.
-            if (isInitiator && localOfferRef.current) {
-              sendSignal('offer', localOfferRef.current);
-            }
-            break;
-          }
-          case 'call': {
-            // Incoming call notification
-            if (!isInitiator) {
-              setIncomingCall({ 
-                fromId: message.senderId, 
-                fromRole: message.senderRole,
-                video: message.data?.video !== false 
-              });
-              setCallState('ringing');
-            }
-            break;
-          }
-          case 'accept': {
-            // Call was accepted by the other party
-            if (isInitiator) {
-              callAcceptedRef.current = true;
+        case 'accept': {
+          if (isInitiator) {
+            callAcceptedRef.current = true;
+            if (current) {
               if (current.signalingState === 'stable') {
-                const offer = await current.createOffer();
-                await current.setLocalDescription(offer);
-                localOfferRef.current = offer;
-                sendSignal('offer', offer);
+                try {
+                  const offer = await current.createOffer();
+                  await current.setLocalDescription(offer);
+                  localOfferRef.current = offer;
+                  sendSignal('offer', offer);
+                } catch (err) {
+                  console.warn('Failed to create offer upon accept:', err);
+                }
               } else if (localOfferRef.current) {
                 sendSignal('offer', localOfferRef.current);
               }
-              setCallState('calling');
             }
-            break;
+            setCallState('calling');
           }
-          case 'reject': {
-            // Call was rejected
-            if (isInitiator) {
-              cleanup();
-              setError('Call was rejected');
+          break;
+        }
+        case 'offer': {
+          const offer = message.data as RTCSessionDescriptionInit;
+          localOfferRef.current = offer;
+          if (current) {
+            try {
+              await current.setRemoteDescription(new RTCSessionDescription(offer));
+              await flushPendingCandidates(current);
+              const answer = await current.createAnswer();
+              await current.setLocalDescription(answer);
+              sendSignal('answer', answer);
+              setCallState('connected');
+            } catch (err) {
+              console.warn('Failed to handle incoming offer:', err);
             }
-            break;
+          } else if (!isInitiator) {
+            // Patient received offer before clicking accept (e.g. auto-call or ring)
+            setIncomingCall({
+              fromId: message.senderId,
+              fromRole: message.senderRole,
+              video: true,
+            });
+            setCallState('ringing');
           }
-          case 'hang-up': {
+          break;
+        }
+        case 'answer': {
+          if (current && current.signalingState === 'have-local-offer') {
+            try {
+              await current.setRemoteDescription(
+                new RTCSessionDescription(message.data as RTCSessionDescriptionInit)
+              );
+              await flushPendingCandidates(current);
+              if (isInitiator) {
+                setCallState('connected');
+              }
+            } catch (err) {
+              console.warn('Failed to handle incoming answer:', err);
+            }
+          }
+          break;
+        }
+        case 'ice-candidate': {
+          if (current) {
+            await addCandidate(current, message.data);
+          } else if (message.data) {
+            pendingCandidatesRef.current.push(message.data);
+          }
+          break;
+        }
+        case 'join': {
+          if (isInitiator && localOfferRef.current) {
+            sendSignal('offer', localOfferRef.current);
+          }
+          break;
+        }
+        case 'reject': {
+          if (isInitiator) {
             cleanup();
-            break;
+            setError('Call was rejected');
+            setCallState('ended');
           }
+          break;
         }
-      };
-
-      const destination = `/topic/webrtc/${consultationId}`;
-      unsubscribeRef.current?.();
-      unsubscribeRef.current = webrtcWsService.subscribe(destination, handleSignal);
-
-      // If we're the initiator (doctor), send a "call" signal to ring the other party
-      if (isInitiator) {
-        sendSignal('call', { video: useVideo });
-        setCallState('calling');
-      } else {
-        // Patient waits for call signal, then sends 'join' to request offer
-        sendSignal('join', {});
+        case 'hang-up': {
+          cleanup();
+          setCallState('ended');
+          break;
+        }
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to start video call');
-      setCallState('ended');
-    }
-  }, [consultationId, userId, isInitiator, iceServers, sendSignal, cleanup, addCandidate, flushPendingCandidates]);
+    },
+    [userId, isInitiator, sendSignal, cleanup, addCandidate, flushPendingCandidates]
+  );
 
-  const acceptCall = useCallback(async (options?: { video?: boolean }) => {
-    if (!consultationId) return;
-    
-    try {
-      const useVideo = options?.video !== undefined ? options.video : (incomingCall?.video !== false);
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: useVideo });
-      const pc = new RTCPeerConnection({ iceServers });
+  // Room listener: Subscribe to WebRTC topic as soon as connected and consultationId is valid
+  useEffect(() => {
+    if (!consultationId || !isConnected) return;
+    const destination = `/topic/webrtc/${consultationId}`;
+    const unsubscribe = webrtcWsService.subscribe(destination, handleSignal);
+    return () => {
+      unsubscribe();
+    };
+  }, [consultationId, isConnected, handleSignal]);
 
-      peerConnectionRef.current = pc;
-      localStreamRef.current = stream;
-      stream.getTracks().forEach((track) => pc.addTrack(track, stream));
+  const startCall = useCallback(
+    async (options?: { video?: boolean }) => {
+      if (!consultationId) return;
 
-      setLocalStream(stream);
-      setError(null);
-      setCallState('connected');
-      setIncomingCall(null);
-
-      pc.ontrack = (event) => {
-        const incoming = event.streams?.[0];
-        if (incoming) setRemoteStream(incoming);
-      };
-
-      pc.onicecandidate = (event) => {
-        if (event.candidate) sendSignal('ice-candidate', event.candidate.toJSON());
-      };
-
-      pc.oniceconnectionstatechange = () => {
-        if (pc.iceConnectionState === 'failed') {
-          setError(
-            TURN_URL
-              ? 'Media connection failed. Check your network or TURN configuration.'
-              : 'Media connection failed. No TURN relay is configured, so calls will not connect on most mobile and campus networks. Ask an administrator to set NEXT_PUBLIC_TURN_URL.'
-          );
-        } else if (pc.iceConnectionState === 'connected' || pc.iceConnectionState === 'completed') {
-          setCallState('connected');
+      if (!webrtcWsService.isConnected()) {
+        let attempts = 0;
+        while (!webrtcWsService.isConnected() && attempts < 15) {
+          await new Promise((r) => setTimeout(r, 200));
+          attempts++;
         }
-      };
+        if (!webrtcWsService.isConnected()) {
+          setError('Signaling connection not ready. Please try again in a moment.');
+          return;
+        }
+      }
 
-      const handleSignal = async (message: any) => {
-        if (!message || typeof message !== 'object') return;
-        if (message.senderId === userId) return;
+      const useVideo = options?.video !== false;
 
-        const current = peerConnectionRef.current;
-        if (!current) return;
+      cleanup();
 
-        switch (message.type) {
-          case 'offer': {
-            const offer = message.data as RTCSessionDescriptionInit;
-            localOfferRef.current = offer;
-            await current.setRemoteDescription(new RTCSessionDescription(offer));
-            await flushPendingCandidates(current);
-            const answer = await current.createAnswer();
-            await current.setLocalDescription(answer);
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: useVideo });
+        const pc = new RTCPeerConnection({ iceServers });
+
+        peerConnectionRef.current = pc;
+        localStreamRef.current = stream;
+        stream.getTracks().forEach((track) => pc.addTrack(track, stream));
+
+        setLocalStream(stream);
+        setError(null);
+
+        pc.ontrack = (event) => {
+          const incoming = event.streams?.[0];
+          if (incoming) setRemoteStream(incoming);
+        };
+
+        pc.onicecandidate = (event) => {
+          if (event.candidate) sendSignal('ice-candidate', event.candidate.toJSON());
+        };
+
+        pc.oniceconnectionstatechange = () => {
+          if (pc.iceConnectionState === 'failed') {
+            setError(
+              TURN_URL
+                ? 'Media connection failed. Check your network or TURN configuration.'
+                : 'Media connection failed. No TURN relay is configured, so calls will not connect on most mobile and campus networks. Ask an administrator to set NEXT_PUBLIC_TURN_URL.'
+            );
+          } else if (pc.iceConnectionState === 'connected' || pc.iceConnectionState === 'completed') {
+            setCallState('connected');
+          }
+        };
+
+        // If we're doctor/initiator, create local offer and broadcast call signal
+        if (isInitiator) {
+          const offer = await pc.createOffer();
+          await pc.setLocalDescription(offer);
+          localOfferRef.current = offer;
+          sendSignal('call', { video: useVideo });
+          setCallState('calling');
+        } else {
+          sendSignal('join', {});
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to start video call');
+        setCallState('ended');
+      }
+    },
+    [consultationId, isInitiator, iceServers, sendSignal, cleanup]
+  );
+
+  const acceptCall = useCallback(
+    async (options?: { video?: boolean }) => {
+      if (!consultationId) return;
+
+      try {
+        const useVideo = options?.video !== undefined ? options.video : incomingCall?.video !== false;
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: useVideo });
+        const pc = new RTCPeerConnection({ iceServers });
+
+        peerConnectionRef.current = pc;
+        localStreamRef.current = stream;
+        stream.getTracks().forEach((track) => pc.addTrack(track, stream));
+
+        setLocalStream(stream);
+        setError(null);
+        setIncomingCall(null);
+
+        pc.ontrack = (event) => {
+          const incoming = event.streams?.[0];
+          if (incoming) setRemoteStream(incoming);
+        };
+
+        pc.onicecandidate = (event) => {
+          if (event.candidate) sendSignal('ice-candidate', event.candidate.toJSON());
+        };
+
+        pc.oniceconnectionstatechange = () => {
+          if (pc.iceConnectionState === 'failed') {
+            setError(
+              TURN_URL
+                ? 'Media connection failed. Check your network or TURN configuration.'
+                : 'Media connection failed. No TURN relay is configured, so calls will not connect on most mobile and campus networks. Ask an administrator to set NEXT_PUBLIC_TURN_URL.'
+            );
+          } else if (pc.iceConnectionState === 'connected' || pc.iceConnectionState === 'completed') {
+            setCallState('connected');
+          }
+        };
+
+        // If doctor's offer already landed, answer immediately
+        if (localOfferRef.current) {
+          try {
+            await pc.setRemoteDescription(new RTCSessionDescription(localOfferRef.current));
+            await flushPendingCandidates(pc);
+            const answer = await pc.createAnswer();
+            await pc.setLocalDescription(answer);
             sendSignal('answer', answer);
             setCallState('connected');
-            break;
-          }
-          case 'ice-candidate': {
-            await addCandidate(current, message.data);
-            break;
-          }
-          case 'hang-up': {
-            cleanup();
-            break;
+          } catch (err) {
+            console.warn('Failed to answer buffered offer:', err);
           }
         }
-      };
 
-      const destination = `/topic/webrtc/${consultationId}`;
-      unsubscribeRef.current?.();
-      unsubscribeRef.current = webrtcWsService.subscribe(destination, handleSignal);
-
-      // Send accept signal to let initiator know we're ready
-      sendSignal('accept', {});
-      // Send a follow-up accept after a brief delay in case the doctor's listener was subscribing
-      setTimeout(() => {
-        if (peerConnectionRef.current?.signalingState === 'stable' && !peerConnectionRef.current?.remoteDescription) {
-          sendSignal('accept', {});
-        }
-      }, 1000);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to accept call');
-      setCallState('ended');
-    }
-  }, [consultationId, incomingCall, userId, iceServers, sendSignal, cleanup, addCandidate, flushPendingCandidates]);
+        // Notify initiator that call was accepted
+        sendSignal('accept', {});
+        setTimeout(() => {
+          if (peerConnectionRef.current?.signalingState === 'stable' && !peerConnectionRef.current?.remoteDescription) {
+            sendSignal('accept', {});
+          }
+        }, 1000);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to accept call');
+        setCallState('ended');
+      }
+    },
+    [consultationId, incomingCall, iceServers, sendSignal, flushPendingCandidates]
+  );
 
 const rejectCall = useCallback(() => {
     if (consultationId && incomingCall) {

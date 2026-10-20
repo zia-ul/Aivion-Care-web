@@ -124,6 +124,29 @@ export default function DoctorConsultationPage({ params }: { params: Promise<{ i
     setBusy,
   } = useConsultation({ appointmentId });
 
+  // Reset all clinical state when appointmentId changes to prevent leaking old consultation data
+  useEffect(() => {
+    setF({
+      chiefComplaints: '',
+      pastHistory: '',
+      physicalExamination: '',
+      diagnosisNotes: '',
+      investigationAdvised: '',
+      clinicalNotes: '',
+      advice: '',
+      allergy: '',
+      severity: '',
+      lifestyleAdvice: '',
+      followUp: '',
+    });
+    setSummary('');
+    setVitals([]);
+    setMedications([]);
+    setInvestigations([]);
+    setTranscript('');
+    lastDraftRef.current = null;
+  }, [appointmentId, setTranscript]);
+
   // Sync local state from consultation
   useEffect(() => {
     if (consultation) {
