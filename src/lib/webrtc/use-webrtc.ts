@@ -296,7 +296,12 @@ localStreamRef.current?.getTracks().forEach((track) => {
       cleanup();
 
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: useVideo });
+        const audioConstraints = {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+        };
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: audioConstraints, video: useVideo });
         const pc = new RTCPeerConnection({ iceServers });
 
         peerConnectionRef.current = pc;
@@ -307,14 +312,18 @@ localStreamRef.current?.getTracks().forEach((track) => {
         setError(null);
 
         pc.ontrack = (event) => {
+          console.log('[WebRTC] ontrack fired:', event.track.kind, event.track.id);
           let incoming = event.streams?.[0];
           if (!incoming) {
             incoming = new MediaStream();
-            if (event.track) {
+          }
+          if (event.track) {
+            // Ensure track is in the stream if not already
+            if (!incoming.getTracks().some((t) => t.id === event.track.id)) {
               incoming.addTrack(event.track);
             }
           }
-          setRemoteStream(incoming);
+          setRemoteStream(new MediaStream(incoming.getTracks()));
         };
 
         pc.onicecandidate = (event) => {
@@ -357,7 +366,12 @@ localStreamRef.current?.getTracks().forEach((track) => {
 
       try {
         const useVideo = options?.video !== undefined ? options.video : incomingCall?.video !== false;
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: useVideo });
+        const audioConstraints = {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+        };
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: audioConstraints, video: useVideo });
         const pc = new RTCPeerConnection({ iceServers });
 
         peerConnectionRef.current = pc;
@@ -369,14 +383,17 @@ localStreamRef.current?.getTracks().forEach((track) => {
         setIncomingCall(null);
 
         pc.ontrack = (event) => {
+          console.log('[WebRTC] ontrack fired (acceptCall):', event.track.kind, event.track.id);
           let incoming = event.streams?.[0];
           if (!incoming) {
             incoming = new MediaStream();
-            if (event.track) {
+          }
+          if (event.track) {
+            if (!incoming.getTracks().some((t) => t.id === event.track.id)) {
               incoming.addTrack(event.track);
             }
           }
-          setRemoteStream(incoming);
+          setRemoteStream(new MediaStream(incoming.getTracks()));
         };
 
         pc.onicecandidate = (event) => {

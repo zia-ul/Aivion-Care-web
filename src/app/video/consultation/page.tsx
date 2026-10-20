@@ -6,7 +6,7 @@ import AppLayout from '@/components/layout/AppLayout';
 import { consultationApi } from '@/lib/api/endpoints';
 import { useWebRtc } from '@/lib/webrtc/use-webrtc';
 import { useCallRecording } from '@/lib/webrtc/use-call-recording';
-import { Video, VideoOff, Mic, MicOff, PhoneOff, User, Stethoscope, Square, Radio, Activity, AlertCircle, CheckCircle2, ChevronRight, FileText, Pill as PillIcon, ShieldAlert, Sparkles, HeartPulse, Clock } from 'lucide-react';
+import { Video, VideoOff, Mic, MicOff, PhoneOff, User, Stethoscope, Square, Radio, Activity, AlertCircle, CheckCircle2, ChevronRight, FileText, Pill as PillIcon, ShieldAlert, Sparkles, HeartPulse, Clock, Volume2, VolumeX, Sliders, Waves } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuthStore } from '@/lib/stores/auth';
 import { Pill, FL } from '@/components/ui/FlutterTheme';
@@ -48,6 +48,124 @@ function VideoConsultationContent() {
   }, [loadConsultation]);
 
   const { localStream, remoteStream, isMuted, isVideoOff, isConnected, error, callState, incomingCall, startCall, acceptCall, rejectCall, toggleMute, toggleVideo, endCall } = useWebRtc(consultationId, user?.id || 0, user?.role || 'PATIENT', accessToken);
+
+  // --- Web Audio Equalizer & Speaker Amplification ---
+  const [speakerEnabled, setSpeakerEnabled] = useState(true);
+  const [showEqPanel, setShowEqPanel] = useState(false);
+  const [speakerVolume, setSpeakerVolume] = useState(100); // 0 - 200%
+  const [lowFreqGain, setLowFreqGain] = useState(0); // -15dB to +15dB
+  const [highFreqGain, setHighFreqGain] = useState(0); // -15dB to +15dB
+
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const sourceNodeRef = useRef<MediaStreamAudioSourceNode | null>(null);
+  const gainNodeRef = useRef<GainNode | null>(null);
+  const lowFilterRef = useRef<BiquadFilterNode | null>(null);
+  const highFilterRef = useRef<BiquadFilterNode | null>(null);
+
+  // Initialize or re-attach Web Audio Graph when remoteStream arrives
+  useEffect(() => {
+    if (!remoteStream || remoteStream.getAudioTracks().length === 0) return;
+
+    try {
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioContextClass) return;
+
+      if (!audioCtxRef.current || audioCtxRef.current.state === 'closed') {
+        audioCtxRef.current = new AudioContextClass();
+      }
+      const ctx = audioCtxRef.current;
+
+      // Resume context if suspended
+      if (ctx.state === 'suspended') {
+        const resumeCtx = () => {
+          ctx.resume().catch(() => {});
+          window.removeEventListener('click', resumeCtx);
+          window.removeEventListener('touchstart', resumeCtx);
+        };
+        window.addEventListener('click', resumeCtx);
+        window.addEventListener('touchstart', resumeCtx);
+      }
+
+      // Cleanup existing source
+      if (sourceNodeRef.current) {
+        try { sourceNodeRef.current.disconnect(); } catch (_) {}
+      }
+
+      const source = ctx.createMediaStreamSource(remoteStream);
+      sourceNodeRef.current = source;
+
+      // Low frequency shelf filter (Bass: 250 Hz)
+      const lowFilter = ctx.createBiquadFilter();
+      lowFilter.type = 'lowshelf';
+      lowFilter.frequency.value = 250;
+      lowFilter.gain.value = lowFreqGain;
+      lowFilterRef.current = lowFilter;
+
+      // High frequency shelf filter (Treble / Clarity: 3500 Hz)
+      const highFilter = ctx.createBiquadFilter();
+      highFilter.type = 'highshelf';
+      highFilter.frequency.value = 3500;
+      highFilter.gain.value = highFreqGain;
+      highFilterRef.current = highFilter;
+
+      // Master gain node (volume & mute)
+      const gainNode = ctx.createGain();
+      gainNode.gain.value = speakerEnabled ? speakerVolume / 100 : 0;
+      gainNodeRef.current = gainNode;
+
+      // Connect: source -> lowFilter -> highFilter -> gainNode -> destination
+      source.connect(lowFilter);
+      lowFilter.connect(highFilter);
+      highFilter.connect(gainNode);
+      gainNode.connect(ctx.destination);
+    } catch (err) {
+      console.warn('Web Audio setup error:', err);
+    }
+
+    return () => {
+      if (sourceNodeRef.current) {
+        try { sourceNodeRef.current.disconnect(); } catch (_) {}
+      }
+    };
+  }, [remoteStream]);
+
+  // Update gain node volume
+  useEffect(() => {
+    if (gainNodeRef.current && audioCtxRef.current) {
+      const targetGain = speakerEnabled ? speakerVolume / 100 : 0;
+      gainNodeRef.current.gain.setTargetAtTime(targetGain, audioCtxRef.current.currentTime, 0.05);
+    }
+  }, [speakerEnabled, speakerVolume]);
+
+  // Update low frequency equalizer
+  useEffect(() => {
+    if (lowFilterRef.current && audioCtxRef.current) {
+      lowFilterRef.current.gain.setTargetAtTime(lowFreqGain, audioCtxRef.current.currentTime, 0.05);
+    }
+  }, [lowFreqGain]);
+
+  // Update high frequency equalizer
+  useEffect(() => {
+    if (highFilterRef.current && audioCtxRef.current) {
+      highFilterRef.current.gain.setTargetAtTime(highFreqGain, audioCtxRef.current.currentTime, 0.05);
+    }
+  }, [highFreqGain]);
+
+  // Unlock and boost speaker
+  const handleToggleSpeaker = useCallback(async () => {
+    if (audioCtxRef.current && audioCtxRef.current.state === 'suspended') {
+      try {
+        await audioCtxRef.current.resume();
+      } catch (e) {
+        console.warn('Failed to resume audio context:', e);
+      }
+    }
+    setSpeakerEnabled((prev) => {
+      const next = !prev;
+      toast.success(next ? 'Speaker Output Enabled' : 'Speaker Output Muted', { id: 'speaker-status' });
+      return next;
+    });
+  }, []);
 
   const callRecording = useCallRecording({ localStream, remoteStream });
   const [callRecordingBusy, setCallRecordingBusy] = useState(false);
@@ -375,11 +493,99 @@ function VideoConsultationContent() {
             {error && <div className="absolute bottom-4 left-4 right-32 bg-danger/20 border border-danger/30 text-danger-light px-4 py-2 rounded-xl text-sm">{error}</div>}
           </div>
 
-          <div className="flex items-center justify-center gap-4 p-4 bg-surface-10/50">
+          {/* Audio Equalizer & Frequency Tuning Panel */}
+          {showEqPanel && (
+            <div className="border-t border-tonal-20/60 bg-surface-20/95 p-4 sm:p-5 backdrop-blur-md transition-all animate-in fade-in slide-in-from-bottom-2">
+              <div className="flex items-center justify-between mb-3.5">
+                <div className="flex items-center gap-2">
+                  <Sliders size={18} className="text-doctor-blue" />
+                  <span className="text-sm font-semibold text-primary-light">Speaker Equalizer & Audio Frequency Controls</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowEqPanel(false)}
+                  className="text-xs text-primary-light/60 hover:text-primary-light transition px-2 py-1 rounded bg-surface-10"
+                >
+                  Close
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+                {/* Speaker Volume / Boost */}
+                <div className="p-3 rounded-xl bg-surface-10 border border-tonal-20/50 space-y-2">
+                  <div className="flex justify-between items-center text-primary-light font-medium">
+                    <span className="flex items-center gap-1.5"><Volume2 size={14} className="text-accent" /> Speaker Volume</span>
+                    <span className="font-bold text-accent">{speakerVolume}%</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max="200"
+                    step="5"
+                    value={speakerVolume}
+                    onChange={(e) => setSpeakerVolume(Number(e.target.value))}
+                    className="w-full accent-doctor-blue cursor-pointer"
+                  />
+                  <div className="flex justify-between text-[10px] text-primary-light/50">
+                    <span>Mute</span>
+                    <span>100% (Normal)</span>
+                    <span>200% (Boost)</span>
+                  </div>
+                </div>
+
+                {/* Low Frequency (Bass / Body) */}
+                <div className="p-3 rounded-xl bg-surface-10 border border-tonal-20/50 space-y-2">
+                  <div className="flex justify-between items-center text-primary-light font-medium">
+                    <span className="flex items-center gap-1.5"><Waves size={14} className="text-doctor-mint" /> Low Frequency (Bass)</span>
+                    <span className="font-bold text-doctor-mint">{lowFreqGain > 0 ? `+${lowFreqGain}` : lowFreqGain} dB</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="-15"
+                    max="15"
+                    step="1"
+                    value={lowFreqGain}
+                    onChange={(e) => setLowFreqGain(Number(e.target.value))}
+                    className="w-full accent-doctor-mint cursor-pointer"
+                  />
+                  <div className="flex justify-between text-[10px] text-primary-light/50">
+                    <span>-15 dB (Cut)</span>
+                    <span>0 dB (Flat)</span>
+                    <span>+15 dB (Deep)</span>
+                  </div>
+                </div>
+
+                {/* High Frequency (Treble / Vocal Clarity) */}
+                <div className="p-3 rounded-xl bg-surface-10 border border-tonal-20/50 space-y-2">
+                  <div className="flex justify-between items-center text-primary-light font-medium">
+                    <span className="flex items-center gap-1.5"><Sparkles size={14} className="text-doctor-blue" /> High Frequency (Voice Clarity)</span>
+                    <span className="font-bold text-doctor-blue">{highFreqGain > 0 ? `+${highFreqGain}` : highFreqGain} dB</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="-15"
+                    max="15"
+                    step="1"
+                    value={highFreqGain}
+                    onChange={(e) => setHighFreqGain(Number(e.target.value))}
+                    className="w-full accent-doctor-blue cursor-pointer"
+                  />
+                  <div className="flex justify-between text-[10px] text-primary-light/50">
+                    <span>-15 dB (Soft)</span>
+                    <span>0 dB (Flat)</span>
+                    <span>+15 dB (Crisp)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="flex items-center justify-center gap-3 sm:gap-4 p-4 bg-surface-10/50">
             <button
               type="button"
               onClick={toggleMute}
               aria-label={isMuted ? 'Unmute microphone' : 'Mute microphone'}
+              title={isMuted ? 'Unmute microphone' : 'Mute microphone'}
               className={`p-3 rounded-full transition ${isMuted ? 'bg-danger/20 text-danger-light' : 'bg-surface-20 text-primary-light hover:bg-surface-30'}`}
             >
               {isMuted ? <MicOff size={20} /> : <Mic size={20} />}
@@ -388,16 +594,38 @@ function VideoConsultationContent() {
               type="button"
               onClick={toggleVideo}
               aria-label={isVideoOff ? 'Turn camera on' : 'Turn camera off'}
+              title={isVideoOff ? 'Turn camera on' : 'Turn camera off'}
               className={`p-3 rounded-full transition ${isVideoOff ? 'bg-danger/20 text-danger-light' : 'bg-surface-20 text-primary-light hover:bg-surface-30'}`}
             >
               {isVideoOff ? <VideoOff size={20} /> : <Video size={20} />}
+            </button>
+            {/* Open Speaker Toggle Button */}
+            <button
+              type="button"
+              onClick={handleToggleSpeaker}
+              aria-label={speakerEnabled ? 'Turn off speaker' : 'Turn on speaker'}
+              title={speakerEnabled ? 'Speaker is ON (Click to Mute)' : 'Speaker is OFF (Click to Open Speaker)'}
+              className={`p-3 rounded-full transition ${!speakerEnabled ? 'bg-danger/20 text-danger-light' : 'bg-doctor-blue-fill text-white shadow-md hover:bg-doctor-blue/90'}`}
+            >
+              {!speakerEnabled ? <VolumeX size={20} /> : <Volume2 size={20} />}
+            </button>
+            {/* Equalizer Frequency Control Toggle */}
+            <button
+              type="button"
+              onClick={() => setShowEqPanel((prev) => !prev)}
+              aria-label="Audio frequency controls"
+              title="Low / High Frequency Equalizer & Boost"
+              className={`p-3 rounded-full transition ${showEqPanel ? 'bg-accent/20 text-accent ring-1 ring-accent' : 'bg-surface-20 text-primary-light hover:bg-surface-30'}`}
+            >
+              <Sliders size={20} />
             </button>
             <button
               type="button"
               onClick={handleToggleCallRecording}
               disabled={callState !== 'connected' || callRecordingBusy}
               aria-label={callRecording.isRecording ? 'Stop recording' : 'Record call'}
-              className={`p-3 rounded-full transition ${callRecording.isRecording ? 'bg-danger-fill text-white' : 'bg-surface-20 text-primary-light hover:bg-surface-30'}`}
+              title={callRecording.isRecording ? 'Stop recording' : 'Record call'}
+              className={`p-3 rounded-full transition relative ${callRecording.isRecording ? 'bg-danger-fill text-white' : 'bg-surface-20 text-primary-light hover:bg-surface-30'}`}
             >
               {callRecording.isRecording ? (
                 <Square size={20} fill="currentColor" />
@@ -412,6 +640,7 @@ function VideoConsultationContent() {
               type="button"
               onClick={handleEndCall}
               aria-label="End call"
+              title="End call"
               className="p-3 bg-danger-fill text-white rounded-full hover:bg-danger-fill/90"
             >
               <PhoneOff size={20} />
