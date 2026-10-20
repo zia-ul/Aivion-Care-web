@@ -1,10 +1,12 @@
 export interface PathologyLabDiscoveryResponse {
   id: number;
+  userId?: number;
   name: string;
   address: string;
   city: string;
   state: string;
   pincode: string;
+  phone?: string;
   homeCollectionAvailable: boolean;
   openingDays: string;
   openingHours: string;

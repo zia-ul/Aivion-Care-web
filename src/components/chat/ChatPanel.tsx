@@ -2,16 +2,19 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { appointmentApi, chatApi } from '@/lib/api/endpoints';
+import { appointmentApi, chatApi, patientDocumentApi } from '@/lib/api/endpoints';
 import { wsService } from '@/lib/websocket/client';
 import {
   MessageCircle, Send, User, Stethoscope, Video, ChevronRight, Paperclip,
-  FileText, Download, Loader2, AlertTriangle,
+  FileText, Download, Loader2, AlertTriangle, Share2, FolderOpen, CheckCircle2,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuthStore } from '@/lib/stores/auth';
 import { notifyError, readableError } from '@/lib/errors';
 import { useClearRoomOnOpen } from './ChatNotificationListener';
+import { ShareModal } from '@/components/sharing/ShareModal';
+import { Modal } from '@/components/ui/FlutterTheme';
+import type { PatientDocumentResponse } from '@/types/patient-documents';
 
 interface ChatRoom {
   id: number;
@@ -503,6 +506,65 @@ const selectedAppointment = useMemo(() => {
     }
   };
 
+  const [shareAttachmentTarget, setShareAttachmentTarget] = useState<{
+    title: string;
+    shareUrl?: string;
+    description?: string;
+  } | null>(null);
+
+  const [vaultOpen, setVaultOpen] = useState(false);
+  const [vaultDocs, setVaultDocs] = useState<PatientDocumentResponse[]>([]);
+  const [loadingVault, setLoadingVault] = useState(false);
+  const [attachingDocId, setAttachingDocId] = useState<number | null>(null);
+
+  const handleShareAttachment = async (msg: ChatMessage) => {
+    if (!msg.id) return;
+    try {
+      const { data } = await chatApi.getSignedFileUrl(msg.id, DOWNLOAD_LINK_TTL_SECONDS);
+      const url = data?.url;
+      setShareAttachmentTarget({
+        title: msg.fileName || 'Shared Document',
+        shareUrl: url,
+        description: `Attachment shared via Aivion Care chat with ${selectedConversation?.name || 'Care Provider'}`,
+      });
+    } catch {
+      toast.error('Could not generate share link for this attachment');
+    }
+  };
+
+  const handleOpenVault = async () => {
+    if (!activeRoomId) {
+      toast.error('Select a conversation first.');
+      return;
+    }
+    setVaultOpen(true);
+    setLoadingVault(true);
+    try {
+      const { data } = await patientDocumentApi.getAll();
+      setVaultDocs(Array.isArray(data) ? data : []);
+    } catch {
+      setVaultDocs([]);
+      toast.error('Could not load documents from vault');
+    } finally {
+      setLoadingVault(false);
+    }
+  };
+
+  const handleSendVaultDoc = async (doc: PatientDocumentResponse) => {
+    if (!activeRoomId) return;
+    setAttachingDocId(doc.id);
+    try {
+      const { data } = await patientDocumentApi.download(doc.id);
+      const file = new globalThis.File([data], doc.originalFileName, { type: doc.mimeType });
+      await handleFileSelected(file);
+      setVaultOpen(false);
+    } catch {
+      toast.error('Could not attach document from vault');
+    } finally {
+      setAttachingDocId(null);
+    }
+  };
+
   const getLastMessagePreview = (msg: ChatMessage) => {
     if (hasAttachment(msg)) {
       return isPdf(msg) ? `📄 ${msg.fileName}` : `📎 ${msg.fileName}`;
@@ -715,28 +777,38 @@ const selectedAppointment = useMemo(() => {
                   )}
 
                   {hasAttachment(msg) && (
-                    <button
-                      type="button"
-                      onClick={() => handleOpenFile(msg)}
-                      disabled={openingFileId === msg.id}
-                      className="mt-1 flex w-full items-center gap-3 rounded-lg border border-tonal-20/60 bg-surface-20/40 p-2.5 text-left transition hover:border-accent/50 hover:bg-surface-20/70 disabled:opacity-60"
-                    >
-                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent/15 text-accent">
-                        {openingFileId === msg.id
-                          ? <Loader2 size={17} className="animate-spin" />
-                          : isPdf(msg) ? <FileText size={17} /> : <Paperclip size={17} />}
-                      </span>
-                      <span className="min-w-0 flex-1">
-                        <span className="block truncate text-sm font-medium text-primary-light">
-                          {msg.fileName ?? 'Attachment'}
+                    <div className="mt-1 flex items-center gap-1.5 w-full">
+                      <button
+                        type="button"
+                        onClick={() => handleOpenFile(msg)}
+                        disabled={openingFileId === msg.id}
+                        className="flex-1 flex items-center gap-3 rounded-lg border border-tonal-20/60 bg-surface-20/40 p-2.5 text-left transition hover:border-accent/50 hover:bg-surface-20/70 disabled:opacity-60"
+                      >
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent/15 text-accent">
+                          {openingFileId === msg.id
+                            ? <Loader2 size={17} className="animate-spin" />
+                            : isPdf(msg) ? <FileText size={17} /> : <Paperclip size={17} />}
                         </span>
-                        <span className="block text-support text-primary-light/50">
-                          {isPdf(msg) ? 'PDF' : (msg.fileMimeType ?? 'File')}
-                          {msg.fileSize ? ` · ${formatBytes(msg.fileSize)}` : ''}
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate text-sm font-medium text-primary-light">
+                            {msg.fileName ?? 'Attachment'}
+                          </span>
+                          <span className="block text-support text-primary-light/50">
+                            {isPdf(msg) ? 'PDF' : (msg.fileMimeType ?? 'File')}
+                            {msg.fileSize ? ` · ${formatBytes(msg.fileSize)}` : ''}
+                          </span>
                         </span>
-                      </span>
-                      <Download size={15} className="shrink-0 text-primary-light/50" aria-hidden="true" />
-                    </button>
+                        <Download size={15} className="shrink-0 text-primary-light/50" aria-hidden="true" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleShareAttachment(msg)}
+                        className="h-10 w-10 shrink-0 flex items-center justify-center rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 transition"
+                        title="Share attachment via WhatsApp or other apps"
+                      >
+                        <Share2 size={16} />
+                      </button>
+                    </div>
                   )}
 
                   {msg.message && (
@@ -772,18 +844,30 @@ const selectedAppointment = useMemo(() => {
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={uploading}
-                title="Attach a PDF, image or document"
+                title="Attach a file from device"
                 aria-label="Attach a file"
                 className="px-3 py-2.5 rounded-input border border-tonal-20 bg-surface-20 text-primary-light/70 transition hover:border-accent/50 hover:text-accent disabled:opacity-50"
               >
                 {uploading ? <Loader2 size={18} className="animate-spin" /> : <Paperclip size={18} />}
               </button>
+              {role === 'PATIENT' && (
+                <button
+                  type="button"
+                  onClick={handleOpenVault}
+                  disabled={uploading || loadingVault}
+                  title="Attach from Medical Document Vault"
+                  aria-label="Attach from Medical Vault"
+                  className="px-3 py-2.5 rounded-input border border-tonal-20 bg-surface-20 text-primary-light/70 transition hover:border-accent/50 hover:text-accent disabled:opacity-50"
+                >
+                  {loadingVault ? <Loader2 size={18} className="animate-spin" /> : <FolderOpen size={18} />}
+                </button>
+              )}
               <input
                 type="text"
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
-                placeholder="Type a message, or attach a PDF..."
+                placeholder="Type a message, or attach a document..."
                 className="flex-1 px-4 py-2.5 bg-surface-20 border border-tonal-20 rounded-input text-primary-light focus:outline-none focus:border-accent"
               />
               <button
@@ -801,6 +885,93 @@ const selectedAppointment = useMemo(() => {
           </div>
         )}
       </div>
+
+      {/* Share Modal for Chat Attachments */}
+      {shareAttachmentTarget && (
+        <ShareModal
+          isOpen={!!shareAttachmentTarget}
+          onClose={() => setShareAttachmentTarget(null)}
+          title="Share Attachment"
+          itemTitle={shareAttachmentTarget.title}
+          description={shareAttachmentTarget.description}
+          shareUrl={shareAttachmentTarget.shareUrl}
+        />
+      )}
+
+      {/* Medical Document Vault Picker Modal */}
+      <Modal
+        isOpen={vaultOpen}
+        onClose={() => setVaultOpen(false)}
+        title="Attach from Medical Vault"
+        size="lg"
+      >
+        <div className="space-y-4">
+          <p className="text-body text-primary-light/70">
+            Select an existing prescription, lab report, or diagnostic document from your personal health vault to send into this chat.
+          </p>
+
+          {loadingVault ? (
+            <div className="flex flex-col items-center justify-center py-10">
+              <Loader2 className="h-8 w-8 animate-spin text-accent mb-2" />
+              <p className="text-support text-primary-light/60">Loading your medical documents...</p>
+            </div>
+          ) : vaultDocs.length === 0 ? (
+            <div className="text-center py-8 rounded-xl border border-dashed border-tonal-20 bg-surface-20/40 p-6">
+              <FileText className="mx-auto h-10 w-10 text-primary-light/30 mb-2" />
+              <p className="text-body font-medium text-primary-light">No documents found in your vault</p>
+              <p className="text-support text-primary-light/50 mt-1">
+                You can upload documents directly from your device using the paperclip icon.
+              </p>
+            </div>
+          ) : (
+            <div className="max-h-80 overflow-y-auto space-y-2 pr-1">
+              {vaultDocs.map((doc) => (
+                <div
+                  key={doc.id}
+                  className="flex items-center justify-between p-3 rounded-xl border border-tonal-20 bg-surface-20/60 hover:border-accent/50 transition gap-3"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="h-10 w-10 rounded-lg bg-accent/10 border border-accent/20 flex items-center justify-center shrink-0 text-accent">
+                      <FileText size={18} />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-primary-light truncate">{doc.title || doc.originalFileName}</p>
+                      <p className="text-xs text-primary-light/50 truncate">
+                        {doc.category?.label || doc.category?.value || 'Document'} • {(doc.fileSizeBytes / 1024).toFixed(0)} KB • {new Date(doc.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleSendVaultDoc(doc)}
+                    disabled={attachingDocId === doc.id}
+                    className="px-3 py-1.5 rounded-lg bg-accent text-white hover:bg-accent/90 text-xs font-medium shrink-0 disabled:opacity-50 flex items-center gap-1.5"
+                  >
+                    {attachingDocId === doc.id ? (
+                      <>
+                        <Loader2 size={13} className="animate-spin" />
+                        <span>Sending...</span>
+                      </>
+                    ) : (
+                      <span>Attach & Send</span>
+                    )}
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="flex justify-end pt-2 border-t border-tonal-20">
+            <button
+              type="button"
+              onClick={() => setVaultOpen(false)}
+              className="px-4 py-2 rounded-xl border border-tonal-20 text-primary-light/70 hover:bg-surface-20 text-sm font-medium"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

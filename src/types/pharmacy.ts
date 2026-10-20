@@ -1,5 +1,6 @@
 export interface PharmacyDiscoveryResponse {
   id: number;
+  userId?: number;
   hospitalId?: number;
   clinicId?: number;
   name: string;

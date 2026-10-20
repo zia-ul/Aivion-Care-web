@@ -13,6 +13,7 @@ import type {
   PatientDocumentResponse, PatientDocumentFolderResponse, DocumentStatsResponse,
   DocumentReminderDTO,
 } from '@/types/patient-documents';
+import { ShareModal } from '@/components/sharing/ShareModal';
 import toast from 'react-hot-toast';
 import {
   FileText, Folder, FolderPlus, Upload, Search, Star, Download, Trash2,
@@ -120,6 +121,7 @@ export default function PatientDocumentsPage() {
   const [uploadOpen, setUploadOpen] = useState(false);
   const [folderOpen, setFolderOpen] = useState(false);
   const [reminderOpen, setReminderOpen] = useState(false);
+  const [shareDoc, setShareDoc] = useState<PatientDocumentResponse | null>(null);
   const [selectedDoc, setSelectedDoc] = useState<PatientDocumentResponse | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
@@ -504,6 +506,13 @@ export default function PatientDocumentsPage() {
                             <Download size={16} />
                           </button>
                           <button
+                            onClick={() => setShareDoc(doc)}
+                            className="p-2 rounded-xl hover:bg-surface-30 text-primary-light/50 hover:text-emerald-400 transition-colors"
+                            title="Share via WhatsApp or other apps"
+                          >
+                            <Share2 size={16} />
+                          </button>
+                          <button
                             onClick={() => openReminder(doc)}
                             className="p-2 rounded-xl hover:bg-surface-30 text-primary-light/50 hover:text-accent transition-colors"
                             title="Add reminder"
@@ -739,6 +748,21 @@ export default function PatientDocumentsPage() {
           </div>
         )}
       </Modal>
+
+      {/* Share Document Modal */}
+      {shareDoc && (
+        <ShareModal
+          isOpen={Boolean(shareDoc)}
+          onClose={() => setShareDoc(null)}
+          title="Share Medical Document"
+          itemTitle={shareDoc.title}
+          category={shareDoc.category?.label || shareDoc.category?.value || String(shareDoc.category || '')}
+          description={`${shareDoc.originalFileName} • Uploaded ${formatDateTime(shareDoc.uploadedAt)}${shareDoc.description ? `\n${shareDoc.description}` : ''}`}
+          shareUrl={typeof window !== 'undefined' ? `${window.location.origin}/patient/documents` : ''}
+          onSendToPharmacy={() => router.push('/patient/pharmacies')}
+          onSendToPathology={() => router.push('/patient/pathology-labs')}
+        />
+      )}
     </AppLayout>
   );
 }
