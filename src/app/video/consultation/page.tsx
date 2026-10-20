@@ -412,6 +412,7 @@ function VideoConsultationContent() {
       <div className="max-w-5xl mx-auto">
         <div className="relative bg-surface-20/80 rounded-card border border-tonal-20/50 overflow-hidden">
           {/* Always mount dedicated audio playback for remote stream so voice is never interrupted */}
+          {/* Dedicated audio element for remote speech */}
           {remoteStream && (
             <audio
               ref={(el) => {
@@ -419,6 +420,7 @@ function VideoConsultationContent() {
                   if (el.srcObject !== remoteStream) {
                     el.srcObject = remoteStream;
                   }
+                  el.volume = speakerEnabled ? Math.min(1, speakerVolume / 100) : 0;
                   el.play().catch((e) => {
                     console.warn('Audio autoplay blocked by browser policy:', e);
                   });
@@ -434,6 +436,7 @@ function VideoConsultationContent() {
                 ref={(el) => { if (el && remoteStream) { el.srcObject = remoteStream; void el.play().catch(() => {}); } }}
                 autoPlay
                 playsInline
+                muted
                 className="h-full w-full object-cover"
               />
             ) : callState === 'connected' ? (

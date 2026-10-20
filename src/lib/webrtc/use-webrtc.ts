@@ -75,14 +75,33 @@ export function useWebRtc(
     if (TURN_URL) {
       servers.push({ urls: TURN_URL, username: TURN_USERNAME, credential: TURN_PASSWORD });
     }
+    // High-availability public STUN servers
     servers.push({
       urls: [
         'stun:stun.l.google.com:19302',
         'stun:stun1.l.google.com:19302',
         'stun:stun2.l.google.com:19302',
+        'stun:stun3.l.google.com:19302',
+        'stun:stun4.l.google.com:19302',
         'stun:stun.services.mozilla.com',
         'stun:global.stun.twilio.com:3478',
       ],
+    });
+    // Free open-relay TURN servers for cellular/mobile carrier NAT traversal
+    servers.push({
+      urls: 'turn:openrelay.metered.ca:80',
+      username: 'openrelayproject',
+      credential: 'openrelayproject',
+    });
+    servers.push({
+      urls: 'turn:openrelay.metered.ca:443',
+      username: 'openrelayproject',
+      credential: 'openrelayproject',
+    });
+    servers.push({
+      urls: 'turn:openrelay.metered.ca:443?transport=tcp',
+      username: 'openrelayproject',
+      credential: 'openrelayproject',
     });
     return servers;
   }, []);
@@ -184,7 +203,7 @@ localStreamRef.current?.getTracks().forEach((track) => {
                 } catch (err) {
                   console.warn('Failed to create offer upon accept:', err);
                 }
-              } else if (localOfferRef.current) {
+              } else if (localOfferRef.current && current.signalingState === 'have-local-offer') {
                 sendSignal('offer', localOfferRef.current);
               }
             }
@@ -197,17 +216,22 @@ localStreamRef.current?.getTracks().forEach((track) => {
           localOfferRef.current = offer;
           if (current) {
             try {
-              await current.setRemoteDescription(new RTCSessionDescription(offer));
-              await flushPendingCandidates(current);
-              const answer = await current.createAnswer();
-              await current.setLocalDescription(answer);
-              sendSignal('answer', answer);
-              setCallState('connected');
+              if (current.signalingState === 'stable' || current.signalingState === 'have-local-offer') {
+                if (current.signalingState === 'have-local-offer') {
+                  await current.setLocalDescription({ type: 'rollback' });
+                }
+                await current.setRemoteDescription(new RTCSessionDescription(offer));
+                await flushPendingCandidates(current);
+                const answer = await current.createAnswer();
+                await current.setLocalDescription(answer);
+                sendSignal('answer', answer);
+                setCallState('connected');
+              }
             } catch (err) {
               console.warn('Failed to handle incoming offer:', err);
             }
           } else if (!isInitiator) {
-            // Patient received offer before clicking accept (e.g. auto-call or ring)
+            // Patient received offer before clicking accept
             setIncomingCall({
               fromId: message.senderId,
               fromRole: message.senderRole,
@@ -218,13 +242,13 @@ localStreamRef.current?.getTracks().forEach((track) => {
           break;
         }
         case 'answer': {
-          if (current && current.signalingState === 'have-local-offer') {
+          if (current) {
             try {
-              await current.setRemoteDescription(
-                new RTCSessionDescription(message.data as RTCSessionDescriptionInit)
-              );
-              await flushPendingCandidates(current);
-              if (isInitiator) {
+              if (current.signalingState === 'have-local-offer') {
+                await current.setRemoteDescription(
+                  new RTCSessionDescription(message.data as RTCSessionDescriptionInit)
+                );
+                await flushPendingCandidates(current);
                 setCallState('connected');
               }
             } catch (err) {
