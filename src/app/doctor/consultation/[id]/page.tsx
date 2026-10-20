@@ -148,9 +148,11 @@ export default function DoctorConsultationPage({ params }: { params: Promise<{ i
   }, [consultation]);
 
   // Sync AI draft fields from review (auto-fill from transcription)
+  const lastDraftRef = useRef<any>(null);
   useEffect(() => {
     const draft = review?.draft;
     if (draft && !loading && !reviewLoading) {
+      lastDraftRef.current = draft;
       // Sync clinical fields from AI draft
       setF({
         chiefComplaints: draft.symptoms || f.chiefComplaints,
@@ -211,8 +213,28 @@ export default function DoctorConsultationPage({ params }: { params: Promise<{ i
       
       // Show success toast if this is a new draft
       toast.success('AI draft generated and fields auto-filled');
+    } else if (!draft && lastDraftRef.current && consultation) {
+      // Draft was discarded, revert to saved consultation values
+      lastDraftRef.current = null;
+      setVitals(syncVitalsFromConsultation(consultation));
+      setMedications(mapMedicinesFromConsultation(consultation));
+      setInvestigations(mapInvestigationsFromConsultation(consultation));
+      setF({
+        chiefComplaints: consultation.chiefComplaints || '',
+        pastHistory: consultation.pastHistory || '',
+        physicalExamination: consultation.physicalExamination || '',
+        diagnosisNotes: consultation.diagnosisNotes || '',
+        investigationAdvised: consultation.investigationAdvised || '',
+        clinicalNotes: consultation.clinicalNotes || '',
+        advice: consultation.advice || '',
+        allergy: consultation.allergy || '',
+        severity: consultation.severity || '',
+        lifestyleAdvice: consultation.lifestyleAdvice || '',
+        followUp: consultation.followUp || '',
+      });
+      setSummary('');
     }
-  }, [review, loading, reviewLoading]);
+  }, [review, loading, reviewLoading, consultation]);
 
   // Load chat room
   useEffect(() => {
@@ -243,15 +265,51 @@ export default function DoctorConsultationPage({ params }: { params: Promise<{ i
     } finally { setSaving(false); }
   }, [consultationId, f, vitals, loadConsultation, setSaving]);
 
+  const onDiscardDraft = useCallback(async () => {
+    if (!confirm('Discard all draft changes? This will revert to the saved consultation.')) return;
+    setBusy(true);
+    try {
+      await consultationApi.discardDraft(appointmentId);
+      const { data: updatedConsultation } = await consultationApi.getByAppointment(appointmentId);
+      if (updatedConsultation) {
+        setVitals(syncVitalsFromConsultation(updatedConsultation));
+        setMedications(mapMedicinesFromConsultation(updatedConsultation));
+        setInvestigations(mapInvestigationsFromConsultation(updatedConsultation));
+        setF({
+          chiefComplaints: updatedConsultation.chiefComplaints || '',
+          pastHistory: updatedConsultation.pastHistory || '',
+          physicalExamination: updatedConsultation.physicalExamination || '',
+          diagnosisNotes: updatedConsultation.diagnosisNotes || '',
+          investigationAdvised: updatedConsultation.investigationAdvised || '',
+          clinicalNotes: updatedConsultation.clinicalNotes || '',
+          advice: updatedConsultation.advice || '',
+          allergy: updatedConsultation.allergy || '',
+          severity: updatedConsultation.severity || '',
+          lifestyleAdvice: updatedConsultation.lifestyleAdvice || '',
+          followUp: updatedConsultation.followUp || '',
+        });
+        setSummary('');
+        setSelectedSuggestionIds(new Set());
+      }
+      await loadReview();
+      toast.success('Draft discarded and form reset');
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || 'Failed to discard draft');
+    } finally {
+      setBusy(false);
+    }
+  }, [appointmentId, loadReview, setBusy]);
+
   const handleFinalize = useCallback(async () => {
-    if (!consultationId) return toast.error('Consultation not loaded yet');
+    const targetId = consultationId || consultation?.id || appointmentId;
+    if (!targetId) return toast.error('Consultation not loaded yet');
     setSaving(true);
     try {
       const meds = extractMedicationsForApi(medications);
       const invs = extractInvestigationsForApi(investigations);
 
       const vitalsObj = extractVitalsForApi(vitals);
-      await consultationApi.finalizePrescription(consultationId, {
+      await consultationApi.finalizePrescription(targetId, {
         diagnosis: f.diagnosisNotes || undefined,
         symptoms: f.chiefComplaints || undefined,
         chiefComplaints: f.chiefComplaints || undefined,
@@ -262,7 +320,7 @@ export default function DoctorConsultationPage({ params }: { params: Promise<{ i
         severity: f.severity || undefined,
         lifestyleAdvice: f.lifestyleAdvice || undefined,
         followUp: f.followUp || undefined,
-        transcriptSummary: review?.transcriptSummary,
+        transcriptSummary: review?.transcriptSummary || summary || undefined,
         finalClinicalNotes: f.clinicalNotes || undefined,
         medicines: meds,
         medications: meds,
@@ -280,7 +338,7 @@ export default function DoctorConsultationPage({ params }: { params: Promise<{ i
     } catch (err: any) {
       toast.error(err?.response?.data?.message || 'Failed to finalize prescription');
     } finally { setSaving(false); }
-  }, [consultationId, f, medications, investigations, review, consultation, loadConsultation, setSaving, vitals]);
+  }, [consultationId, consultation, appointmentId, f, medications, investigations, review, summary, loadConsultation, setSaving, vitals]);
 
   const handleSend = useCallback(async () => {
     if (!consultationId) return;
@@ -481,7 +539,7 @@ export default function DoctorConsultationPage({ params }: { params: Promise<{ i
             <ActionButton variant="ghost" disabled={busy} onClick={handleRefreshSummary}>
               <span className="inline-flex items-center gap-1.5"><Sparkles size={15} /> Refresh AI Summary</span>
             </ActionButton>
-            <ActionButton variant="ghost" disabled={busy} onClick={handleDiscardDraft}>
+            <ActionButton variant="ghost" disabled={busy} onClick={onDiscardDraft}>
               <span className="inline-flex items-center gap-1.5"><Trash2 size={15} /> Discard Draft</span>
             </ActionButton>
           </div>

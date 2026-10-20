@@ -1,7 +1,8 @@
 import SockJS from 'sockjs-client';
 import { Client, StompSubscription } from '@stomp/stompjs';
-
 import { resolveWsOrigin } from '@/lib/api/config';
+import { getValidAccessToken } from '@/lib/api/auth-token';
+
 const WS_URL = resolveWsOrigin();
 
 const toHttpUrl = (url: string): string => {
@@ -46,8 +47,19 @@ class WebRtcWebSocketService {
 
     this.isManualDisconnect = false;
     this.client = new Client({
+      beforeConnect: async () => {
+        const freshToken = await getValidAccessToken();
+        if (freshToken && this.client) {
+          this.client.connectHeaders = {
+            Authorization: `Bearer ${freshToken}`,
+          };
+        }
+      },
       // Pass token as query param for SockJS (headers not reliable over SockJS)
-      webSocketFactory: () => new SockJS(`${toHttpUrl(WS_URL)}/ws/webrtc?token=${encodeURIComponent(accessToken)}`) as any,
+      webSocketFactory: () => {
+        const token = (typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null) || accessToken;
+        return new SockJS(`${toHttpUrl(WS_URL)}/ws/webrtc?token=${encodeURIComponent(token)}`) as any;
+      },
       connectHeaders: {
         Authorization: `Bearer ${accessToken}`,
       },

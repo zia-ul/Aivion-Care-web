@@ -2,6 +2,7 @@ import SockJS from 'sockjs-client';
 import { Client, StompSubscription } from '@stomp/stompjs';
 import { useEffect, useRef, useCallback } from 'react';
 import { resolveWsOrigin } from '@/lib/api/config';
+import { getValidAccessToken } from '@/lib/api/auth-token';
 
 // Same value as the REST client; the scheme is rewritten to ws/wss below.
 // One setting in .env.local controls both. See @/lib/api/config.
@@ -33,7 +34,18 @@ class WebSocketService {
 
     this.isManualDisconnect = false;
     this.client = new Client({
-      webSocketFactory: () => new SockJS(`${toHttpUrl(WS_URL)}/ws/chat`) as any,
+      beforeConnect: async () => {
+        const freshToken = await getValidAccessToken();
+        if (freshToken && this.client) {
+          this.client.connectHeaders = {
+            Authorization: `Bearer ${freshToken}`,
+          };
+        }
+      },
+      webSocketFactory: () => {
+        const token = (typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null) || accessToken;
+        return new SockJS(`${toHttpUrl(WS_URL)}/ws/chat?token=${encodeURIComponent(token)}`) as any;
+      },
       connectHeaders: {
         Authorization: `Bearer ${accessToken}`,
       },

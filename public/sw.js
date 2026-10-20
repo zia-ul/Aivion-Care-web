@@ -67,9 +67,10 @@ self.addEventListener('fetch', (event) => {
 
           return response;
         })
-        .catch(() => {
+        .catch(async () => {
           // Fallback gracefully for offline or network blips
-          return caches.match('/');
+          const fallback = await caches.match('/');
+          return fallback || new Response('Offline', { status: 503, headers: { 'Content-Type': 'text/plain' } });
         });
     })
   );

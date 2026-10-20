@@ -156,8 +156,15 @@ localStreamRef.current?.getTracks().forEach((track) => {
     if (!consultationId) return;
 
     if (!webrtcWsService.isConnected()) {
-      setError('Signaling connection not ready. Please try again in a moment.');
-      return;
+      let attempts = 0;
+      while (!webrtcWsService.isConnected() && attempts < 15) {
+        await new Promise((r) => setTimeout(r, 200));
+        attempts++;
+      }
+      if (!webrtcWsService.isConnected()) {
+        setError('Signaling connection not ready. Please try again in a moment.');
+        return;
+      }
     }
 
     const useVideo = options?.video !== false; // default true

@@ -141,16 +141,17 @@ export function extractMedicationsForApi(medications: MedicationDetail[]) {
   return medications
     .filter(m => (m.medicineName || m.dosage)?.trim())
     .map(m => ({
+      aiSuggestionId: m.aiSuggestionId,
       medicineName: m.medicineName.trim(),
       dosage: m.dosage.trim() || undefined,
-      amountPerUse: m.amountPerUse.trim() || undefined,
-      frequency: m.frequency.trim() || undefined,
-      frequencyPerDay: m.frequencyPerDay.trim() || undefined,
-      timing: m.timing.trim() || undefined,
-      duration: m.duration.trim() || undefined,
+      amountPerUse: m.amountPerUse?.trim() || undefined,
+      frequency: m.frequency?.trim() || undefined,
+      frequencyPerDay: m.frequencyPerDay?.trim() || undefined,
+      timing: m.timing?.trim() || undefined,
+      duration: m.duration?.trim() || undefined,
       durationDays: m.durationDays,
-      instructions: m.instructions.trim() || undefined,
-      notes: m.notes.trim() || undefined,
+      instructions: m.instructions?.trim() || undefined,
+      notes: m.notes?.trim() || undefined,
       route: m.route || 'Oral',
     }));
 }
