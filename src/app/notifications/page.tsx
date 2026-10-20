@@ -6,6 +6,8 @@ import { notificationApi } from '@/lib/api/endpoints';
 import { Bell, Check } from 'lucide-react';
 import { Card, EmptyState } from '@/components/ui';
 
+import { useAuthStore } from '@/lib/stores/auth';
+
 interface Notification {
   id: number;
   title: string;
@@ -17,6 +19,7 @@ interface Notification {
 }
 
 export default function NotificationsPage() {
+  const { user } = useAuthStore();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -47,7 +50,7 @@ export default function NotificationsPage() {
   }, []);
 
   return (
-    <AppLayout role="PATIENT" title="Notifications" subtitle="Your alerts and updates">
+    <AppLayout role={user?.role || 'PATIENT'} title="Notifications" subtitle="Your alerts and updates">
       <div className="max-w-3xl">
         <Card>
           {loading ? (

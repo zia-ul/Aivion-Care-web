@@ -250,6 +250,7 @@ export default function DoctorConsultationPage({ params }: { params: Promise<{ i
       const meds = extractMedicationsForApi(medications);
       const invs = extractInvestigationsForApi(investigations);
 
+      const vitalsObj = extractVitalsForApi(vitals);
       await consultationApi.finalizePrescription(consultationId, {
         diagnosis: f.diagnosisNotes || undefined,
         symptoms: f.chiefComplaints || undefined,
@@ -262,7 +263,8 @@ export default function DoctorConsultationPage({ params }: { params: Promise<{ i
         lifestyleAdvice: f.lifestyleAdvice || undefined,
         followUp: f.followUp || undefined,
         transcriptSummary: review?.transcriptSummary,
-        doctorNotes: f.clinicalNotes || undefined,
+        finalClinicalNotes: f.clinicalNotes || undefined,
+        medicines: meds,
         medications: meds,
         investigations: invs,
         maxId: consultation?.patientMaxId,
@@ -271,7 +273,7 @@ export default function DoctorConsultationPage({ params }: { params: Promise<{ i
         speciality: consultation?.speciality,
         invoiceNumber: consultation?.invoiceNumber,
         consultationDate: consultation?.consultationDate,
-        vitals: extractVitalsForApi(vitals),
+        ...vitalsObj,
       });
       toast.success('Prescription finalized');
       await loadConsultation();
