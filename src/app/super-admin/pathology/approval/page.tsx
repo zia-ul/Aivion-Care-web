@@ -102,7 +102,7 @@ export default function PathologyApprovalPage() {
   const [loading, setLoading] = useState(true);
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [acting, setActing] = useState(false);
-  const [activeStatus, setActiveStatus] = useState('SUBMITTED');
+  const [activeStatus, setActiveStatus] = useState('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [reason, setReason] = useState('');
 
