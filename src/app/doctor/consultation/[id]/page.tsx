@@ -235,29 +235,31 @@ export default function DoctorConsultationPage({ params }: { params: Promise<{ i
       if (draft.transcriptSummary) setSummary(draft.transcriptSummary);
       
       // Show success toast if this is a new draft
-      toast.success('AI draft generated and fields auto-filled');
-    } else if (!draft && lastDraftRef.current && consultation) {
-      // Draft was discarded, revert to saved consultation values
+    } else if (!draft && lastDraftRef.current) {
+      // Draft was discarded, make all fields empty
       lastDraftRef.current = null;
-      setVitals(syncVitalsFromConsultation(consultation));
-      setMedications(mapMedicinesFromConsultation(consultation));
-      setInvestigations(mapInvestigationsFromConsultation(consultation));
+      setVitals([]);
+      setMedications([]);
+      setInvestigations([]);
       setF({
-        chiefComplaints: consultation.chiefComplaints || '',
-        pastHistory: consultation.pastHistory || '',
-        physicalExamination: consultation.physicalExamination || '',
-        diagnosisNotes: consultation.diagnosisNotes || '',
-        investigationAdvised: consultation.investigationAdvised || '',
-        clinicalNotes: consultation.clinicalNotes || '',
-        advice: consultation.advice || '',
-        allergy: consultation.allergy || '',
-        severity: consultation.severity || '',
-        lifestyleAdvice: consultation.lifestyleAdvice || '',
-        followUp: consultation.followUp || '',
+        chiefComplaints: '',
+        pastHistory: '',
+        physicalExamination: '',
+        diagnosisNotes: '',
+        investigationAdvised: '',
+        clinicalNotes: '',
+        advice: '',
+        allergy: '',
+        severity: '',
+        lifestyleAdvice: '',
+        followUp: '',
       });
       setSummary('');
+      setTranscript('');
+      setRecordingUrlInput('');
+      setSelectedSuggestionIds(new Set());
     }
-  }, [review, loading, reviewLoading, consultation]);
+  }, [review, loading, reviewLoading, setTranscript, setRecordingUrlInput]);
 
   // Load chat room
   useEffect(() => {
@@ -293,35 +295,36 @@ export default function DoctorConsultationPage({ params }: { params: Promise<{ i
     setBusy(true);
     try {
       await consultationApi.discardDraft(appointmentId);
-      const { data: updatedConsultation } = await consultationApi.getByAppointment(appointmentId);
-      if (updatedConsultation) {
-        setVitals(syncVitalsFromConsultation(updatedConsultation));
-        setMedications(mapMedicinesFromConsultation(updatedConsultation));
-        setInvestigations(mapInvestigationsFromConsultation(updatedConsultation));
-        setF({
-          chiefComplaints: updatedConsultation.chiefComplaints || '',
-          pastHistory: updatedConsultation.pastHistory || '',
-          physicalExamination: updatedConsultation.physicalExamination || '',
-          diagnosisNotes: updatedConsultation.diagnosisNotes || '',
-          investigationAdvised: updatedConsultation.investigationAdvised || '',
-          clinicalNotes: updatedConsultation.clinicalNotes || '',
-          advice: updatedConsultation.advice || '',
-          allergy: updatedConsultation.allergy || '',
-          severity: updatedConsultation.severity || '',
-          lifestyleAdvice: updatedConsultation.lifestyleAdvice || '',
-          followUp: updatedConsultation.followUp || '',
-        });
-        setSummary('');
-        setSelectedSuggestionIds(new Set());
-      }
+      lastDraftRef.current = null;
+      setF({
+        chiefComplaints: '',
+        pastHistory: '',
+        physicalExamination: '',
+        diagnosisNotes: '',
+        investigationAdvised: '',
+        clinicalNotes: '',
+        advice: '',
+        allergy: '',
+        severity: '',
+        lifestyleAdvice: '',
+        followUp: '',
+      });
+      setVitals([]);
+      setMedications([]);
+      setInvestigations([]);
+      setSummary('');
+      setTranscript('');
+      setRecordingUrlInput('');
+      setSelectedSuggestionIds(new Set());
+      await loadConsultation();
       await loadReview();
-      toast.success('Draft discarded and form reset');
+      toast.success('Draft discarded. All fields cleared.');
     } catch (err: any) {
       toast.error(err?.response?.data?.message || 'Failed to discard draft');
     } finally {
       setBusy(false);
     }
-  }, [appointmentId, loadReview, setBusy]);
+  }, [appointmentId, loadConsultation, loadReview, setBusy, setTranscript, setRecordingUrlInput]);
 
   const handleFinalize = useCallback(async () => {
     const targetId = consultationId || consultation?.id || appointmentId;
