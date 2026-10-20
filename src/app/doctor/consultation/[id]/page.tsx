@@ -201,22 +201,36 @@ export default function DoctorConsultationPage({ params }: { params: Promise<{ i
 
       // Sync medications from AI draft
       if (draft.medications && draft.medications.length > 0) {
-        const medsFromDraft = draft.medications.map((m, i) => ({
-          sno: i + 1,
-          medicineName: m.medicineName,
-          dosage: m.dosage,
-          amountPerUse: m.amountPerUse,
-          frequency: m.frequencyPerDay,
-          frequencyPerDay: m.frequencyPerDay,
-          timing: m.timing,
-          duration: m.duration,
-          durationDays: m.durationDays,
-          instructions: m.instructions,
-          notes: m.notes,
-          route: (m as any).route || 'Oral',
-          aiSuggestionId: m.aiSuggestionId,
-          conditionKeyword: m.conditionKeyword,
-        }));
+        const medsFromDraft = draft.medications.map((m: any, i: number) => {
+          let medName = (m.medicineName || m.name || '').trim();
+          let dosage = (m.dosage || '').trim();
+
+          // If medicine name contains dosage like "Paracetamol 500 mg" and dosage is empty, auto-separate
+          if (!dosage && medName) {
+            const dosageMatch = medName.match(/\s+(\d+(?:\.\d+)?\s*(?:mg|g|mcg|ml|iu|tablets?|capsules?|drops?|pills?))\b/i);
+            if (dosageMatch) {
+              dosage = dosageMatch[1].trim();
+              medName = medName.replace(dosageMatch[0], '').trim();
+            }
+          }
+
+          return {
+            sno: i + 1,
+            medicineName: medName,
+            dosage: dosage,
+            amountPerUse: m.amountPerUse || '',
+            frequency: m.frequencyPerDay || m.frequency || '',
+            frequencyPerDay: m.frequencyPerDay || m.frequency || '',
+            timing: m.timing || '',
+            duration: m.duration || (m.durationDays ? `${m.durationDays} days` : ''),
+            durationDays: m.durationDays,
+            instructions: m.instructions || '',
+            notes: m.notes || '',
+            route: m.route || 'Oral',
+            aiSuggestionId: m.aiSuggestionId,
+            conditionKeyword: m.conditionKeyword,
+          };
+        });
         setMedications(medsFromDraft);
       }
 

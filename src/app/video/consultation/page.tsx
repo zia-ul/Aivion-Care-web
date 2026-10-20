@@ -293,6 +293,20 @@ function VideoConsultationContent() {
     <AppLayout role={role} title={isAudioCallOnly ? "Audio Consultation" : "Video Consultation"} subtitle={`Consultation #${consultationId}`}>
       <div className="max-w-5xl mx-auto">
         <div className="relative bg-surface-20/80 rounded-card border border-tonal-20/50 overflow-hidden">
+          {/* Always mount dedicated audio playback for remote stream so voice is never interrupted */}
+          {remoteStream && (
+            <audio
+              ref={(el) => {
+                if (el && remoteStream && el.srcObject !== remoteStream) {
+                  el.srcObject = remoteStream;
+                  void el.play().catch((e) => console.debug('Audio autoplay awaiting interaction:', e));
+                }
+              }}
+              autoPlay
+              playsInline
+              className="hidden"
+            />
+          )}
           <div className="aspect-video bg-surface-10 relative">
             {showStage ? (
               <video
@@ -308,12 +322,6 @@ function VideoConsultationContent() {
                 </div>
                 <p className="text-xl font-bold text-primary-light">{peerName}</p>
                 <p className="text-sm text-doctor-mint mt-1">Audio Consultation Connected</p>
-                {remoteStream && (
-                  <audio
-                    ref={(el) => { if (el && remoteStream) { el.srcObject = remoteStream; void el.play().catch(() => {}); } }}
-                    autoPlay
-                  />
-                )}
                 {callRecording.isRecording && (
                   <p className="mt-2 text-xs text-danger-light font-medium bg-danger/10 px-3 py-1 rounded-full border border-danger/20">
                     Recording {formatCallElapsed(callRecording.elapsedMs)}

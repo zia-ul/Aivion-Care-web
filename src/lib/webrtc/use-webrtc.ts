@@ -307,8 +307,14 @@ localStreamRef.current?.getTracks().forEach((track) => {
         setError(null);
 
         pc.ontrack = (event) => {
-          const incoming = event.streams?.[0];
-          if (incoming) setRemoteStream(incoming);
+          let incoming = event.streams?.[0];
+          if (!incoming) {
+            incoming = new MediaStream();
+            if (event.track) {
+              incoming.addTrack(event.track);
+            }
+          }
+          setRemoteStream(incoming);
         };
 
         pc.onicecandidate = (event) => {
@@ -363,8 +369,14 @@ localStreamRef.current?.getTracks().forEach((track) => {
         setIncomingCall(null);
 
         pc.ontrack = (event) => {
-          const incoming = event.streams?.[0];
-          if (incoming) setRemoteStream(incoming);
+          let incoming = event.streams?.[0];
+          if (!incoming) {
+            incoming = new MediaStream();
+            if (event.track) {
+              incoming.addTrack(event.track);
+            }
+          }
+          setRemoteStream(incoming);
         };
 
         pc.onicecandidate = (event) => {
