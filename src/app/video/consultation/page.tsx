@@ -297,14 +297,17 @@ function VideoConsultationContent() {
           {remoteStream && (
             <audio
               ref={(el) => {
-                if (el && remoteStream && el.srcObject !== remoteStream) {
-                  el.srcObject = remoteStream;
-                  void el.play().catch((e) => console.debug('Audio autoplay awaiting interaction:', e));
+                if (el && remoteStream) {
+                  if (el.srcObject !== remoteStream) {
+                    el.srcObject = remoteStream;
+                  }
+                  el.play().catch((e) => {
+                    console.warn('Audio autoplay blocked by browser policy:', e);
+                  });
                 }
               }}
               autoPlay
               playsInline
-              className="hidden"
             />
           )}
           <div className="aspect-video bg-surface-10 relative">
