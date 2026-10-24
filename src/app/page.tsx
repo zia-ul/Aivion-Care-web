@@ -24,6 +24,7 @@ import RolesSection from '@/components/landing/RolesSection';
 import SecuritySection from '@/components/landing/SecuritySection';
 import SupportChatbot from '@/components/landing/SupportChatbot';
 import TrustStats from '@/components/landing/TrustStats';
+import WorldFirstSection from '@/components/landing/WorldFirstSection';
 import WhyUsSection from '@/components/landing/WhyUsSection';
 
 export default function HomePage() {
@@ -33,6 +34,7 @@ export default function HomePage() {
       <main>
         <HeroSection />
         <TrustStats />
+        <WorldFirstSection />
         <PlatformsSection />
         <AboutSection />
         <FeaturesSection />
