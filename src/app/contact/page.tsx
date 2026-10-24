@@ -1,20 +1,23 @@
 'use client';
 
 import { useState, type FormEvent } from 'react';
-import { ArrowRight, Building2, CalendarDays, Mail, MapPin, Phone, Send, Target } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { ArrowRight, Building2, CalendarDays, Mail, MapPin, Phone, Send, Target, Sparkles, CheckCircle2, Clock } from 'lucide-react';
 import { SectionHeader } from '@/components/landing/common';
 import PageShell from '@/components/landing/PageShell';
 import { CONTACT_CHANNELS, CONTACT_EMAILS, mailto } from '@/lib/contact-emails';
 
 const contactPoints = [
-  { label: 'Phone', value: '+91 84493 91441', Icon: Phone, href: 'tel:+918449391441' },
-  { label: 'Office', value: 'AMU Innovation Foundation, 1st Floor Near Minto Circle School, Minto Circle Road, Aligarh, UP 202001, India', Icon: Building2, href: null },
+  { label: 'Phone Support', value: '+91 84493 91441', Icon: Phone, href: 'tel:+918449391441' },
+  { label: 'Direct Email', value: 'contact@aiconfidencecure.com', Icon: Mail, href: 'mailto:contact@aiconfidencecure.com' },
+  { label: 'Headquarters', value: 'AMU Innovation Foundation, 1st Floor Near Minto Circle School, Minto Circle Road, Aligarh, UP 202001, India', Icon: Building2, href: null },
 ] as const;
 
 const facts = [
-  { value: 'Early', label: 'Startup stage' },
-  { value: 'Aligarh', label: 'Based in' },
-  { value: 'Preventive care', label: 'Focus' },
+  { value: '24/7', label: 'Ecosystem Telemetry', sub: 'Always monitoring' },
+  { value: 'Aligarh & Delhi NCR', label: 'Headquarters & Lab', sub: 'AMUIF Incubated' },
+  { value: '< 2 Hours', label: 'Inquiry Response Time', sub: 'Fast support' },
 ] as const;
 
 export default function ContactPage() {
@@ -50,141 +53,186 @@ export default function ContactPage() {
   return (
     <PageShell>
       <main>
-        <SectionHeader
-          eyebrow="Contact"
-          title="Reach the team behind Aivion Care."
-          description="Whether you are exploring pilots, internships, incubation support, or collaborations, the team would love to hear from you."
-        />
+        {/* HERO SECTION WITH IMAGE BANNER */}
+        <div className="relative overflow-hidden rounded-3xl border border-sky-500/20 bg-surface-20/80 p-8 sm:p-12 mb-10">
+          <div className="absolute inset-0 z-0 opacity-20 dark:opacity-15">
+            <Image
+              src="/images/healthcare/telemedicine-call.jpg"
+              alt="Contact Aivion Care Team"
+              fill
+              className="object-cover"
+              priority
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-surface-10 via-surface-10/90 to-transparent" />
+          </div>
 
-        <div className="mt-10 grid gap-4 sm:grid-cols-3">
+          <div className="relative z-10 max-w-2xl">
+            <div className="inline-flex items-center gap-2 rounded-full border border-sky-500/30 bg-sky-500/10 px-3.5 py-1 text-xs font-semibold text-sky-600 dark:text-sky-400 mb-4">
+              <Mail size={14} />
+              <span>We're Here to Help</span>
+            </div>
+            <h1 className="text-3xl font-extrabold sm:text-4xl lg:text-5xl text-primary-light tracking-tight leading-tight">
+              Get in Touch with Our <br />
+              <span className="bg-gradient-to-r from-sky-500 via-teal-400 to-indigo-500 bg-clip-text text-transparent">
+                Clinical & Technology Team.
+              </span>
+            </h1>
+            <p className="mt-4 text-base sm:text-lg text-primary-light/80 leading-relaxed">
+              Whether you are exploring hospital deployment, clinic onboarding, pharmacy integration, academic research, or career opportunities, our team responds swiftly.
+            </p>
+          </div>
+        </div>
+
+        {/* METRICS ROW */}
+        <div className="grid gap-4 sm:grid-cols-3 mb-10">
           {facts.map((fact) => (
-            <div key={fact.label} className="animate-fade-in-up rounded-2xl border border-sky-500/15 bg-surface-20/60 p-5 text-center backdrop-blur">
-              <p className="text-xl font-bold text-sky-600 dark:text-sky-400">{fact.value}</p>
-              <p className="mt-1 text-support text-muted-foreground">{fact.label}</p>
+            <div key={fact.label} className="rounded-2xl border border-sky-500/15 bg-surface-20/60 p-6 backdrop-blur">
+              <div className="text-2xl font-extrabold text-sky-600 dark:text-sky-400">{fact.value}</div>
+              <div className="mt-1 text-sm font-semibold text-primary-light">{fact.label}</div>
+              <div className="text-xs text-primary-light/60 mt-0.5">{fact.sub}</div>
             </div>
           ))}
         </div>
 
-        {/* Direct mailboxes, so a visitor can pick the right team instead of
-            guessing which inbox handles their question. */}
-        <div className="mt-8">
-          <h2 className="text-heading font-bold text-primary-light">Choose the right team</h2>
-          <p className="mt-2 text-sm text-primary-light/70">
-            Each address reaches the team responsible for that kind of enquiry.
-          </p>
-          <ul className="mt-4 grid gap-3 sm:grid-cols-2">
-            {CONTACT_CHANNELS.map((channel) => (
-              <li key={channel.address}>
-                <a
-                  href={mailto(channel.address)}
-                  className="flex h-full items-start gap-4 rounded-2xl border border-sky-500/15 bg-surface-20/60 p-5 backdrop-blur transition hover:-translate-y-0.5 hover:border-accent/50"
-                >
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-sky-500/15 text-sky-600 dark:text-sky-400">
-                    <Mail size={19} aria-hidden="true" />
-                  </span>
-                  <span className="min-w-0">
-                    <span className="block text-support font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                      {channel.label}
-                    </span>
-                    <span className="mt-1 block break-words text-sm font-medium text-sky-600 dark:text-sky-400">{channel.address}</span>
-                    <span className="mt-1 block text-sm leading-6 text-primary-light/70">{channel.purpose}</span>
-                  </span>
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="mt-8 grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
-          <div className="space-y-4">
-            <h2 className="text-heading font-bold text-primary-light">Office Details</h2>
-            <div className="rounded-2xl border border-sky-500/15 bg-surface-20/60 p-5 backdrop-blur">
-              <p className="flex items-start gap-3 text-sm leading-6 text-primary-light/70">
-                <MapPin size={17} className="mt-0.5 shrink-0 text-sky-600 dark:text-sky-400" aria-hidden="true" />
-                {contactPoints[1].value}
-              </p>
-              <p className="mt-3 flex items-start gap-3 text-sm leading-6 text-primary-light/70">
-                <CalendarDays size={17} className="mt-0.5 shrink-0 text-sky-600 dark:text-sky-400" aria-hidden="true" />
-                Saturday - Sunday, 10:00 AM to 4:00 PM
-              </p>
-            </div>
-
-            <h2 className="pt-2 text-heading font-bold text-primary-light">Location</h2>
-            <div className="relative overflow-hidden rounded-2xl border border-sky-500/15 bg-surface-20/60 p-6 backdrop-blur">
-              <div className="absolute inset-0 opacity-40" aria-hidden="true">
-                <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full border border-sky-500/20" />
-                <div className="absolute -bottom-12 -left-8 h-40 w-40 rounded-full border border-teal-500/20" />
-              </div>
-              <div className="relative">
-                <h3 className="font-semibold text-primary-light">AMU Innovation Foundation, Aligarh</h3>
-                <p className="mt-2 text-sm leading-6 text-primary-light/70">
-                  This section is ready for an embedded map whenever the contact flow moves from starter site to a production operations setup.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <h2 className="text-heading font-bold text-primary-light">Inquiry Form</h2>
-            <p className="mt-2 text-sm leading-6 text-primary-light/70">
-              Tell us how you want to collaborate. Use the form to reach out about pilots, partnerships, media, mentorship, or internship interest.
+        {/* TWO-COLUMN CONTACT FORM & INFO */}
+        <div className="grid gap-10 lg:grid-cols-12 items-start">
+          {/* CONTACT FORM */}
+          <div className="rounded-2xl border border-sky-500/20 bg-surface-20/80 p-6 sm:p-8 backdrop-blur lg:col-span-7">
+            <h2 className="text-xl font-bold text-primary-light flex items-center gap-2">
+              <Send size={18} className="text-sky-500" /> Send Us a Message
+            </h2>
+            <p className="mt-1 text-xs sm:text-sm text-primary-light/70">
+              Fill out the form below and an engineering or clinical lead will get back to you within 2 business hours.
             </p>
 
-            <form onSubmit={submitContact} className="mt-6 rounded-2xl border border-sky-500/15 bg-surface-20/60 p-6 backdrop-blur sm:p-8">
+            <form onSubmit={submitContact} className="mt-6 space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">
-                <label className="block text-sm font-medium text-primary-light">
-                  Name
-                  <input name="name" type="text" required placeholder="Your name" className="mt-2 w-full rounded-2xl border border-sky-500/20 bg-surface-10 px-4 py-3 text-sm text-primary-light outline-none placeholder:text-primary-light/35 focus:border-sky-400" />
-                </label>
-                <label className="block text-sm font-medium text-primary-light">
-                  Email
-                  <input name="email" type="email" required placeholder="you@example.com" className="mt-2 w-full rounded-2xl border border-sky-500/20 bg-surface-10 px-4 py-3 text-sm text-primary-light outline-none placeholder:text-primary-light/35 focus:border-sky-400" />
-                </label>
+                <div>
+                  <label className="block text-xs font-semibold text-primary-light mb-1.5">Your Full Name</label>
+                  <input
+                    name="name"
+                    required
+                    placeholder="Dr. Rajesh Sharma"
+                    className="w-full rounded-xl border border-tonal-20 bg-surface-10 px-4 py-2.5 text-sm text-primary-light placeholder:text-primary-light/40 focus:border-sky-500 focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-primary-light mb-1.5">Email Address</label>
+                  <input
+                    name="email"
+                    type="email"
+                    required
+                    placeholder="doctor@hospital.org"
+                    className="w-full rounded-xl border border-tonal-20 bg-surface-10 px-4 py-2.5 text-sm text-primary-light placeholder:text-primary-light/40 focus:border-sky-500 focus:outline-none"
+                  />
+                </div>
               </div>
-              <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                <label className="block text-sm font-medium text-primary-light">
-                  Phone
-                  <input name="phone" type="tel" placeholder="+91" className="mt-2 w-full rounded-2xl border border-sky-500/20 bg-surface-10 px-4 py-3 text-sm text-primary-light outline-none placeholder:text-primary-light/35 focus:border-sky-400" />
-                </label>
-                <label className="block text-sm font-medium text-primary-light">
-                  Company
-                  <input name="company" type="text" placeholder="Organisation" className="mt-2 w-full rounded-2xl border border-sky-500/20 bg-surface-10 px-4 py-3 text-sm text-primary-light outline-none placeholder:text-primary-light/35 focus:border-sky-400" />
-                </label>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label className="block text-xs font-semibold text-primary-light mb-1.5">Phone Number</label>
+                  <input
+                    name="phone"
+                    type="tel"
+                    placeholder="+91 98765 43210"
+                    className="w-full rounded-xl border border-tonal-20 bg-surface-10 px-4 py-2.5 text-sm text-primary-light placeholder:text-primary-light/40 focus:border-sky-500 focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-primary-light mb-1.5">Organization / Role</label>
+                  <select
+                    name="role"
+                    className="w-full rounded-xl border border-tonal-20 bg-surface-10 px-4 py-2.5 text-sm text-primary-light focus:border-sky-500 focus:outline-none"
+                  >
+                    <option value="doctor">Medical Doctor / Specialist</option>
+                    <option value="hospital">Hospital / Clinic Administration</option>
+                    <option value="pharmacy">Pharmacy / Retail Chemist</option>
+                    <option value="pathology">Diagnostic / Pathology Lab</option>
+                    <option value="patient">Patient / Family Inquirer</option>
+                    <option value="other">Other / Investor / Research</option>
+                  </select>
+                </div>
               </div>
-              <label className="mt-4 block text-sm font-medium text-primary-light">
-                Message
-                <textarea name="message" required rows={6} placeholder="Tell us how you want to collaborate..." className="mt-2 w-full resize-y rounded-2xl border border-sky-500/20 bg-surface-10 px-4 py-3 text-sm text-primary-light outline-none placeholder:text-primary-light/35 focus:border-sky-400" />
-              </label>
-              <button type="submit" disabled={status === 'sending'} className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-sky-500 px-5 py-3.5 font-bold text-sky-950 shadow-lg shadow-sky-500/20 transition hover:-translate-y-0.5 hover:bg-sky-400 disabled:cursor-not-allowed disabled:opacity-60">
-                {status === 'sending' ? 'Sending...' : 'Send Inquiry'}
-                {status !== 'sending' && <ArrowRight size={17} />}
-              </button>
+
+              <div>
+                <label className="block text-xs font-semibold text-primary-light mb-1.5">Your Message / Inquiry</label>
+                <textarea
+                  name="message"
+                  required
+                  rows={4}
+                  placeholder="Tell us how we can assist your hospital or practice..."
+                  className="w-full rounded-xl border border-tonal-20 bg-surface-10 px-4 py-2.5 text-sm text-primary-light placeholder:text-primary-light/40 focus:border-sky-500 focus:outline-none"
+                />
+              </div>
+
               {status === 'success' && (
-                <p className="mt-4 rounded-2xl bg-success/10 p-3 text-sm text-emerald-700 dark:text-success-light" role="status">Your inquiry was sent. We will get back to you soon.</p>
+                <div className="flex items-center gap-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30 p-3 text-xs text-emerald-600 dark:text-emerald-400">
+                  <CheckCircle2 size={16} /> Thank you! Your message has been sent successfully. We will reach out shortly.
+                </div>
               )}
+
               {status === 'error' && (
-                <p className="mt-4 rounded-2xl bg-danger/10 p-3 text-sm text-rose-700 dark:text-danger-light" role="alert">{errorMessage || `We could not send your message. Please try again or email ${CONTACT_EMAILS.info}.`}</p>
+                <div className="rounded-xl bg-rose-500/10 border border-rose-500/30 p-3 text-xs text-rose-500">
+                  {errorMessage}
+                </div>
               )}
+
+              <button
+                type="submit"
+                disabled={status === 'sending'}
+                className="w-full rounded-xl bg-gradient-to-r from-sky-500 to-teal-500 py-3 text-sm font-bold text-slate-950 shadow-lg shadow-sky-500/20 transition hover:bg-sky-400 disabled:opacity-50"
+              >
+                {status === 'sending' ? 'Transmitting Message...' : 'Send Message'}
+              </button>
             </form>
           </div>
-        </div>
 
-        <div className="mt-10 rounded-2xl border border-sky-500/20 bg-sky-500/10 p-6 text-center backdrop-blur sm:p-10">
-          <h2 className="text-section font-bold text-primary-light">Let us build preventive healthcare with stronger visibility and better coordination.</h2>
-          <p className="mx-auto mt-4 max-w-2xl leading-7 text-primary-light/70">
-            The team is open to conversations about product pilots, ecosystem partnerships, startup support, and internship collaboration.
-          </p>
-          <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <a href={mailto(CONTACT_EMAILS.sales)} className="inline-flex items-center gap-2 rounded-2xl bg-sky-500 px-6 py-3.5 font-bold text-sky-950 shadow-lg shadow-sky-500/20 transition hover:-translate-y-0.5 hover:bg-sky-400">
-              Partner with us <ArrowRight size={17} />
-            </a>
-            <a href={mailto(CONTACT_EMAILS.hr)} className="inline-flex items-center gap-2 rounded-2xl border border-sky-500/20 bg-background/60 px-6 py-3.5 font-semibold text-foreground transition hover:bg-sky-500/10">
-              Join the team <ArrowRight size={17} />
-            </a>
+          {/* CONTACT CARDS */}
+          <div className="space-y-4 lg:col-span-5">
+            {contactPoints.map((point) => {
+              const IconComponent = point.Icon;
+              return (
+                <div key={point.label} className="rounded-2xl border border-sky-500/15 bg-surface-20/60 p-5 backdrop-blur">
+                  <div className="flex items-start gap-4">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-sky-500/15 text-sky-600 dark:text-sky-400">
+                      <IconComponent size={20} />
+                    </div>
+                    <div>
+                      <h3 className="text-xs font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400">{point.label}</h3>
+                      {point.href ? (
+                        <a href={point.href} className="mt-1 block text-sm font-semibold text-primary-light hover:underline">
+                          {point.value}
+                        </a>
+                      ) : (
+                        <p className="mt-1 text-xs sm:text-sm text-primary-light/80 leading-relaxed">{point.value}</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+
+            {/* QUICK ROLE ONBOARDING LINKS */}
+            <div className="rounded-2xl border border-tonal-20/70 bg-surface-10 p-5">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-primary-light/60 mb-3">Instant Registration</h4>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <Link href="/register/doctor" className="rounded-lg bg-surface-20 p-2.5 text-center font-medium hover:border-sky-500 border border-transparent transition">
+                  Doctor Sign Up
+                </Link>
+                <Link href="/register/hospital" className="rounded-lg bg-surface-20 p-2.5 text-center font-medium hover:border-sky-500 border border-transparent transition">
+                  Hospital Sign Up
+                </Link>
+                <Link href="/register/pharmacist" className="rounded-lg bg-surface-20 p-2.5 text-center font-medium hover:border-sky-500 border border-transparent transition">
+                  Pharmacy Sign Up
+                </Link>
+                <Link href="/register/pathology" className="rounded-lg bg-surface-20 p-2.5 text-center font-medium hover:border-sky-500 border border-transparent transition">
+                  Lab Sign Up
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </main>
     </PageShell>
   );
 }
-
