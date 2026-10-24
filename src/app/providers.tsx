@@ -11,6 +11,7 @@ import { ChatNotificationListener } from '@/components/chat/ChatNotificationList
 import { NewMessageToast } from '@/components/chat/NewMessageToast';
 import { GlobalNotificationToast } from '@/components/notifications/GlobalNotificationToast';
 import { RealtimeNotificationListener } from '@/components/notifications/RealtimeNotificationListener';
+import PageTransitionProvider from '@/components/ui/PageTransitionProvider';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient({
@@ -119,7 +120,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {children}
+      <PageTransitionProvider>{children}</PageTransitionProvider>
       <IncomingCallListener />
       <ChatNotificationListener />
       <NewMessageToast />
