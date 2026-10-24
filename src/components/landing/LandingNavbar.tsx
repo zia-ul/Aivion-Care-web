@@ -110,7 +110,7 @@ const navItems: NavItem[] = [
       { 
         title: 'Doctors & Specialists', 
         desc: 'Teleconsultation, prescription copilot & longitudinal patient tracking', 
-        href: '/register/doctor',
+        href: '/solutions/doctors-specialists',
         icon: Stethoscope,
         tag: 'Physicians'
       },
