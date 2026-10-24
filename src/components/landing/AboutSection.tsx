@@ -32,7 +32,7 @@ export default function AboutSection() {
               <p className="font-display text-lg font-bold text-primary-light">Aivion Care</p>
               <p className="text-sm text-muted-foreground">Connected healthcare, built in India 🇮🇳</p>
               <a
-                href="https://www.aiconfidencecure.com/"
+                href="https://aivioncare.aiconfidencecure.com/"
                 target="_blank"
                 rel="noreferrer"
                 className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-sky-600 hover:text-sky-500 dark:text-sky-400 dark:hover:text-sky-300"

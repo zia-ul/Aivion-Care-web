@@ -38,12 +38,12 @@ export const metadata: Metadata = {
     'pediatrician near me'
   ],
   alternates: {
-    canonical: 'https://www.aiconfidencecure.com/book-appointment',
+    canonical: 'https://aivioncare.aiconfidencecure.com/book-appointment',
   },
   openGraph: {
     title: 'Book Doctor Appointments Online — Instant & Verified | Aivion Care',
     description: 'Instant doctor appointments with verified specialists. Choose Video Call or Clinic Visit. 24/7 continuous health ecosystem.',
-    url: 'https://www.aiconfidencecure.com/book-appointment',
+    url: 'https://aivioncare.aiconfidencecure.com/book-appointment',
     images: ['/images/healthcare/doctor-consulting.jpg'],
   },
 };
@@ -130,7 +130,7 @@ export default function BookAppointmentPage() {
             '@context': 'https://schema.org',
             '@type': 'MedicalWebPage',
             name: 'Book Doctor Appointments Online — Top Verified Doctors Near You',
-            url: 'https://www.aiconfidencecure.com/book-appointment',
+            url: 'https://aivioncare.aiconfidencecure.com/book-appointment',
             description: 'Online doctor appointment booking with verified medical specialists. Real-time slots, instant video consults and clinic OPD visits.',
             mainEntity: {
               '@type': 'FAQPage',

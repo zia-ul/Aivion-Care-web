@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://www.aiconfidencecure.com';
+  const baseUrl = 'https://aivioncare.aiconfidencecure.com';
   const lastModified = new Date();
 
   return [

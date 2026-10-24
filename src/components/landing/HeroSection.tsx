@@ -491,7 +491,7 @@ export default function HeroSection() {
 
 
                 <a
-                  href="https://www.aiconfidencecure.com/"
+                  href="https://aivioncare.aiconfidencecure.com/"
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex items-center justify-center gap-2 rounded-full border border-tonal-20 bg-surface-30/60 px-5 py-4 text-sm font-semibold text-primary-light/80 transition-all duration-300 hover:border-sky-400/50 hover:bg-surface-30 hover:text-primary-light"

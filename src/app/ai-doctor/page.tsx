@@ -43,12 +43,12 @@ export const metadata: Metadata = {
     'generative AI electronic health records'
   ],
   alternates: {
-    canonical: 'https://www.aiconfidencecure.com/ai-doctor',
+    canonical: 'https://aivioncare.aiconfidencecure.com/ai-doctor',
   },
   openGraph: {
     title: 'AI Doctor & Predictive Clinical AI Health Engine | Aivion Care',
     description: 'Autonomous multi-modal clinical intelligence. Combines 30-year physician decision pathways with calibrated neural risk modeling and live vitals telemetry.',
-    url: 'https://www.aiconfidencecure.com/ai-doctor',
+    url: 'https://aivioncare.aiconfidencecure.com/ai-doctor',
     images: ['/images/healthcare/healthcare-ai-future.jpg'],
   },
 };
@@ -155,8 +155,8 @@ export default function AIDoctorPage() {
     '@graph': [
       {
         '@type': 'MedicalWebPage',
-        '@id': 'https://www.aiconfidencecure.com/ai-doctor/#webpage',
-        url: 'https://www.aiconfidencecure.com/ai-doctor',
+        '@id': 'https://aivioncare.aiconfidencecure.com/ai-doctor/#webpage',
+        url: 'https://aivioncare.aiconfidencecure.com/ai-doctor',
         name: 'AI Doctor & Predictive Health Assessment | Aivion Care',
         description: 'Multi-modal AI health intelligence engine merging 30-year veteran clinical experience with autonomous AI diagnostic agents.',
         about: [
@@ -170,7 +170,7 @@ export default function AIDoctorPage() {
       },
       {
         '@type': 'FAQPage',
-        '@id': 'https://www.aiconfidencecure.com/ai-doctor/#faq',
+        '@id': 'https://aivioncare.aiconfidencecure.com/ai-doctor/#faq',
         mainEntity: faqList.map((item) => ({
           '@type': 'Question',
           name: item.q,

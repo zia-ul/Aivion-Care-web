@@ -89,4 +89,4 @@ export function getRoleHomePathWithGate(user?: {
 export function getRoleHomePath(role?: string | null): string {
   if (!role) return ROLE_HOME.PATIENT;
   return ROLE_HOME[role] ?? ROLE_HOME.PATIENT;
-}
+}

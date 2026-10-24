@@ -33,12 +33,12 @@ export const metadata: Metadata = {
     'pharmacy ERP software'
   ],
   alternates: {
-    canonical: 'https://www.aiconfidencecure.com/solutions/pharmacy',
+    canonical: 'https://aivioncare.aiconfidencecure.com/solutions/pharmacy',
   },
   openGraph: {
     title: 'Smart Pharmacy Management & E-Prescription Dispensing | Aivion Care',
     description: 'Instant e-prescription transmission, AI contraindication checks, automated inventory expiry tracking, and seamless patient fulfillment.',
-    url: 'https://www.aiconfidencecure.com/solutions/pharmacy',
+    url: 'https://aivioncare.aiconfidencecure.com/solutions/pharmacy',
     images: ['/images/healthcare/pharmacy-shelf.jpg'],
   },
 };
