@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -294,8 +294,9 @@ export default function LandingNavbar() {
 
             {/* Android APK download button */}
             <a
-              href="/app-release.apk"
-              download="aivion-care.apk"
+              href="https://drive.google.com/drive/u/1/folders/1ALfyNroHMqFdpmYDJ-hpWMcndzO4eAd8"
+              target="_blank"
+              rel="noreferrer"
               className="hidden lg:inline-flex items-center gap-1.5 rounded-xl border border-tonal-20 bg-surface-10 px-2.5 py-1.5 text-xs font-semibold text-primary-light shadow-sm transition hover:bg-tonal-20"
               title="Download Android APK"
             >
@@ -372,8 +373,9 @@ export default function LandingNavbar() {
 
               <div className="mt-3 flex flex-col gap-2 border-t border-tonal-20/60 pt-3">
                 <a
-                  href="/app-release.apk"
-                  download="aivion-care.apk"
+                  href="https://drive.google.com/drive/u/1/folders/1ALfyNroHMqFdpmYDJ-hpWMcndzO4eAd8"
+              target="_blank"
+              rel="noreferrer"
                   className="flex items-center justify-center gap-2 rounded-xl border border-tonal-20 bg-surface-20 py-2.5 text-xs font-semibold text-primary-light"
                 >
                   <Smartphone size={14} className="text-emerald-500" /> Download Android APK
