@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -6,13 +6,15 @@ import AppLayout from '@/components/layout/AppLayout';
 import { appointmentApi, notificationApi } from '@/lib/api/endpoints';
 import { useAuthStore } from '@/lib/stores/auth';
 import { DarkCard, InnerCard, SectionTitle, Pill, ActionButton, FL, tint } from '@/components/ui/FlutterTheme';
-import { Building2, CalendarDays, FileText, Pill as PillIcon, MessageCircle, Wallet, Bell, Stethoscope, Clock, FolderOpen } from 'lucide-react';
+import { Building2, CalendarDays, FileText, Pill as PillIcon, MessageCircle, Wallet, Bell, Stethoscope, Clock, FolderOpen, HeartPulse, ShieldPlus } from 'lucide-react';
 
 interface Appt { id: number; doctorName?: string; hospitalName?: string; appointmentDate?: string; slotTime?: string; status?: string; type?: string; }
 
 const TILES = [
   { href: '/patient/hospitals', title: 'Find Hospitals', subtitle: 'Book appointments faster', icon: Building2, color: FL.mint },
   { href: '/patient/appointments', title: 'My Appointments', subtitle: 'Upcoming & past visits', icon: CalendarDays, color: FL.blue },
+  { href: '/patient/ecg', title: 'ECG Monitor', subtitle: 'Track your heartbeat live', icon: HeartPulse, color: FL.pink },
+  { href: '/patient/surgeries', title: 'Surgery Care', subtitle: 'Browse surgical procedures', icon: ShieldPlus, color: FL.gold },
   { href: '/patient/records', title: 'Medical Records', subtitle: 'Prescriptions & history', icon: FileText, color: FL.lavender },
   { href: '/patient/documents', title: 'My Documents', subtitle: 'Reports, scans & files', icon: FolderOpen, color: FL.cyan },
   { href: '/patient/reminders', title: 'Medicines', subtitle: 'Reminders & adherence', icon: PillIcon, color: FL.gold },

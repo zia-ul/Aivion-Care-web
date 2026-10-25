@@ -1,7 +1,7 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
-import { Activity, LayoutDashboard, Calendar, MessageCircle, Bell, User, Users, Building2, UserCheck, BarChart3, Radio, X, FileText, Pill, Wallet, CalendarDays, Sparkles, CreditCard, ShieldCheck, Shield, MapPin, Stethoscope, Building, Microscope, TestTube, ClipboardList, ShieldPlus, type LucideIcon } from 'lucide-react';
+import { Activity, LayoutDashboard, Calendar, MessageCircle, Bell, User, Users, Building2, UserCheck, BarChart3, Radio, X, FileText, Pill, Wallet, CalendarDays, Sparkles, CreditCard, ShieldCheck, Shield, MapPin, Stethoscope, Building, Microscope, TestTube, ClipboardList, ShieldPlus, HeartPulse, type LucideIcon } from 'lucide-react';
 import { usePathmap } from '@/lib/use-pathmap';
 import { useChatUnreadStore } from '@/lib/stores/chat-unread';
 import { useNotificationPopupStore } from '@/lib/stores/notification-popup';
@@ -13,6 +13,8 @@ const patientNavItems: NavItem[] = [
   { href: '/patient/hospitals', label: 'Hospitals', icon: Building2 },
   { href: '/patient/pharmacies', label: 'Pharmacies', icon: Pill },
   { href: '/patient/pathology-labs', label: 'Pathology labs', icon: Activity },
+  { href: '/patient/ecg', label: 'ECG Monitor', icon: HeartPulse },
+  { href: '/patient/surgeries', label: 'Surgery Care', icon: ShieldPlus },
   { href: '/patient/appointments', label: 'Appointments', icon: Calendar },
   { href: '/patient/records', label: 'Medical records', icon: FileText },
   { href: '/patient/documents', label: 'My Documents', icon: ClipboardList },
