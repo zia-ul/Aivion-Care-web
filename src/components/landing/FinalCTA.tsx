@@ -72,10 +72,10 @@ export default function FinalCTA() {
           Access verified doctor appointments, continuous 24/7 telemetry monitoring, universal medical records, and autonomous clinical intelligence through Aivion Care. <span className="text-teal-600 dark:text-teal-300 font-bold">Your health, connected — pure signal, zero cap.</span>
         </p>
 
-        <div className="mt-8 flex flex-col justify-center items-center gap-4 sm:flex-row">
+        <div className="mt-8 flex flex-col sm:flex-row flex-wrap justify-center items-stretch sm:items-center gap-3 sm:gap-4 max-w-xl mx-auto">
           <Link
             href="/register"
-            className="group relative inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-sky-500 to-teal-500 px-8 py-4 text-base font-extrabold text-white shadow-xl shadow-sky-500/30 transition-all duration-300 hover:scale-[1.04] hover:shadow-cyan-400/40"
+            className="group relative inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-full bg-gradient-to-r from-sky-500 to-teal-500 px-6 sm:px-8 py-3.5 sm:py-4 text-base font-extrabold text-white shadow-xl shadow-sky-500/30 transition-all duration-300 hover:scale-[1.04] hover:shadow-cyan-400/40"
           >
             <span>Create Free Account</span>
             <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
@@ -83,7 +83,7 @@ export default function FinalCTA() {
 
           <Link
             href="/login"
-            className="inline-flex items-center justify-center gap-2 rounded-full border border-tonal-20 bg-surface-20/60 px-8 py-4 text-base font-bold text-primary-light shadow-sm backdrop-blur-md transition-all duration-300 hover:bg-surface-30 hover:border-cyan-500/50 dark:hover:border-cyan-400/50"
+            className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-full border border-tonal-20 bg-surface-20/60 px-6 sm:px-8 py-3.5 sm:py-4 text-base font-bold text-primary-light shadow-sm backdrop-blur-md transition-all duration-300 hover:bg-surface-30 hover:border-cyan-500/50 dark:hover:border-cyan-400/50"
           >
             <span>Launch Care Portal</span>
           </Link>
@@ -92,7 +92,7 @@ export default function FinalCTA() {
             href={process.env.NEXT_PUBLIC_ANDROID_APK_DRIVE_URL || "https://drive.google.com/drive/folders/1aivion-care-apk-download"}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center justify-center gap-2 rounded-full border border-teal-500/40 bg-teal-500/15 px-6 py-4 text-base font-bold text-teal-800 dark:text-teal-200 transition-all duration-300 hover:bg-teal-500/25"
+            className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-full border border-teal-500/40 bg-teal-500/15 px-6 py-3.5 sm:py-4 text-base font-bold text-teal-800 dark:text-teal-200 transition-all duration-300 hover:bg-teal-500/25"
           >
             <span>Android APK</span>
           </a>

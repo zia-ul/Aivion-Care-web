@@ -69,7 +69,7 @@ export default function AboutSection() {
               sizes="(max-width: 768px) 100vw, 600px"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-surface-20 via-surface-20/40 to-transparent dark:from-slate-950 dark:via-slate-950/40 dark:to-transparent" />
-            <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between">
+            <div className="absolute bottom-3 left-3 right-3 flex flex-wrap items-center justify-between gap-2">
               <span className="rounded-full bg-sky-500/20 px-3 py-1 text-xs font-bold text-sky-700 dark:text-sky-300 border border-sky-500/30 backdrop-blur-md">
                 Continuous Doctor-Patient Loop
               </span>
@@ -79,7 +79,7 @@ export default function AboutSection() {
             </div>
           </div>
 
-          <div className="relative z-10 grid grid-cols-2 gap-3 sm:grid-cols-5">
+          <div className="relative z-10 flex flex-wrap justify-center sm:grid sm:grid-cols-5 gap-2.5">
             {nodes.map(([label, Icon]) => (
               <div key={label} className="rounded-2xl border border-tonal-20 bg-surface-30/60 dark:bg-white/[0.03] p-3 text-center transition-all duration-300 hover:-translate-y-1 hover:border-cyan-500/50 dark:hover:border-cyan-400/50 hover:bg-surface-40/60 dark:hover:bg-white/[0.08]">
                 <Icon size={20} className="mx-auto text-sky-600 dark:text-sky-400" />

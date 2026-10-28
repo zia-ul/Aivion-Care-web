@@ -319,7 +319,7 @@ export default function GallerySection() {
         </div>
 
         {/* Interactive Gallery Grid (All 26+ Images Visible) */}
-        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-10 grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((item, idx) => (
             <article
               key={item.title + idx}

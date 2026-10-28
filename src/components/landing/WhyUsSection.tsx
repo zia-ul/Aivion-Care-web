@@ -78,7 +78,7 @@ export default function WhyUsSection() {
           </p>
         </div>
 
-        <div className="mt-10 grid gap-5 sm:grid-cols-2">
+        <div className="mt-10 grid gap-5 grid-cols-1 md:grid-cols-2">
           {audiences.map(({ audience, points, Icon }) => (
             <article
               key={audience}
@@ -105,7 +105,7 @@ export default function WhyUsSection() {
           ))}
         </div>
 
-        <div className="mt-6 grid gap-4 sm:grid-cols-3">
+        <div className="mt-6 grid gap-4 grid-cols-1 sm:grid-cols-3">
           {assurance.map(({ title, text, Icon }) => (
             <div key={title} className="rounded-2xl border border-sky-500/20 bg-sky-500/10 p-5 backdrop-blur">
               <Icon size={20} className="text-sky-600 dark:text-sky-400" aria-hidden="true" />
