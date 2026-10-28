@@ -221,16 +221,16 @@ export default function HeroSection() {
                   AMUIF Incubated
                 </span>
               </div>
-              <p className="text-[11px] sm:text-xs text-primary-light/70 font-medium truncate sm:whitespace-normal">
+              <p className="text-[11px] sm:text-xs text-primary-light/70 font-medium whitespace-normal break-words">
                 Connected Clinical Operating System · Pure Signal, Zero Cap
               </p>
             </div>
           </div>
 
           {/* Ticker & Slide Controls Row */}
-          <div className="flex items-center justify-between sm:justify-end gap-2.5 sm:gap-3 pt-2 sm:pt-0 border-t border-tonal-20/40 sm:border-t-0">
+          <div className="flex flex-wrap items-center justify-between sm:justify-end gap-2 sm:gap-3 pt-2.5 sm:pt-0 border-t border-tonal-20/40 sm:border-t-0">
             {/* Live ECG heartbeat ticker */}
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 rounded-2xl border border-cyan-400/40 bg-surface-30/90 px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-xs text-cyan-600 dark:text-cyan-300 shadow-md">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 rounded-2xl border border-cyan-400/40 bg-surface-30/90 px-2.5 sm:px-4 py-1.5 sm:py-2 text-[10px] sm:text-xs text-cyan-600 dark:text-cyan-300 shadow-md">
               <span className="relative flex h-2 w-2 sm:h-2.5 sm:w-2.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-500 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 sm:h-2.5 sm:w-2.5 bg-rose-500" />
