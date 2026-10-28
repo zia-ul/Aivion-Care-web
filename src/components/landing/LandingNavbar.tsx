@@ -18,7 +18,8 @@ import {
   Stethoscope, 
   UserCheck, 
   Activity,
-  HeartPulse
+  HeartPulse,
+  ShieldCheck
 } from 'lucide-react';
 import { useEffect, useState, useRef } from 'react';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
@@ -127,6 +128,7 @@ const navItems: NavItem[] = [
       { title: 'Public Health Initiatives', desc: 'Free community screening drives & MoUs', href: '/initiatives', icon: HeartPulse },
       { title: 'Careers & Internships', desc: 'Join our clinical AI & engineering mission', href: '/careers', icon: Layers },
       { title: 'Contact Us', desc: 'Support, hospital onboarding & partnerships', href: '/contact', icon: PhoneCall },
+      { title: 'Terms & CDSCO Compliance', desc: 'Regulatory classification, intended use & terms', href: '/terms', icon: ShieldCheck },
     ]
   },
 ];
