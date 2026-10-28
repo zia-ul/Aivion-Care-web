@@ -40,7 +40,6 @@ export default function AboutSection() {
                 aiconfidencecure.com <ArrowUpRight size={15} />
               </a>
             </div>
-          </div>
 
           <dl className="mt-6 grid gap-3 sm:grid-cols-3">
             {[
@@ -79,13 +78,19 @@ export default function AboutSection() {
             </div>
           </div>
 
-          <div className="relative z-10 flex flex-wrap justify-center sm:grid sm:grid-cols-5 gap-2.5">
-            {nodes.map(([label, Icon]) => (
-              <div key={label} className="rounded-2xl border border-tonal-20 bg-surface-30/60 dark:bg-white/[0.03] p-3 text-center transition-all duration-300 hover:-translate-y-1 hover:border-cyan-500/50 dark:hover:border-cyan-400/50 hover:bg-surface-40/60 dark:hover:bg-white/[0.08]">
+          <div className="relative z-10 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+            {nodes.map(([label, Icon], idx) => (
+              <div
+                key={label}
+                className={`rounded-2xl border border-tonal-20 bg-surface-30/60 dark:bg-white/[0.03] p-3 text-center transition-all duration-300 hover:-translate-y-1 hover:border-cyan-500/50 dark:hover:border-cyan-400/50 hover:bg-surface-40/60 dark:hover:bg-white/[0.08] ${
+                  idx === 4 ? "col-span-2 sm:col-span-1" : ""
+                }`}
+              >
                 <Icon size={20} className="mx-auto text-sky-600 dark:text-sky-400" />
-                <p className="mt-2 text-xs font-semibold text-primary-light/90">{label}</p>
+                <p className="mt-2 text-xs font-semibold text-primary-light/90 truncate">{label}</p>
               </div>
             ))}
+          </div>
           </div>
           <div className="mt-6 flex items-center justify-center gap-2 text-xs font-medium text-primary-light/70">
             <Building2 size={15} className="text-teal-600 dark:text-teal-400" /> Unified clinical operating system across clinics and hospitals
