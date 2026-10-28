@@ -198,7 +198,7 @@ export default function HeroSection() {
 
       {/* Top Floating Logo & Brand Banner */}
       <div className="mx-auto max-w-[1400px] px-4 sm:px-8 lg:px-10 mb-6 sm:mb-8">
-        <div className="flex flex-col gap-3 rounded-3xl border border-tonal-20 bg-surface-20/90 p-3 sm:p-4 sm:px-6 shadow-2xl backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+        <div className="flex flex-col gap-3 rounded-3xl border border-tonal-20 bg-surface-20/90 p-4 sm:px-6 shadow-2xl backdrop-blur-xl md:flex-row md:items-center md:justify-between md:gap-4">
           
           {/* Brand Info Row */}
           <div className="flex items-center gap-3 min-w-0">
@@ -228,9 +228,9 @@ export default function HeroSection() {
           </div>
 
           {/* Ticker & Slide Controls Row */}
-          <div className="flex flex-wrap items-center justify-between sm:justify-end gap-2 sm:gap-3 pt-2.5 sm:pt-0 border-t border-tonal-20/40 sm:border-t-0">
+          <div className="flex flex-wrap items-center justify-between md:justify-end gap-2.5 pt-3 border-t border-tonal-20/40 md:pt-0 md:border-t-0">
             {/* Live ECG heartbeat ticker */}
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 rounded-2xl border border-cyan-400/40 bg-surface-30/90 px-2.5 sm:px-4 py-1.5 sm:py-2 text-[10px] sm:text-xs text-cyan-600 dark:text-cyan-300 shadow-md">
+            <div className="flex items-center gap-1.5 sm:gap-2 rounded-2xl border border-cyan-400/40 bg-surface-30/90 px-3 py-1.5 sm:py-2 text-[11px] sm:text-xs text-cyan-600 dark:text-cyan-300 shadow-md overflow-x-auto no-scrollbar">
               <span className="relative flex h-2 w-2 sm:h-2.5 sm:w-2.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-500 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 sm:h-2.5 sm:w-2.5 bg-rose-500" />

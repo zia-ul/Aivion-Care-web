@@ -339,11 +339,11 @@ export default function GallerySection() {
                 <div className="absolute inset-0 bg-gradient-to-t from-surface-20 via-surface-20/20 to-transparent dark:from-slate-950 dark:via-slate-950/20" />
                 
                 {/* Top Category and Tag Badges */}
-                <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
-                  <span className="rounded-full border border-cyan-500/30 bg-surface-20/85 dark:border-white/15 dark:bg-slate-950/80 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-cyan-700 dark:text-cyan-300 backdrop-blur-md">
+                <div className="absolute top-3 left-3 right-3 flex flex-wrap items-center justify-between gap-1.5 z-10">
+                  <span className="rounded-full border border-cyan-500/30 bg-surface-20/90 dark:border-white/15 dark:bg-slate-950/90 px-2.5 py-0.5 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-cyan-700 dark:text-cyan-300 backdrop-blur-md truncate max-w-[50%]">
                     {item.category}
                   </span>
-                  <span className="rounded-full border border-teal-500/30 bg-surface-20/85 dark:border-teal-400/30 dark:bg-slate-950/80 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-teal-700 dark:text-teal-300 backdrop-blur-md">
+                  <span className="rounded-full border border-teal-500/30 bg-surface-20/90 dark:border-teal-400/30 dark:bg-slate-950/90 px-2.5 py-0.5 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-teal-700 dark:text-teal-300 backdrop-blur-md truncate max-w-[50%]">
                     {item.tag}
                   </span>
                 </div>
