@@ -520,9 +520,17 @@ export default function StandaloneDocumentStudio() {
                   <p className="text-doctor-muted">Method: <span className="text-primary-light font-mono">{result.extractedData.extractionMethod}</span></p>
                   <p className="text-doctor-muted">Pages: <span className="text-primary-light">{result.extractedData.pagesWithText} of {result.extractedData.totalPages}</span></p>
                   <p className="text-doctor-muted">Model: <span className="text-primary-light font-mono">{result.agentExecution.modelUsed}</span></p>
-                  <p className="text-doctor-dim text-[11px] pt-2 border-t border-doctor-border-soft italic">
-                    {result.disclaimer}
-                  </p>
+                  <div className="pt-3 border-t border-doctor-border-soft space-y-1.5">
+                    <p className="text-amber-500 font-bold text-[11px] uppercase tracking-wider flex items-center gap-1.5">
+                      ⚠️ AI-ASSISTED DECISION SUPPORT ONLY — NO CLINICAL LIABILITY
+                    </p>
+                    <p className="text-doctor-dim text-[11px] leading-relaxed">
+                      All calculations, risk tiers, and compound ratios are produced via probabilistic AI and mathematical decision trees designed for diagnostic screening only. This analysis does <span className="font-bold text-primary-light">NOT</span> provide a binding medical diagnosis or prescription. Final judgment and medical responsibility remain exclusively with the licensed physician.
+                    </p>
+                    <p className="text-doctor-muted text-[10px] italic">
+                      {result.disclaimer}
+                    </p>
+                  </div>
                 </InnerCard>
               </div>
             </div>

@@ -75,7 +75,7 @@ export default function ClinicalAssessmentLandingPage() {
           <SectionHeader
             eyebrow="Autonomous Clinical Assessment & AI Dashboards"
             title="Next-Generation Biomarker Analytics & Calibrated Disease Prediction"
-            description="Built on international clinical decision support (CDS) literature and multi-agent RAG reasoning. Upload any lab panel or medical document to generate real-time organ-axis dashboards, biomarker variance spectrums, and multi-disease risk projections."
+            description="Built on international clinical decision support (CDS) literature and multi-agent RAG reasoning. Provides maximum analytical precision and pattern screening. Purely informational AI decision support — non-binding and does not substitute licensed physician clinical judgment."
           />
 
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
