@@ -57,6 +57,18 @@ const nextConfig = {
     };
     return config;
   },
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'https://80.225.231.72/api/:path*',
+      },
+      {
+        source: '/ws/:path*',
+        destination: 'https://80.225.231.72/ws/:path*',
+      },
+    ];
+  },
   async headers() {
     return [
       {

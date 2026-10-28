@@ -4,10 +4,12 @@ import { useState, useEffect, useCallback, use } from 'react';
 import AppLayout from '@/components/layout/AppLayout';
 import { chatApi, consultationApi } from '@/lib/api/endpoints';
 import { useRouter } from 'next/navigation';
-import { Download, Video, MessageCircle } from 'lucide-react';
+import { Download, Video, MessageCircle, Bell, Check, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui';
 import { SoapSummary } from '@/components/doctor/SoapSummary';
 import { ConsultationSoapSectionResponse } from '@/types/consultation';
+import { patientApi } from '@/lib/api/endpoints';
+import toast from 'react-hot-toast';
 
 interface Consultation {
   id: number;
@@ -34,6 +36,8 @@ export default function PatientConsultationPage({ params }: { params: Promise<{ 
   const [consultation, setConsultation] = useState<Consultation | null>(null);
   const [loading, setLoading] = useState(true);
   const [chatRoomId, setChatRoomId] = useState<number | null>(null);
+  const [addingReminders, setAddingReminders] = useState(false);
+  const [remindersAdded, setRemindersAdded] = useState(false);
 
   const id = Number(resolvedParams.id);
 
@@ -75,6 +79,46 @@ export default function PatientConsultationPage({ params }: { params: Promise<{ 
       alert(error?.response?.data?.message || 'Failed to download PDF');
     }
   }, [consultation?.id]);
+
+  const handleAddMedicationReminders = async () => {
+    if (!consultation?.medicines?.length) {
+      toast.error('No medicines available in this prescription.');
+      return;
+    }
+
+    setAddingReminders(true);
+    let successCount = 0;
+
+    for (const med of consultation.medicines) {
+      try {
+        const medName = med.medicineName || med.name;
+        if (!medName) continue;
+        const durationStr = med.durationDays ? `${med.durationDays} days` : med.duration || '7 days';
+        await patientApi.createMedicationReminder({
+          medicineName: medName,
+          dosage: med.dosage || '1 dose',
+          amountPerUse: med.amountPerUse || '1 tablet',
+          frequencyPerDay: med.frequency || med.frequencyPerDay || 'Twice daily',
+          timing: med.timing || 'After meals',
+          duration: durationStr,
+          notes: med.instructions || med.notes || `Prescribed in Consultation #${consultation.id}`,
+          startDate: new Date().toISOString().split('T')[0],
+          scheduleTimes: ['09:00', '21:00'],
+        });
+        successCount++;
+      } catch (e) {
+        console.error('Failed to create reminder for', med, e);
+      }
+    }
+
+    setAddingReminders(false);
+    if (successCount > 0) {
+      setRemindersAdded(true);
+      toast.success(`Successfully set ${successCount} medicine reminder(s)!`);
+    } else {
+      toast.error('Could not schedule reminders. Please try again.');
+    }
+  };
 
   if (loading) return <AppLayout role="PATIENT" title="Consultation" subtitle="Loading..."><div className="flex items-center justify-center py-8"><p className="text-body text-primary-light/60">Loading...</p></div></AppLayout>;
   if (!consultation) return <AppLayout role="PATIENT" title="Consultation" subtitle="Not found"><div className="flex items-center justify-center py-8"><p className="text-body text-primary-light/60">Consultation not found</p></div></AppLayout>;
@@ -147,7 +191,32 @@ export default function PatientConsultationPage({ params }: { params: Promise<{ 
               )}
             </div>
             <div>
-              <h4 className="text-heading font-bold text-primary-light mb-2">Prescription</h4>
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="text-heading font-bold text-primary-light">Prescription</h4>
+                {medicines && medicines.length > 0 && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleAddMedicationReminders}
+                    disabled={addingReminders || remindersAdded}
+                    className="gap-1.5 text-xs font-medium"
+                  >
+                    {addingReminders ? (
+                      <>
+                        <Loader2 size={14} className="animate-spin inline" /> Setting...
+                      </>
+                    ) : remindersAdded ? (
+                      <>
+                        <Check size={14} className="text-doctor-emerald inline" /> Reminders Set
+                      </>
+                    ) : (
+                      <>
+                        <Bell size={14} className="inline text-doctor-cyan" /> Set Reminders
+                      </>
+                    )}
+                  </Button>
+                )}
+              </div>
               {medicines?.length ? (
                 <div className="space-y-2">
                   {medicines.map((med: any, idx: number) => (
