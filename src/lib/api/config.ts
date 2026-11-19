@@ -28,7 +28,7 @@ const stripTrailingSlash = (value: string) => value.replace(/\/+$/, '');
 export function resolveApiOrigin(): string {
   if (typeof window !== 'undefined') {
     if (window.location.protocol === 'https:') {
-      return 'https://api.aivioncare.aiconfidencecure.com';
+      return 'https://api.aivioncare.com';
     }
     return DEFAULT_DEV_ORIGIN;
   }
@@ -36,7 +36,7 @@ export function resolveApiOrigin(): string {
   if (configured) {
     return stripTrailingSlash(configured);
   }
-  return 'https://api.aivioncare.aiconfidencecure.com';
+  return 'https://api.aivioncare.com';
 }
 
 /** WebSocket origin: same host as the API. */
