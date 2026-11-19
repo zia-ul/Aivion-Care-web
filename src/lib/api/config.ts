@@ -28,16 +28,15 @@ const stripTrailingSlash = (value: string) => value.replace(/\/+$/, '');
 export function resolveApiOrigin(): string {
   if (typeof window !== 'undefined') {
     if (window.location.protocol === 'https:') {
-      // Eliminate non-existent api.* subdomains entirely in browser
-      return 'https://www.aivioncare.com';
+      return 'https://api.aivioncare.aiconfidencecure.com';
     }
     return DEFAULT_DEV_ORIGIN;
   }
   const configured = process.env.NEXT_PUBLIC_API_URL?.trim();
-  if (configured && !configured.includes('api.aivioncare.com')) {
+  if (configured) {
     return stripTrailingSlash(configured);
   }
-  return 'https://www.aivioncare.com';
+  return 'https://api.aivioncare.aiconfidencecure.com';
 }
 
 /** WebSocket origin: same host as the API. */

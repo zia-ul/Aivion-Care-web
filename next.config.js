@@ -67,11 +67,11 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'https://api.aivioncare.com/api/:path*',
+        destination: 'https://api.aivioncare.aiconfidencecure.com/api/:path*',
       },
       {
         source: '/ws/:path*',
-        destination: 'https://api.aivioncare.com/ws/:path*',
+        destination: 'https://api.aivioncare.aiconfidencecure.com/ws/:path*',
       },
     ];
   },
