@@ -29,7 +29,7 @@ function assertApiUrlIsSecure() {
     throw new Error(
       `NEXT_PUBLIC_API_URL is plain HTTP (${value}). The site is served over ` +
         `HTTPS, so the browser will block every request as Mixed Content. Use ` +
-        `https://aivioncare.aiconfidencecure.com, then rebuild.`
+        `https://aivioncare.com, then rebuild.`
     );
   }
 }
@@ -39,10 +39,16 @@ assertApiUrlIsSecure();
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  compress: true,
+  poweredByHeader: false,
   distDir: '.next',
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
+  experimental: {
+    optimizePackageImports: ['lucide-react', 'date-fns', '@tanstack/react-query'],
+  },
   images: {
+    formats: ['image/avif', 'image/webp'],
     remotePatterns: [
       {
         protocol: 'https',
@@ -61,11 +67,11 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'https://80.225.231.72/api/:path*',
+        destination: 'https://aivioncare.com/api/:path*',
       },
       {
         source: '/ws/:path*',
-        destination: 'https://80.225.231.72/ws/:path*',
+        destination: 'https://aivioncare.com/ws/:path*',
       },
     ];
   },

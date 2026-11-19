@@ -14,6 +14,6 @@ export default function robots(): MetadataRoute.Robots {
         ],
       },
     ],
-    sitemap: 'https://aivioncare.aiconfidencecure.com/sitemap.xml',
+    sitemap: 'https://aivioncare.com/sitemap.xml',
   };
 }

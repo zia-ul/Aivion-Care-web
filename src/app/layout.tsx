@@ -7,14 +7,14 @@ import { themeInitScript } from '@/lib/stores/theme';
 const inter = Inter({ subsets: ['latin'], display: 'swap' });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://aivioncare.aiconfidencecure.com'),
+  metadataBase: new URL('https://aivioncare.com'),
   title: {
     default: 'Aivion Care — Book Doctor Appointments Online, Clinic Software & Hospital OS',
     template: '%s | Aivion Care — Healthcare & Clinic Software',
   },
   description: 'Book verified doctor appointments online instantly, find top multi-specialty hospitals near you, or power your clinical practice with Aivion Care — India\'s next-gen AI clinic software, hospital ERP, 24/7 continuous vitals telemetry & digital prescriptions.',
   applicationName: 'Aivion Care',
-  authors: [{ name: 'AI Confidence Cure', url: 'https://aivioncare.aiconfidencecure.com' }],
+  authors: [{ name: 'AI Confidence Cure', url: 'https://aivioncare.com' }],
   creator: 'AI Confidence Cure (AMUIF Incubated)',
   publisher: 'AI Confidence Cure',
   keywords: [
@@ -38,12 +38,12 @@ export const metadata: Metadata = {
     'Practo alternative doctor app'
   ],
   alternates: {
-    canonical: 'https://aivioncare.aiconfidencecure.com',
+    canonical: 'https://aivioncare.com',
   },
   openGraph: {
     type: 'website',
     locale: 'en_IN',
-    url: 'https://aivioncare.aiconfidencecure.com',
+    url: 'https://aivioncare.com',
     title: 'Aivion Care — Book Doctor Appointments Online, Clinic Software & Hospital OS',
     description: 'Instant verified doctor consultations, top hospitals, and all-in-one clinic management software. 24/7 AI telemetry, digital prescriptions & seamless appointments.',
     siteName: 'Aivion Care',
@@ -125,13 +125,13 @@ export default function RootLayout({
                 '@context': 'https://schema.org',
                 '@type': 'MedicalWebPage',
                 name: 'Aivion Care — Book Doctor Appointments Online & Clinic Software',
-                url: 'https://aivioncare.aiconfidencecure.com',
+                url: 'https://aivioncare.com',
                 description: 'Book verified doctors online, access top hospital schedules, and empower clinics with smart AI management software.',
                 about: {
                   '@type': 'MedicalBusiness',
                   name: 'Aivion Care',
-                  url: 'https://aivioncare.aiconfidencecure.com',
-                  logo: 'https://aivioncare.aiconfidencecure.com/images/aivion-care-logo.png',
+                  url: 'https://aivioncare.com',
+                  logo: 'https://aivioncare.com/images/aivion-care-logo.png',
                   medicalSpecialty: [
                     'GeneralPractice',
                     'Cardiology',

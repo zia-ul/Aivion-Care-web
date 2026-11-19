@@ -4,7 +4,7 @@
  * There is exactly ONE setting to change between environments:
  *
  *   .env.local   NEXT_PUBLIC_API_URL=http://localhost:8080                      (development)
- *   .env.local   NEXT_PUBLIC_API_URL=https://aivioncare.aiconfidencecure.com (production)
+ *   .env.local   NEXT_PUBLIC_API_URL=https://aivioncare.com (production)
  *
  * The WebSocket origin deliberately reuses the same value rather than having its
  * own variable: the STOMP client rewrites the scheme itself, so a second setting
@@ -29,15 +29,15 @@ export function resolveApiOrigin(): string {
   if (typeof window !== 'undefined') {
     if (window.location.protocol === 'https:') {
       // Eliminate non-existent api.* subdomains entirely in browser
-      return 'https://aivioncare.aiconfidencecure.com';
+      return 'https://aivioncare.com';
     }
     return DEFAULT_DEV_ORIGIN;
   }
   const configured = process.env.NEXT_PUBLIC_API_URL?.trim();
-  if (configured && !configured.includes('api.aivioncare.aiconfidencecure.com')) {
+  if (configured && !configured.includes('api.aivioncare.com')) {
     return stripTrailingSlash(configured);
   }
-  return 'https://aivioncare.aiconfidencecure.com';
+  return 'https://aivioncare.com';
 }
 
 /** WebSocket origin: same host as the API. */

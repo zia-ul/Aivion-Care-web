@@ -28,7 +28,7 @@ const resourceLinks = [
   ['Terms & Regulatory', '/terms'],
   ['Privacy Policy', '/privacy-policy'],
   ['Feedback', '/feedback'],
-  ['AI Confidence Cure', 'https://aivioncare.aiconfidencecure.com/'],
+  ['AI Confidence Cure', 'https://aivioncare.com/'],
 ];
 
 const socials = [
