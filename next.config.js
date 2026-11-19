@@ -29,7 +29,7 @@ function assertApiUrlIsSecure() {
     throw new Error(
       `NEXT_PUBLIC_API_URL is plain HTTP (${value}). The site is served over ` +
         `HTTPS, so the browser will block every request as Mixed Content. Use ` +
-        `https://aivioncare.com, then rebuild.`
+        `https://www.aivioncare.com, then rebuild.`
     );
   }
 }
@@ -67,11 +67,11 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'https://aivioncare.com/api/:path*',
+        destination: 'https://www.aivioncare.com/api/:path*',
       },
       {
         source: '/ws/:path*',
-        destination: 'https://aivioncare.com/ws/:path*',
+        destination: 'https://www.aivioncare.com/ws/:path*',
       },
     ];
   },

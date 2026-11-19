@@ -32,12 +32,12 @@ export const metadata: Metadata = {
     'radiology and pathology reporting software'
   ],
   alternates: {
-    canonical: 'https://aivioncare.com/solutions/pathology',
+    canonical: 'https://www.aivioncare.com/solutions/pathology',
   },
   openGraph: {
     title: 'Smart Pathology & Diagnostic Lab Software (LIMS) | Aivion Care',
     description: 'Transform diagnostic workflows: automated analyzer interfacing, AI biomarker interpretation, barcoded tracking, and instant digital report delivery.',
-    url: 'https://aivioncare.com/solutions/pathology',
+    url: 'https://www.aivioncare.com/solutions/pathology',
     images: ['/images/healthcare/medical-lab.jpg'],
   },
 };

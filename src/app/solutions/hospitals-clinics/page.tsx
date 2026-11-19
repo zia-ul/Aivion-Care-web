@@ -45,12 +45,12 @@ export const metadata: Metadata = {
     'doctor roster and nurse shift scheduling software'
   ],
   alternates: {
-    canonical: 'https://aivioncare.com/solutions/hospitals-clinics',
+    canonical: 'https://www.aivioncare.com/solutions/hospitals-clinics',
   },
   openGraph: {
     title: 'Enterprise Hospital & Clinic OS — Staff Onboarding & Security Profiles | Aivion Care',
     description: 'Transform hospital operations: digital staff credentialing, automated OPD queue velocity, IPD bed telemetry, and zero-knowledge medical security.',
-    url: 'https://aivioncare.com/solutions/hospitals-clinics',
+    url: 'https://www.aivioncare.com/solutions/hospitals-clinics',
     images: ['/images/healthcare/hospital-interior.jpg'],
   },
 };
@@ -181,15 +181,15 @@ export default function HospitalsClinicsPage() {
     '@graph': [
       {
         '@type': 'MedicalWebPage',
-        '@id': 'https://aivioncare.com/solutions/hospitals-clinics/#webpage',
-        url: 'https://aivioncare.com/solutions/hospitals-clinics',
+        '@id': 'https://www.aivioncare.com/solutions/hospitals-clinics/#webpage',
+        url: 'https://www.aivioncare.com/solutions/hospitals-clinics',
         name: 'Hospital & Clinic Management Software | Aivion Care',
         description: 'Comprehensive enterprise hospital and clinic operating system with digital OPD token queues, IPD bed allocation, staff onboarding, and cryptographic security profiles.',
         medicalAudience: 'Hospitals, Clinics, Chief Medical Officers, and Health Administrators'
       },
       {
         '@type': 'FAQPage',
-        '@id': 'https://aivioncare.com/solutions/hospitals-clinics/#faq',
+        '@id': 'https://www.aivioncare.com/solutions/hospitals-clinics/#faq',
         mainEntity: faqList.map((item) => ({
           '@type': 'Question',
           name: item.q,

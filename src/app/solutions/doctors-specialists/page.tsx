@@ -42,12 +42,12 @@ export const metadata: Metadata = {
     'clinic management software for doctors'
   ],
   alternates: {
-    canonical: 'https://aivioncare.com/solutions/doctors-specialists',
+    canonical: 'https://www.aivioncare.com/solutions/doctors-specialists',
   },
   openGraph: {
     title: 'Doctors & Specialists Clinical Suite | Aivion Care',
     description: 'Empower your clinical practice: AI prescription copilot, 30-year diagnostic decision support, WebRTC teleconsultation, and real-time patient vital streams.',
-    url: 'https://aivioncare.com/solutions/doctors-specialists',
+    url: 'https://www.aivioncare.com/solutions/doctors-specialists',
     images: ['/images/healthcare/doctor-consulting.jpg'],
   },
 };
@@ -137,15 +137,15 @@ export default function DoctorsSpecialistsPage() {
     '@graph': [
       {
         '@type': 'MedicalWebPage',
-        '@id': 'https://aivioncare.com/solutions/doctors-specialists/#webpage',
-        url: 'https://aivioncare.com/solutions/doctors-specialists',
+        '@id': 'https://www.aivioncare.com/solutions/doctors-specialists/#webpage',
+        url: 'https://www.aivioncare.com/solutions/doctors-specialists',
         name: 'Doctor & Specialist Practice Management Software | Aivion Care',
         description: 'Advanced clinical practice management software with AI prescription drafting, real-time vitals telemetry, WebRTC video consultations, and intelligent OPD slot scheduling.',
         medicalAudience: 'Medical Doctors, Specialists, and Clinical Practitioners'
       },
       {
         '@type': 'FAQPage',
-        '@id': 'https://aivioncare.com/solutions/doctors-specialists/#faq',
+        '@id': 'https://www.aivioncare.com/solutions/doctors-specialists/#faq',
         mainEntity: faqList.map((item) => ({
           '@type': 'Question',
           name: item.q,
