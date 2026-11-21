@@ -1,3 +1,27 @@
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Privacy Policy & Health Data Governance',
+  description: 'Read the Aivion Care Privacy Policy. Learn how patient data, medical records, encryption, and HIPAA/ABDM compliant health data governance are handled.',
+  keywords: ['privacy policy healthcare', 'medical data privacy', 'HIPAA compliance India', 'health data protection', 'Aivion Care privacy'],
+  alternates: {
+    canonical: 'https://www.aivioncare.com/privacy-policy',
+  },
+  openGraph: {
+    title: 'Privacy Policy & Health Data Governance',
+    description: 'Read the Aivion Care Privacy Policy. Learn how patient data, medical records, encryption, and HIPAA/ABDM compliant health data governance are handled.',
+    url: 'https://www.aivioncare.com/privacy-policy',
+    siteName: 'Aivion Care',
+    images: [{ url: '/images/healthcare/smart-monitoring.jpg', width: 1200, height: 630, alt: 'Privacy Policy & Health Data Governance' }],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Privacy Policy & Health Data Governance',
+    description: 'Read the Aivion Care Privacy Policy. Learn how patient data, medical records, encryption, and HIPAA/ABDM compliant health data governance are handled.',
+  },
+};
+
 import { Lock, Mail, Phone, ShieldCheck, Stethoscope, UserRoundCheck } from 'lucide-react';
 import PageShell from '@/components/landing/PageShell';
 import { CONTACT_EMAILS, mailto } from '@/lib/contact-emails';

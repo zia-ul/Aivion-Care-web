@@ -1,3 +1,27 @@
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Careers & Internships in Healthcare AI — Join Aivion Care',
+  description: 'Join our mission to transform healthcare. Explore job openings and internships in clinical AI research, full-stack telehealth engineering, and medical IoT.',
+  keywords: ['healthcare AI jobs', 'telemedicine careers', 'medical IoT internship', 'healthtech careers India', 'Aivion Care jobs'],
+  alternates: {
+    canonical: 'https://www.aivioncare.com/careers',
+  },
+  openGraph: {
+    title: 'Careers & Internships in Healthcare AI — Join Aivion Care',
+    description: 'Join our mission to transform healthcare. Explore job openings and internships in clinical AI research, full-stack telehealth engineering, and medical IoT.',
+    url: 'https://www.aivioncare.com/careers',
+    siteName: 'Aivion Care',
+    images: [{ url: '/images/healthcare/smart-monitoring.jpg', width: 1200, height: 630, alt: 'Careers & Internships in Healthcare AI — Join Aivion Care' }],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Careers & Internships in Healthcare AI — Join Aivion Care',
+    description: 'Join our mission to transform healthcare. Explore job openings and internships in clinical AI research, full-stack telehealth engineering, and medical IoT.',
+  },
+};
+
 import { ArrowRight, Calendar, Clock, HeartPulse, Stethoscope, UserRoundCheck, Users, Sparkles, BrainCircuit, Code2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';

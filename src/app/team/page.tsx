@@ -1,3 +1,27 @@
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Our Team & Advisory Leadership — AI Confidence Cure',
+  description: 'Meet the founders, clinical researchers, and engineering leadership behind Aivion Care, incubated at AMU Innovation Foundation (AMUIF).',
+  keywords: ['Aivion Care founders', 'AI Confidence Cure leadership', 'AMUIF incubated startup', 'Daniya Parveen', 'Saif Malik', 'Ziaul Islam'],
+  alternates: {
+    canonical: 'https://www.aivioncare.com/team',
+  },
+  openGraph: {
+    title: 'Our Team & Advisory Leadership — AI Confidence Cure',
+    description: 'Meet the founders, clinical researchers, and engineering leadership behind Aivion Care, incubated at AMU Innovation Foundation (AMUIF).',
+    url: 'https://www.aivioncare.com/team',
+    siteName: 'Aivion Care',
+    images: [{ url: '/images/healthcare/smart-monitoring.jpg', width: 1200, height: 630, alt: 'Our Team & Advisory Leadership — AI Confidence Cure' }],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Our Team & Advisory Leadership — AI Confidence Cure',
+    description: 'Meet the founders, clinical researchers, and engineering leadership behind Aivion Care, incubated at AMU Innovation Foundation (AMUIF).',
+  },
+};
+
 import { ArrowRight, Building2, FlaskConical, GraduationCap, HeartHandshake, ShieldCheck, Stethoscope, Users, Sparkles } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';

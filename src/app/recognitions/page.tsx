@@ -1,3 +1,27 @@
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Awards, Incubations & Government Recognitions',
+  description: 'Discover the awards, incubation programs, and recognitions earned by AI Confidence Cure and Aivion Care across national healthcare hackathons and institutions.',
+  keywords: ['healthcare awards India', 'AMUIF incubation', 'startup awards healthcare', 'Aivion Care recognition'],
+  alternates: {
+    canonical: 'https://www.aivioncare.com/recognitions',
+  },
+  openGraph: {
+    title: 'Awards, Incubations & Government Recognitions',
+    description: 'Discover the awards, incubation programs, and recognitions earned by AI Confidence Cure and Aivion Care across national healthcare hackathons and institutions.',
+    url: 'https://www.aivioncare.com/recognitions',
+    siteName: 'Aivion Care',
+    images: [{ url: '/images/healthcare/smart-monitoring.jpg', width: 1200, height: 630, alt: 'Awards, Incubations & Government Recognitions' }],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Awards, Incubations & Government Recognitions',
+    description: 'Discover the awards, incubation programs, and recognitions earned by AI Confidence Cure and Aivion Care across national healthcare hackathons and institutions.',
+  },
+};
+
 import { ArrowRight, Award, Building2, Globe2, Medal, Star } from 'lucide-react';
 import { SectionHeader } from '@/components/landing/common';
 import PageShell from '@/components/landing/PageShell';

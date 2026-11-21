@@ -1,3 +1,27 @@
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Aivion Care HealthTech Application — Smart Connected Healthcare',
+  description: 'Aivion Care connects patients, doctors, hospitals, and pharmacies into one ecosystem. Book appointments, manage health records, and access continuous monitoring.',
+  keywords: ['Aivion Care app', 'healthtech software', 'doctor patient app', 'online prescription app', 'hospital clinic software'],
+  alternates: {
+    canonical: 'https://www.aivioncare.com/products/aivion-care',
+  },
+  openGraph: {
+    title: 'Aivion Care HealthTech Application — Smart Connected Healthcare',
+    description: 'Aivion Care connects patients, doctors, hospitals, and pharmacies into one ecosystem. Book appointments, manage health records, and access continuous monitoring.',
+    url: 'https://www.aivioncare.com/products/aivion-care',
+    siteName: 'Aivion Care',
+    images: [{ url: '/images/healthcare/smart-monitoring.jpg', width: 1200, height: 630, alt: 'Aivion Care HealthTech Application — Smart Connected Healthcare' }],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Aivion Care HealthTech Application — Smart Connected Healthcare',
+    description: 'Aivion Care connects patients, doctors, hospitals, and pharmacies into one ecosystem. Book appointments, manage health records, and access continuous monitoring.',
+  },
+};
+
 import { Activity, BellRing, CalendarDays, FileText, HeartPulse, Pill, Stethoscope, Video } from 'lucide-react';
 import ProductPageTemplate, { type ProductDetail } from '@/components/landing/ProductPageTemplate';
 

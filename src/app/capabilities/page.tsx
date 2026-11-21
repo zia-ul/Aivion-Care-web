@@ -1,3 +1,27 @@
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Platform Capabilities — 24/7 Biometric Telemetry & Clinical AI',
+  description: 'Explore Aivion Care capabilities: continuous physiological telemetry, multi-agent AI diagnostic copilot, phonocardiogram screening, and HIPAA-grade health security.',
+  keywords: ['biometric telemetry', 'clinical AI copilot', 'hospital ICU telemetry', 'telemedicine capabilities', 'cardiac sound analysis', 'Aivion Care technology'],
+  alternates: {
+    canonical: 'https://www.aivioncare.com/capabilities',
+  },
+  openGraph: {
+    title: 'Platform Capabilities — 24/7 Biometric Telemetry & Clinical AI',
+    description: 'Explore Aivion Care capabilities: continuous physiological telemetry, multi-agent AI diagnostic copilot, phonocardiogram screening, and HIPAA-grade health security.',
+    url: 'https://www.aivioncare.com/capabilities',
+    siteName: 'Aivion Care',
+    images: [{ url: '/images/healthcare/smart-monitoring.jpg', width: 1200, height: 630, alt: 'Platform Capabilities — 24/7 Biometric Telemetry & Clinical AI' }],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Platform Capabilities — 24/7 Biometric Telemetry & Clinical AI',
+    description: 'Explore Aivion Care capabilities: continuous physiological telemetry, multi-agent AI diagnostic copilot, phonocardiogram screening, and HIPAA-grade health security.',
+  },
+};
+
 import { ArrowRight, BrainCircuit, HeartPulse, Lock, ShieldCheck, Stethoscope, Users, Sparkles, Activity, Cpu, Microscope } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';

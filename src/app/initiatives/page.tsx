@@ -1,3 +1,27 @@
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Community Health Initiatives & Rural Screening Campaigns',
+  description: 'Learn about Aivion Care community outreach programs, preventive cardiovascular screening drives, and health awareness camps in rural India.',
+  keywords: ['rural healthcare outreach', 'free health screening camps', 'cardiovascular screening drives', 'preventive health initiatives'],
+  alternates: {
+    canonical: 'https://www.aivioncare.com/initiatives',
+  },
+  openGraph: {
+    title: 'Community Health Initiatives & Rural Screening Campaigns',
+    description: 'Learn about Aivion Care community outreach programs, preventive cardiovascular screening drives, and health awareness camps in rural India.',
+    url: 'https://www.aivioncare.com/initiatives',
+    siteName: 'Aivion Care',
+    images: [{ url: '/images/healthcare/smart-monitoring.jpg', width: 1200, height: 630, alt: 'Community Health Initiatives & Rural Screening Campaigns' }],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Community Health Initiatives & Rural Screening Campaigns',
+    description: 'Learn about Aivion Care community outreach programs, preventive cardiovascular screening drives, and health awareness camps in rural India.',
+  },
+};
+
 import { ArrowRight, Calendar, Clock, HeartPulse, MapPin, Stethoscope, UserRoundCheck, Users, Sparkles, Building2, ShieldCheck } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
