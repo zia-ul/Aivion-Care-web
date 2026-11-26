@@ -39,7 +39,13 @@ export function NewMessageToast() {
   }, [lastEventAt, latestMessageByRoom, rooms]);
 
   const userRole = useAuthStore((state) => state.user?.role);
-  const chatPath = userRole === 'DOCTOR' ? '/doctor/chat' : '/patient/chat';
+  const chatPath = userRole === 'DOCTOR' 
+    ? '/doctor/chat' 
+    : userRole === 'PHARMACY' 
+    ? '/pharmacist/chat' 
+    : userRole === 'PATHOLOGY' 
+    ? '/pathology/chat' 
+    : '/patient/chat';
 
   if (!visible) return null;
 

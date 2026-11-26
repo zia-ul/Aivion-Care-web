@@ -4,8 +4,9 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { authApi } from '@/lib/api/endpoints';
+import { ValidationHelpers } from '@/lib/helpers/validation';
 import toast from 'react-hot-toast';
-import { Card, Button, Input, Select } from '@/components/ui';
+import { Card, Button, Input, Select, PasswordRequirements } from '@/components/ui';
 import { BadgeCheck, Building2, CircleDollarSign, Eye, EyeOff, Mail, Phone, ShieldCheck, Stethoscope, UserRound, Globe } from 'lucide-react';
 
 interface HospitalOption {
@@ -89,13 +90,67 @@ export default function RegisterDoctorPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Comprehensive client-side validations
+    const nameCheck = ValidationHelpers.validateAlphabeticName(form.fullName, 'Doctor Full Name', 2, 70);
+    if (!nameCheck.isValid) return toast.error(nameCheck.error!);
+
+    const emailCheck = ValidationHelpers.validateEmail(form.email, 'Email');
+    if (!emailCheck.isValid) return toast.error(emailCheck.error!);
+
+    const rawPhone = form.phone.trim();
+    const fullPhone = rawPhone.startsWith('+') ? rawPhone : `${form.phoneCountryCode}${rawPhone}`;
+    const phoneCheck = ValidationHelpers.validatePhone(fullPhone, 'Doctor Phone');
+    if (!phoneCheck.isValid) return toast.error(phoneCheck.error!);
+
+    const specCheck = ValidationHelpers.validateTextLength(form.speciality, 'Speciality', 2, 80);
+    if (!specCheck.isValid) return toast.error(specCheck.error!);
+
+    const licenseCheck = ValidationHelpers.validateTextLength(form.licenseNumber, 'Medical License Number', 3, 50);
+    if (!licenseCheck.isValid) return toast.error(licenseCheck.error!);
+
+    const passCheck = ValidationHelpers.validatePassword(form.password, 'Password');
+    if (!passCheck.isValid) return toast.error(passCheck.error!);
+
     if (form.password !== form.confirmPassword) return toast.error('Passwords do not match');
-    if (!form.privacyPolicyAccepted) return toast.error('Accept privacy policy');
+
+    if (form.experienceYears) {
+      const expCheck = ValidationHelpers.validateNumberRange(form.experienceYears, 'Experience Years', 0, 70);
+      if (!expCheck.isValid) return toast.error(expCheck.error!);
+    }
+
+    if (form.consultationFee) {
+      const feeCheck = ValidationHelpers.validateNumberRange(form.consultationFee, 'Consultation Fee', 0, 100000);
+      if (!feeCheck.isValid) return toast.error(feeCheck.error!);
+    }
+
+    if (isHospitalDoctor && !form.hospitalId) {
+      return toast.error('Please select an affiliated hospital');
+    }
+
+    if (!isHospitalDoctor) {
+      const clinicCheck = ValidationHelpers.validateTextLength(form.clinicName, 'Clinic Name', 2, 100);
+      if (!clinicCheck.isValid) return toast.error(clinicCheck.error!);
+    }
+
+    if (!form.privacyPolicyAccepted) return toast.error('Please accept the privacy policy to continue');
+
     setLoading(true);
     try {
       // Backend DoctorRegisterRequest: consultationFee is BigDecimal, hospitalId optional; no confirmPassword.
-      const { confirmPassword: _omit, ...rest } = form;
-      await authApi.registerDoctor({ ...rest, experienceYears: form.experienceYears ? Number(form.experienceYears) : undefined, consultationFee: form.consultationFee ? Number(form.consultationFee) : undefined, hospitalId: isHospitalDoctor && form.hospitalId ? Number(form.hospitalId) : undefined, clinicName: isHospitalDoctor ? undefined : form.clinicName });
+      const { confirmPassword: _omit, phoneCountryCode, phone, ...rest } = form;
+      await authApi.registerDoctor({
+        ...rest,
+        fullName: nameCheck.sanitizedValue || form.fullName.trim(),
+        email: emailCheck.sanitizedValue || form.email.trim(),
+        phone: phoneCheck.sanitizedValue || fullPhone,
+        speciality: specCheck.sanitizedValue || form.speciality.trim(),
+        licenseNumber: licenseCheck.sanitizedValue || form.licenseNumber.trim(),
+        experienceYears: form.experienceYears ? Number(form.experienceYears) : undefined,
+        consultationFee: form.consultationFee ? Number(form.consultationFee) : undefined,
+        hospitalId: isHospitalDoctor && form.hospitalId ? Number(form.hospitalId) : undefined,
+        clinicName: isHospitalDoctor ? undefined : (form.clinicName.trim() || undefined)
+      });
       toast.success('Registration successful! Please login.');
       router.push('/login');
     } catch (error: any) {
@@ -132,21 +187,41 @@ export default function RegisterDoctorPage() {
             </div>
             <div className="border-b border-tonal-20/50 pb-1 pt-2"><p className="text-heading font-bold text-primary-light">Professional profile</p><p className="text-support text-primary-light/55">Add your clinical identity and practice details.</p></div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Input icon={<UserRound size={17} />} label="Full Name" placeholder="Enter your full name" required value={form.fullName} onChange={(e) => update('fullName', e.target.value)} />
-              <Input icon={<Mail size={17} />} label="Email" type="email" placeholder="you@example.com" required value={form.email} onChange={(e) => update('email', e.target.value)} />
+              <Input 
+                icon={<UserRound size={17} />} 
+                label="Full Name" 
+                placeholder="Enter your full name" 
+                filterType="alphabets"
+                hint="Letters and spaces only"
+                required 
+                value={form.fullName} 
+                onChange={(e) => update('fullName', e.target.value)} 
+              />
+              <Input 
+                icon={<Mail size={17} />} 
+                label="Email" 
+                type="email" 
+                placeholder="you@example.com" 
+                hint="Used for official sign-in and patient notices"
+                required 
+                value={form.email} 
+                onChange={(e) => update('email', e.target.value)} 
+              />
               <div className="sm:grid-cols-2">
                 <div className="flex gap-2">
                   <Select
                     label="Country Code"
                     value={form.phoneCountryCode}
                     onChange={(e) => update('phoneCountryCode', e.target.value)}
-                    options={COUNTRY_CODES.map(c => ({ value: c.dialCode, label: `${c.dialCode} ${c.label}` }))}
+                    options={COUNTRY_CODES.map(c => ({ value: c.dialCode, label: `${c.dialCode} (${c.label})` }))}
                     className="w-full"
                   />
                   <Input
                     icon={<Phone size={17} />}
                     label="Phone"
-                    placeholder="Enter your phone number"
+                    placeholder="e.g. 9876543210"
+                    filterType="phone"
+                    hint="10-15 digits"
                     required
                     value={form.phone}
                     onChange={(e) => update('phone', e.target.value)}
@@ -156,12 +231,15 @@ export default function RegisterDoctorPage() {
               <Input icon={<Stethoscope size={17} />} label="Speciality" placeholder="e.g. Cardiology" required value={form.speciality} onChange={(e) => update('speciality', e.target.value)} />
               <Input icon={<BadgeCheck size={17} />} label="License Number" placeholder="Medical license number" required value={form.licenseNumber} onChange={(e) => update('licenseNumber', e.target.value)} />
               <Input icon={<BadgeCheck size={17} />} label="Qualification" placeholder="e.g. MBBS, MD" value={form.qualification} onChange={(e) => update('qualification', e.target.value)} />
-              <Input icon={<BadgeCheck size={17} />} label="Experience (years)" placeholder="Years of experience" type="number" value={form.experienceYears} onChange={(e) => update('experienceYears', e.target.value)} />
-              <Input icon={<CircleDollarSign size={17} />} label="Consultation Fee" placeholder="Enter fee amount" value={form.consultationFee} onChange={(e) => update('consultationFee', e.target.value)} />
+              <Input icon={<BadgeCheck size={17} />} label="Experience (years)" placeholder="e.g. 10" filterType="numeric" hint="Numbers only (0 to 70)" value={form.experienceYears} onChange={(e) => update('experienceYears', e.target.value)} />
+              <Input icon={<CircleDollarSign size={17} />} label="Consultation Fee (₹)" placeholder="e.g. 500" filterType="numeric" hint="Fee shown to patients during booking" value={form.consultationFee} onChange={(e) => update('consultationFee', e.target.value)} />
+            </div>
+            <div className="border-b border-tonal-20/50 pb-1 pt-2"><p className="text-heading font-bold text-primary-light">Security</p><p className="text-support text-primary-light/55">Protect your doctor account with a strong password.</p></div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="relative"><Input icon={<ShieldCheck size={17} />} className="pr-12" label="Password" placeholder="Create a strong password" type={showPassword ? 'text' : 'password'} required value={form.password} onChange={(e) => update('password', e.target.value)} /><button type="button" aria-label={showPassword ? 'Hide password' : 'Show password'} onClick={() => setShowPassword((value) => !value)} className="absolute right-3 top-[2.65rem] z-10 text-primary-light/80 hover:text-accent">{showPassword ? <EyeOff size={18} /> : <Eye size={18} />}</button></div>
               <div className="relative"><Input icon={<ShieldCheck size={17} />} className="pr-12" label="Confirm Password" placeholder="Re-enter your password" type={showConfirmPassword ? 'text' : 'password'} required value={form.confirmPassword} onChange={(e) => update('confirmPassword', e.target.value)} /><button type="button" aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'} onClick={() => setShowConfirmPassword((value) => !value)} className="absolute right-3 top-[2.65rem] z-10 text-primary-light/80 hover:text-accent">{showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}</button></div>
             </div>
-            <div className="border-b border-tonal-20/50 pb-1 pt-2"><p className="text-heading font-bold text-primary-light">Security</p><p className="text-support text-primary-light/55">Protect your doctor account with a strong password.</p></div>
+            <PasswordRequirements password={form.password} confirmPassword={form.confirmPassword} />
             <div className="flex items-center gap-2">
               <input type="checkbox" id="privacy" checked={form.privacyPolicyAccepted} onChange={(e) => update('privacyPolicyAccepted', e.target.checked)} className="w-4 h-4 rounded border-tonal-20 bg-surface-20 text-accent focus:ring-accent" />
               <label htmlFor="privacy" className="text-body text-primary-light/80">I accept the privacy policy and terms of service. Healthcare data is handled with role-based access and secure authentication.</label>

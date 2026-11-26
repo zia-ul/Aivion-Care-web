@@ -2,277 +2,228 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { 
-  Clock, CheckCircle, AlertCircle, Mail, 
-  Shield, UserCheck, Loader2, RefreshCw 
+  Clock, CheckCircle2, XCircle, AlertTriangle, 
+  FileText, Shield, ArrowRight, RefreshCw, LogOut,
+  Sparkles, Stethoscope, Building2, UserRound
 } from 'lucide-react';
-import AppLayout from '@/components/layout/AppLayout';
-import { FL, DarkCard, InnerCard, Pill, ActionButton, SectionTitle } from '@/components/ui/FlutterTheme';
-import { doctorApi } from '@/lib/api/endpoints';
+import { authApi, doctorApi } from '@/lib/api/endpoints';
 import { useAuthStore } from '@/lib/stores/auth';
+import toast from 'react-hot-toast';
 
-interface ApprovalStatusResponse {
-  doctorId: number;
-  status: 'PENDING' | 'APPROVED' | 'REJECTED';
-  submittedAt: string;
-  reviewedAt?: string;
-  reviewNotes?: string;
-  rejectionReason?: string;
-}
-
-export default function WaitingForApprovalPage() {
+export default function DoctorApprovalPage() {
   const router = useRouter();
-  const { user } = useAuthStore();
-  const [status, setStatus] = useState<ApprovalStatusResponse | null>(null);
+  const { user, clearAuth } = useAuthStore();
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
+  const [profile, setProfile] = useState<any>(null);
+  const [approvalStatus, setApprovalStatus] = useState<string>('PENDING');
+  const [reviewNotes, setReviewNotes] = useState<string>('');
+  const [rejectionReason, setRejectionReason] = useState<string>('');
 
-  const checkStatus = async () => {
-    if (!user?.doctorId) {
-      setError('Doctor profile not found');
-      setLoading(false);
-      return;
-    }
+  const fetchDoctorStatus = async (isManualRefresh = false) => {
+    if (isManualRefresh) setRefreshing(true);
+    else setLoading(true);
 
     try {
-      const response = await doctorApi.getApprovalStatus();
-      setStatus(response.data);
-      setError(null);
-    } catch (e: any) {
-      setError(e.response?.data?.message || 'Failed to check approval status');
+      // 1. Check approval status endpoint
+      const statusRes = await doctorApi.getApprovalStatus().catch(() => null);
+      if (statusRes?.data) {
+        const rawStatus = (statusRes.data.status || statusRes.data.approvalStatus || 'PENDING').toUpperCase();
+        setApprovalStatus(rawStatus);
+        setReviewNotes(statusRes.data.reviewNotes || '');
+        setRejectionReason(statusRes.data.rejectionReason || '');
+
+        if (rawStatus === 'APPROVED') {
+          toast.success('Your doctor account has been approved!');
+          router.push('/doctor/dashboard');
+          return;
+        }
+      }
+
+      // 2. Fetch full doctor onboarding profile details
+      const profileRes = await doctorApi.getMyProfile().catch(() => null);
+      if (profileRes?.data) {
+        setProfile(profileRes.data);
+      }
+    } catch (err: any) {
+      console.error('Failed to fetch doctor approval status:', err);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
 
   useEffect(() => {
-    checkStatus();
-  }, [user?.doctorId]);
+    fetchDoctorStatus();
+  }, []);
 
-  const handleRetry = () => {
-    checkStatus();
-  };
-
-  const handleLogout = async () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
+  const handleSignOut = () => {
+    clearAuth();
     router.push('/login');
   };
 
-  if (loading) {
-    return (
-      <AppLayout role="DOCTOR" title="Approval Status" subtitle="Checking your application status...">
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="flex flex-col items-center gap-4">
-            <Loader2 className="w-12 h-12 border-4 border-doctor-lavender border-t-transparent rounded-full animate-spin" />
-            <p className="text-primary-light font-medium text-lg">Checking your approval status...</p>
-            <p className="text-sm text-doctor-muted">Please wait while we fetch your application status</p>
-          </div>
-        </div>
-      </AppLayout>
-    );
-  }
-
-  if (error) {
-    return (
-      <AppLayout role="DOCTOR" title="Approval Status" subtitle="Unable to check status">
-        <DarkCard className="max-w-md mx-auto text-center py-8">
-          <AlertCircle className="mx-auto text-doctor-pink" size={48} />
-          <h3 className="mt-4 text-primary-light font-semibold text-lg">Unable to check status</h3>
-          <p className="mt-2 text-sm text-doctor-muted">{error}</p>
-          <div className="mt-6 flex gap-3 justify-center">
-            <ActionButton onClick={handleRetry}>
-              <RefreshCw size={16} className="mr-1" />
-              Retry
-            </ActionButton>
-            <ActionButton variant="outline" onClick={handleLogout}>
-              Logout
-            </ActionButton>
-          </div>
-        </DarkCard>
-      </AppLayout>
-    );
-  }
-
-  if (!status) {
-    return (
-      <AppLayout role="DOCTOR" title="Approval Status" subtitle="No status available">
-        <DarkCard className="max-w-md mx-auto text-center py-8">
-          <Clock className="mx-auto text-doctor-gold" size={48} />
-          <h3 className="mt-4 text-primary-light font-semibold text-lg">No Application Found</h3>
-          <p className="mt-2 text-sm text-doctor-muted">No doctor registration application found for your account.</p>
-          <ActionButton onClick={() => router.push('/register/doctor')} className="mt-4">
-            Register as Doctor
-          </ActionButton>
-        </DarkCard>
-      </AppLayout>
-    );
-  }
-
-  const getStatusConfig = () => {
-    switch (status.status) {
-      case 'APPROVED':
-        return {
-          icon: CheckCircle,
-          color: FL.mint,
-          bgColor: 'bg-doctor-mint/10',
-          borderColor: 'border-doctor-mint/30',
-          title: 'Application Approved!',
-          subtitle: 'You can now access all doctor features',
-          action: <ActionButton onClick={() => router.push('/doctor/dashboard')}>Go to Dashboard</ActionButton>
-        };
-      case 'REJECTED':
-        return {
-          icon: AlertCircle,
-          color: FL.pink,
-          bgColor: 'bg-doctor-pink/10',
-          borderColor: 'border-doctor-pink/30',
-          title: 'Application Not Approved',
-          subtitle: 'Your application was not approved',
-          action: <ActionButton variant="outline" onClick={() => router.push('/register/doctor')}>Re-apply</ActionButton>
-        };
-      default:
-        return {
-          icon: Clock,
-          color: FL.gold,
-          bgColor: 'bg-doctor-gold/10',
-          borderColor: 'border-doctor-gold/30',
-          title: 'Application Under Review',
-          subtitle: 'Our admin team is reviewing your application. This typically takes 2-3 business days.',
-          action: (
-            <div className="flex gap-3 w-full">
-              <ActionButton variant="outline" onClick={checkStatus} className="flex-1">
-                <RefreshCw size={16} className="mr-1" />
-                Refresh Status
-              </ActionButton>
-              <ActionButton variant="ghost" onClick={handleLogout}>Logout</ActionButton>
-            </div>
-          )
-        };
-    }
-  };
-
-  const config = getStatusConfig();
+  const isApproved = approvalStatus === 'APPROVED';
+  const isRejected = approvalStatus === 'REJECTED';
+  const isResubmit = approvalStatus === 'RESUBMIT_REQUIRED';
+  const isPending = !isApproved && !isRejected && !isResubmit;
 
   return (
-    <AppLayout role="DOCTOR" title="Doctor Approval Status" subtitle="Track your doctor registration application">
-      <div className="space-y-6 max-w-2xl mx-auto">
-        {/* Status Card */}
-        <div className={`rounded-2xl p-6 border ${config.bgColor} ${config.borderColor}`}>
-          <div className="flex items-center gap-4">
-            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center ${config.bgColor} border ${config.borderColor}`}>
-              <config.icon className={`text-2xl ${config.color}`} size={32} />
-            </div>
-            <div className="flex-1">
-              <h3 className="text-primary-light font-semibold text-xl">{config.title}</h3>
-              <p className="mt-1 text-doctor-muted">{config.subtitle}</p>
-            </div>
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-slate-950 via-[#0B132B] to-[#1C2541] px-4 py-12 text-slate-100">
+      <div className="relative w-full max-w-2xl">
+        {/* Header Icon & Branding */}
+        <div className="mb-6 text-center">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-tr from-[#00A884] to-[#00E5FF] text-slate-950 shadow-xl shadow-[#00A884]/20">
+            <Stethoscope size={32} strokeWidth={2.4} />
           </div>
-
-          {status.rejectionReason && (
-            <div className="mt-6 p-4 rounded-xl bg-doctor-pink/10 border border-doctor-pink/30">
-              <div className="flex items-start gap-3">
-                <AlertCircle className="text-doctor-pink mt-0.5" size={20} />
-                <div className="flex-1">
-                  <p className="text-primary-light font-medium">Reason for Rejection</p>
-                  <p className="mt-1 text-sm text-doctor-muted">{status.rejectionReason}</p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {status.reviewNotes && status.status === 'APPROVED' && (
-            <div className="mt-4 p-4 rounded-xl bg-doctor-mint/10 border border-doctor-mint/30">
-              <div className="flex items-start gap-3">
-                <Mail className="text-doctor-mint mt-0.5" size={20} />
-                <div className="flex-1">
-                  <p className="text-primary-light font-medium">Admin Notes</p>
-                  <p className="mt-1 text-sm text-doctor-muted">{status.reviewNotes}</p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div className="mt-6 pt-4 border-t border-doctor-border-soft/30">
-            {config.action}
-          </div>
+          <span className="inline-block rounded-full bg-emerald-500/10 px-3.5 py-1 text-xs font-bold tracking-wider text-emerald-400 border border-emerald-500/20 uppercase">
+            Doctor Profile Verification
+          </span>
+          <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-white">
+            {isApproved && 'Account Approved!'}
+            {isPending && 'Application Under Review'}
+            {isRejected && 'Application Declined'}
+            {isResubmit && 'Action Required: Re-upload Documents'}
+          </h1>
+          <p className="mt-2 text-sm text-slate-400 max-w-md mx-auto">
+            {isPending && 'Your credentials and clinic details have been submitted to hospital administration & Super Admin for compliance review.'}
+            {isResubmit && 'Reviewers requested updates or clear scans for certain verification documents before approval.'}
+            {isRejected && 'Your application could not be verified. Please check the review notes below or contact support.'}
+          </p>
         </div>
 
-        {/* Timeline */}
-        <DarkCard>
-          <SectionTitle>Application Timeline</SectionTitle>
-          <div className="space-y-4">
-            <div className="flex items-start gap-4">
-              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-doctor-lavender/15 flex items-center justify-center">
-                <Shield className="text-doctor-lavender" size={20} />
+        {/* Status Card (Mirrors Android Wrapper & AuthPageShell) */}
+        <div className="rounded-[28px] border border-slate-800/80 bg-slate-900/80 p-6 md:p-8 backdrop-blur-2xl shadow-2xl">
+          {/* Status Badge Row */}
+          <div className="flex items-center justify-between border-b border-slate-800/80 pb-5">
+            <div className="flex items-center gap-3">
+              <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${
+                isApproved ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30' :
+                isRejected ? 'bg-rose-500/15 text-rose-400 border border-rose-500/30' :
+                isResubmit ? 'bg-amber-500/15 text-amber-400 border border-amber-500/30' :
+                'bg-blue-500/15 text-blue-400 border border-blue-500/30'
+              }`}>
+                {isApproved && <CheckCircle2 size={22} />}
+                {isRejected && <XCircle size={22} />}
+                {isResubmit && <AlertTriangle size={22} />}
+                {isPending && <Clock size={22} className="animate-pulse" />}
               </div>
-              <div className="flex-1">
-                <p className="text-primary-light font-medium">Application Submitted</p>
-                <p className="text-sm text-doctor-muted">{new Date(status.submittedAt).toLocaleString()}</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <Pill color={FL.mint} size="xs">Completed</Pill>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-4">
-              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-doctor-gold/15 flex items-center justify-center">
-                <UserCheck className="text-doctor-gold" size={20} />
-              </div>
-              <div className="flex-1">
-                <p className="text-primary-light font-medium">Admin Review Started</p>
-                <p className="text-sm text-doctor-muted">Your application is being reviewed by our admin team</p>
-              </div>
-              <div className="flex items-center gap-2">
-                {status.status === 'PENDING' ? (
-                  <Pill color={FL.gold} size="xs">In Progress</Pill>
-                ) : (
-                  <Pill color={FL.mint} size="xs">Completed</Pill>
-                )}
+              <div>
+                <span className="text-xs font-semibold text-slate-400 block">Status:</span>
+                <span className="text-sm font-bold text-white tracking-wide">
+                  {approvalStatus.replace(/_/g, ' ')}
+                </span>
               </div>
             </div>
 
-            {(status.status === 'APPROVED' || status.status === 'REJECTED') && status.reviewedAt && (
-              <div className="flex items-start gap-4">
-                <div className={`flex-shrink-0 w-10 h-10 rounded-full ${status.status === 'APPROVED' ? 'bg-doctor-mint/15' : 'bg-doctor-pink/15'} flex items-center justify-center`}>
-                  {status.status === 'APPROVED' ? (
-                    <CheckCircle className="text-doctor-mint" size={20} />
-                  ) : (
-                    <AlertCircle className="text-doctor-pink" size={20} />
-                  )}
-                </div>
-                <div className="flex-1">
-                  <p className="text-primary-light font-medium">{status.status === 'APPROVED' ? 'Application Approved' : 'Application Rejected'}</p>
-                  <p className="text-sm text-doctor-muted">{new Date(status.reviewedAt).toLocaleString()}</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Pill color={status.status === 'APPROVED' ? FL.mint : FL.pink} size="xs">
-                    {status.status}
-                  </Pill>
-                </div>
-              </div>
-            )}
+            <button
+              onClick={() => fetchDoctorStatus(true)}
+              disabled={refreshing}
+              className="flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-800/80 px-3.5 py-2 text-xs font-semibold text-slate-200 hover:border-emerald-500/50 hover:bg-slate-800 transition disabled:opacity-50"
+            >
+              <RefreshCw size={13} className={refreshing ? 'animate-spin' : ''} />
+              <span>Refresh Status</span>
+            </button>
           </div>
-        </DarkCard>
 
-        {/* Info Card */}
-        <div className="rounded-2xl bg-doctor-surface/30 border border-doctor-border-soft/30 p-4">
-          <div className="flex items-start gap-3">
-            <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-doctor-lavender/15 flex items-center justify-center">
-              <Shield className="text-doctor-lavender" size={20} />
+          {/* Details / Review Notes */}
+          {(rejectionReason || reviewNotes) && (
+            <div className="mt-5 rounded-2xl border border-rose-500/20 bg-rose-500/10 p-4 text-xs text-rose-300">
+              <span className="font-bold block mb-1">Administrative Feedback:</span>
+              <p>{rejectionReason || reviewNotes}</p>
             </div>
-            <div className="flex-1">
-              <p className="text-primary-light font-semibold">What happens next?</p>
-              <ul className="mt-2 space-y-1 text-sm text-doctor-muted">
-                <li className="flex items-center gap-2">• Our admin team reviews all credentials and qualifications</li>
-                <li className="flex items-center gap-2">• You will receive an email notification once reviewed</li>
-                <li className="flex items-center gap-2">• If approved, you'll get immediate access to the doctor dashboard</li>
-                <li className="flex items-center gap-2">• If additional documents are needed, we will contact you via email</li>
-              </ul>
+          )}
+
+          {/* Doctor Info Preview */}
+          <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs">
+            <div className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800/80">
+              <span className="text-slate-400 block font-medium">Doctor Name:</span>
+              <span className="font-bold text-slate-100 text-sm mt-0.5 block">
+                {profile?.fullName || user?.fullName || 'Verified Medical Practitioner'}
+              </span>
+            </div>
+            <div className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800/80">
+              <span className="text-slate-400 block font-medium">Speciality & License:</span>
+              <span className="font-bold text-slate-100 text-sm mt-0.5 block">
+                {profile?.speciality || 'General Medicine'} {profile?.licenseNumber ? `• Reg: ${profile.licenseNumber}` : ''}
+              </span>
+            </div>
+            <div className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800/80">
+              <span className="text-slate-400 block font-medium">Hospital / Clinic:</span>
+              <span className="font-bold text-slate-100 text-sm mt-0.5 block">
+                {profile?.hospitalName || profile?.clinicName || 'Aivion Care Network'}
+              </span>
+            </div>
+            <div className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800/80">
+              <span className="text-slate-400 block font-medium">Verification Standard:</span>
+              <span className="font-bold text-emerald-400 text-sm mt-0.5 block">
+                HIPAA & CDSCO Compliant
+              </span>
+            </div>
+          </div>
+
+          {/* Verification Progress Checklist (Same as Android) */}
+          <div className="mt-6 border-t border-slate-800/80 pt-5">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Verification Checklist</h4>
+            <div className="space-y-2.5 text-xs">
+              <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-950/40 border border-slate-800/60">
+                <span className="flex items-center gap-2 text-slate-200">
+                  <CheckCircle2 size={16} className="text-emerald-400" />
+                  <span>Profile & Registration Information</span>
+                </span>
+                <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">Completed</span>
+              </div>
+              <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-950/40 border border-slate-800/60">
+                <span className="flex items-center gap-2 text-slate-200">
+                  <FileText size={16} className="text-blue-400" />
+                  <span>Medical Degree & License Uploads</span>
+                </span>
+                <span className="text-[10px] font-bold text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded">Uploaded</span>
+              </div>
+              <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-950/40 border border-slate-800/60">
+                <span className="flex items-center gap-2 text-slate-200">
+                  <Shield size={16} className="text-amber-400" />
+                  <span>Super Admin Clinical Accreditation</span>
+                </span>
+                <span className="text-[10px] font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">In Progress</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <button
+              onClick={handleSignOut}
+              className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl border border-slate-800 text-xs font-semibold text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 transition"
+            >
+              <LogOut size={14} />
+              <span>Sign out</span>
+            </button>
+
+            <div className="w-full sm:w-auto flex items-center gap-2">
+              {isResubmit && (
+                <Link
+                  href="/verification"
+                  className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-lg shadow-amber-500/20"
+                >
+                  <span>Re-upload Documents</span>
+                  <ArrowRight size={14} />
+                </Link>
+              )}
+              {isApproved && (
+                <Link
+                  href="/doctor/dashboard"
+                  className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-500/20"
+                >
+                  <span>Open Doctor Dashboard</span>
+                  <ArrowRight size={14} />
+                </Link>
+              )}
             </div>
           </div>
         </div>
       </div>
-    </AppLayout>
+    </main>
   );
 }

@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react';
 import { pharmacyDirectoryApi, staffRegistrationApi } from '@/lib/api/hospital-staff';
 import { useAuthStore } from '@/lib/stores/auth';
 import AppLayout from '@/components/layout/AppLayout';
-import { Card, Button, Input } from '@/components/ui';
+import { Card, Button, Input, PasswordRequirements } from '@/components/ui';
+import { ValidationHelpers } from '@/lib/helpers/validation';
 import { Pill, RefreshCw, UserPlus } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -49,17 +50,25 @@ export default function HospitalHeadPharmacyPage() {
       toast.error('Hospital ID is missing from your profile');
       return;
     }
-    if (!form.pharmacyName || !form.email || !form.phone || !form.password) {
-      toast.error('Pharmacy name, email, phone and password are required');
-      return;
-    }
+    const pharmacyNameCheck = ValidationHelpers.validateTextLength(form.pharmacyName, 'Pharmacy name', 2, 100);
+    if (!pharmacyNameCheck.isValid) return toast.error(pharmacyNameCheck.error!);
+
+    const emailCheck = ValidationHelpers.validateEmail(form.email, 'Email');
+    if (!emailCheck.isValid) return toast.error(emailCheck.error!);
+
+    const phoneCheck = ValidationHelpers.validatePhone(form.phone, 'Phone');
+    if (!phoneCheck.isValid) return toast.error(phoneCheck.error!);
+
+    const passCheck = ValidationHelpers.validatePassword(form.password, 'Password');
+    if (!passCheck.isValid) return toast.error(passCheck.error!);
+
     setRegistering(true);
     try {
       const { data } = await staffRegistrationApi.registerPharmacy({
         hospitalId,
-        pharmacyName: form.pharmacyName,
-        email: form.email,
-        phone: form.phone,
+        pharmacyName: pharmacyNameCheck.sanitizedValue || form.pharmacyName.trim(),
+        email: emailCheck.sanitizedValue || form.email.trim(),
+        phone: phoneCheck.sanitizedValue || form.phone.trim(),
         password: form.password,
       });
       toast.success(`Pharmacy created · Login ID: ${data.loginId}`);
@@ -77,12 +86,15 @@ export default function HospitalHeadPharmacyPage() {
       <div className="max-w-6xl mx-auto space-y-6">
         <Card className="p-6">
           <h2 className="text-heading font-bold text-primary-light mb-4">Register a hospital pharmacy</h2>
-          <form onSubmit={submit} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Input label="Pharmacy name" value={form.pharmacyName} onChange={(event) => setForm({ ...form, pharmacyName: event.target.value })} required />
-            <Input label="Email" type="email" value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} required />
-            <Input label="Phone" value={form.phone} onChange={(event) => setForm({ ...form, phone: event.target.value })} required />
-            <Input label="Password" type="password" value={form.password} onChange={(event) => setForm({ ...form, password: event.target.value })} required />
-            <div className="sm:col-span-2 lg:col-span-4">
+          <form onSubmit={submit} className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Input label="Pharmacy name" placeholder="Hospital Pharmacy Name" value={form.pharmacyName} onChange={(event) => setForm({ ...form, pharmacyName: event.target.value })} required />
+              <Input label="Email" type="email" placeholder="pharmacy@hospital.com" value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} required />
+              <Input label="Phone" placeholder="10-digit mobile" filterType="phone" value={form.phone} onChange={(event) => setForm({ ...form, phone: event.target.value })} required />
+              <Input label="Password" type="password" placeholder="Create strong password" value={form.password} onChange={(event) => setForm({ ...form, password: event.target.value })} required />
+            </div>
+            <PasswordRequirements password={form.password} />
+            <div>
               <Button type="submit" loading={registering}><UserPlus size={16} className="mr-2" /> Register pharmacy</Button>
             </div>
           </form>

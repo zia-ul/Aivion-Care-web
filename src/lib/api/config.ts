@@ -27,7 +27,11 @@ const stripTrailingSlash = (value: string) => value.replace(/\/+$/, '');
  */
 export function resolveApiOrigin(): string {
   if (typeof window !== 'undefined') {
-    if (window.location.protocol === 'https:') {
+    const isLocal =
+      window.location.hostname === 'localhost' ||
+      window.location.hostname === '127.0.0.1' ||
+      window.location.hostname === '::1';
+    if (!isLocal && window.location.protocol === 'https:') {
       return 'https://api.aivioncare.com';
     }
     return DEFAULT_DEV_ORIGIN;

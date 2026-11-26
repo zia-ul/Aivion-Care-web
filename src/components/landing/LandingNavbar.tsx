@@ -1,8 +1,9 @@
-﻿'use client';
+'use client';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { 
+  HelpCircle, 
   Menu, 
   X, 
   Smartphone, 
@@ -126,6 +127,7 @@ const navItems: NavItem[] = [
       { title: 'Leadership & Team', desc: 'Founders, medical advisors & engineers', href: '/team', icon: UserCheck },
       { title: 'Recognitions & Awards', desc: 'AMUIF incubated & institutional accolades', href: '/recognitions', icon: Sparkles },
       { title: 'Public Health Initiatives', desc: 'Free community screening drives & MoUs', href: '/initiatives', icon: HeartPulse },
+      { title: 'User Help & Guide', desc: 'How to use the app, teleconsultation & assessments', href: '/help', icon: HelpCircle, tag: 'Help' },
       { title: 'Careers & Internships', desc: 'Join our clinical AI & engineering mission', href: '/careers', icon: Layers },
       { title: 'Contact Us', desc: 'Support, hospital onboarding & partnerships', href: '/contact', icon: PhoneCall },
       { title: 'Terms & CDSCO Compliance', desc: 'Regulatory classification, intended use & terms', href: '/terms', icon: ShieldCheck },
@@ -292,6 +294,7 @@ export default function LandingNavbar() {
 
           {/* Right actions */}
           <div className="flex items-center gap-2">
+            <Link href="/help" className="flex items-center gap-1.5 rounded-xl border border-teal-500/30 bg-teal-500/10 px-3 py-1.5 text-xs font-bold text-teal-600 dark:text-teal-400 hover:bg-teal-500/20 transition-all shadow-sm" title="Help & User Guide"><HelpCircle size={15} /><span>Help Guide</span></Link>
             <ThemeToggle />
 
             {/* Android APK download button */}

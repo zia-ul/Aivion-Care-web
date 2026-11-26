@@ -4,8 +4,9 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { authApi } from '@/lib/api/endpoints';
+import { ValidationHelpers } from '@/lib/helpers/validation';
 import toast from 'react-hot-toast';
-import { Card, Button, Input, Select } from '@/components/ui';
+import { Card, Button, Input, Select, PasswordRequirements } from '@/components/ui';
 import { BadgeCheck, Building2, Eye, EyeOff, Mail, Phone, ShieldCheck, UserRound } from 'lucide-react';
 
 interface HospitalOption {
@@ -64,13 +65,48 @@ export default function RegisterPharmacistPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const nameCheck = ValidationHelpers.validateAlphabeticName(form.fullName, 'Pharmacist Full Name', 2, 70);
+    if (!nameCheck.isValid) return toast.error(nameCheck.error!);
+
+    const emailCheck = ValidationHelpers.validateEmail(form.email, 'Email');
+    if (!emailCheck.isValid) return toast.error(emailCheck.error!);
+
+    const phoneCheck = ValidationHelpers.validatePhone(form.phone, 'Phone number');
+    if (!phoneCheck.isValid) return toast.error(phoneCheck.error!);
+
+    const regNumCheck = ValidationHelpers.validateTextLength(form.pharmacistRegistrationNumber, 'Pharmacist Registration Number', 3, 50);
+    if (!regNumCheck.isValid) return toast.error(regNumCheck.error!);
+
+    const drugLicCheck = ValidationHelpers.validateTextLength(form.drugLicenseNumber, 'Drug License Number', 3, 50);
+    if (!drugLicCheck.isValid) return toast.error(drugLicCheck.error!);
+
+    const passCheck = ValidationHelpers.validatePassword(form.password, 'Password');
+    if (!passCheck.isValid) return toast.error(passCheck.error!);
+
     if (form.password !== form.confirmPassword) return toast.error('Passwords do not match');
-    if (!form.privacyPolicyAccepted) return toast.error('Accept privacy policy');
+
+    if (form.pincode && form.pincode.trim()) {
+      const pinCheck = ValidationHelpers.validatePincode(form.pincode, 'Pincode');
+      if (!pinCheck.isValid) return toast.error(pinCheck.error!);
+    }
+
+    if (_requiresFacilityLink && !form.hospitalId) {
+      return toast.error('Please select an affiliated hospital or clinic');
+    }
+
+    if (!form.privacyPolicyAccepted) return toast.error('Please accept the privacy policy to continue');
+
     setLoading(true);
     try {
       const { confirmPassword: _omit, ...rest } = form;
       const payload = {
         ...rest,
+        fullName: nameCheck.sanitizedValue || form.fullName.trim(),
+        email: emailCheck.sanitizedValue || form.email.trim(),
+        phone: phoneCheck.sanitizedValue || form.phone.trim(),
+        pharmacistRegistrationNumber: regNumCheck.sanitizedValue || form.pharmacistRegistrationNumber.trim(),
+        drugLicenseNumber: drugLicCheck.sanitizedValue || form.drugLicenseNumber.trim(),
         hospitalId: _requiresFacilityLink && rest.hospitalId ? Number(rest.hospitalId) : undefined,
         pharmacyType: _requiresFacilityLink
           ? (hospitals.find(h => h.id === Number(rest.hospitalId))?.facilityType === 'CLINIC'
@@ -143,9 +179,9 @@ export default function RegisterPharmacistPage() {
             </div>
             <div className="border-b border-tonal-20/50 pb-1 pt-2"><p className="text-heading font-bold text-primary-light">Identity and contact</p><p className="text-support text-primary-light/55">Details patients and teams will see.</p></div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Input icon={<UserRound size={17} />} label="Full Name" placeholder="Enter your full name" required value={form.fullName} onChange={(e) => update('fullName', e.target.value)} />
-              <Input icon={<Phone size={17} />} label="Mobile Number" placeholder="Enter mobile number" required value={form.phone} onChange={(e) => update('phone', e.target.value)} />
-              <Input icon={<Mail size={17} />} label="Email" type="email" placeholder="you@example.com" required value={form.email} onChange={(e) => update('email', e.target.value)} />
+              <Input icon={<UserRound size={17} />} label="Full Name" placeholder="Enter your full name" filterType="alphabets" hint="Letters and spaces only" required value={form.fullName} onChange={(e) => update('fullName', e.target.value)} />
+              <Input icon={<Phone size={17} />} label="Mobile Number" placeholder="e.g. 9876543210" filterType="phone" hint="10-15 digits" required value={form.phone} onChange={(e) => update('phone', e.target.value)} />
+              <Input icon={<Mail size={17} />} label="Email" type="email" placeholder="you@example.com" hint="Work email for pharmacy notifications" required value={form.email} onChange={(e) => update('email', e.target.value)} />
             </div>
             <div className="border-b border-tonal-20/50 pb-1 pt-2"><p className="text-heading font-bold text-primary-light">Professional details</p><p className="text-support text-primary-light/55">Core pharmacist registration details.</p></div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -158,13 +194,14 @@ export default function RegisterPharmacistPage() {
               <Input icon={<BadgeCheck size={17} />} label="Drug License Number" placeholder="Enter drug license number" required value={form.drugLicenseNumber} onChange={(e) => update('drugLicenseNumber', e.target.value)} />
               <Input icon={<BadgeCheck size={17} />} label="License Type" placeholder="e.g. Retail, Wholesale" required value={form.licenseType} onChange={(e) => update('licenseType', e.target.value)} />
               <Input icon={<BadgeCheck size={17} />} label="City" placeholder="City" required value={form.city} onChange={(e) => update('city', e.target.value)} />
-              <Input icon={<BadgeCheck size={17} />} label="Pincode" placeholder="Pincode" type="number" required value={form.pincode} onChange={(e) => update('pincode', e.target.value)} />
+              <Input icon={<BadgeCheck size={17} />} label="Pincode" placeholder="e.g. 110001" filterType="numeric" hint="Postal PIN code" required value={form.pincode} onChange={(e) => update('pincode', e.target.value)} />
             </div>
             <div className="border-b border-tonal-20/50 pb-1 pt-2"><p className="text-heading font-bold text-primary-light">Security</p><p className="text-support text-primary-light/55">Protect your account with a strong password.</p></div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="relative"><Input icon={<ShieldCheck size={17} />} className="pr-12" label="Password" placeholder="Create a strong password" type={showPassword ? 'text' : 'password'} required value={form.password} onChange={(e) => update('password', e.target.value)} /><button type="button" aria-label={showPassword ? 'Hide password' : 'Show password'} onClick={() => setShowPassword((v) => !v)} className="absolute right-3 top-[2.65rem] z-10 text-primary-light/80 hover:text-accent">{showPassword ? <EyeOff size={18} /> : <Eye size={18} />}</button></div>
               <div className="relative"><Input icon={<ShieldCheck size={17} />} className="pr-12" label="Confirm Password" placeholder="Re-enter your password" type={showConfirmPassword ? 'text' : 'password'} required value={form.confirmPassword} onChange={(e) => update('confirmPassword', e.target.value)} /><button type="button" aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'} onClick={() => setShowConfirmPassword((v) => !v)} className="absolute right-3 top-[2.65rem] z-10 text-primary-light/80 hover:text-accent">{showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}</button></div>
             </div>
+            <PasswordRequirements password={form.password} confirmPassword={form.confirmPassword} />
             <div className="flex items-center gap-2">
               <input type="checkbox" id="privacy" checked={form.privacyPolicyAccepted} onChange={(e) => update('privacyPolicyAccepted', e.target.checked)} className="w-4 h-4 rounded border-tonal-20 bg-surface-20 text-accent focus:ring-accent" />
               <label htmlFor="privacy" className="text-body text-primary-light/80">I accept the privacy policy and terms of service. My information is protected by secure authentication and role-based access.</label>

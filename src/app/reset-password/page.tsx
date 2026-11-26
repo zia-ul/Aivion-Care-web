@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { verificationApi } from '@/lib/api/endpoints';
 import toast from 'react-hot-toast';
-import { Card, Button, Input } from '@/components/ui';
+import { Card, Button, Input, PasswordRequirements } from '@/components/ui';
+import { ValidationHelpers } from '@/lib/helpers/validation';
 import { KeyRound, Mail, ArrowLeft, ShieldCheck, CheckCircle2 } from 'lucide-react';
 
 export default function ResetPasswordPage() {
@@ -41,8 +42,9 @@ export default function ResetPasswordPage() {
       toast.error('Please enter the 6-digit code');
       return;
     }
-    if (newPassword.length < 6) {
-      toast.error('Password must be at least 6 characters long');
+    const passCheck = ValidationHelpers.validatePassword(newPassword, 'New Password');
+    if (!passCheck.isValid) {
+      toast.error(passCheck.error!);
       return;
     }
     if (newPassword !== confirmPassword) {
@@ -100,7 +102,7 @@ export default function ResetPasswordPage() {
 
               <div className="rounded-xl border border-tonal-20 bg-surface-20 p-3 text-xs leading-5 text-primary-light/60">
                 <span className="block font-bold text-primary-light">Super Admin Recovery:</span>
-                Super Admin credentials can only be recovered via primary authorized email (<code className="text-teal-600 dark:text-teal-300">ziaulislam83413@gmail.com</code>).
+                Super Admin credentials can only be recovered via the primary authorized system administrator email.
               </div>
 
               <Button type="submit" loading={loading} fullWidth size="lg">
@@ -143,6 +145,8 @@ export default function ResetPasswordPage() {
                 placeholder="Re-enter password"
                 required
               />
+
+              <PasswordRequirements password={newPassword} confirmPassword={confirmPassword} />
 
               <Button type="submit" loading={loading} fullWidth size="lg">
                 {loading ? 'Updating Password…' : 'Set New Password'}

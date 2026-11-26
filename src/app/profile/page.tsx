@@ -7,8 +7,9 @@ import { authApi, doctorApi } from '@/lib/api/endpoints';
 import { isTokenExpired } from '@/lib/helpers';
 import { wsService } from '@/lib/websocket/client';
 import { useAuthStore } from '@/lib/stores/auth';
-import { User, Mail, Phone, Building2, LogOut, FileUp, ShieldCheck, Trash2, AlertTriangle, KeyRound, Lock, Eye, EyeOff } from 'lucide-react';
-import { Card, Button, Input } from '@/components/ui';
+import { User, Mail, Phone, Building2, LogOut, FileUp, ShieldCheck, Trash2, AlertTriangle, KeyRound, Lock, Eye, EyeOff, Copy, Check, QrCode } from 'lucide-react';
+import { Card, Button, Input, PasswordRequirements } from '@/components/ui';
+import { ValidationHelpers } from '@/lib/helpers/validation';
 import toast from 'react-hot-toast';
 
 export default function ProfilePage() {
@@ -27,6 +28,14 @@ export default function ProfilePage() {
   const [showCurrentPw, setShowCurrentPw] = useState(false);
   const [showNewPw, setShowNewPw] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
+  const [copiedToken, setCopiedToken] = useState(false);
+
+  const copyPatientToken = (token: string) => {
+    navigator.clipboard.writeText(token);
+    setCopiedToken(true);
+    toast.success('Patient token copied to clipboard!');
+    setTimeout(() => setCopiedToken(false), 2500);
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -97,8 +106,9 @@ export default function ProfilePage() {
       toast.error('Please enter your current password');
       return;
     }
-    if (newPassword.length < 6) {
-      toast.error('New password must be at least 6 characters long');
+    const passCheck = ValidationHelpers.validatePassword(newPassword, 'New Password');
+    if (!passCheck.isValid) {
+      toast.error(passCheck.error!);
       return;
     }
     if (newPassword !== confirmPassword) {
@@ -153,7 +163,7 @@ export default function ProfilePage() {
                 <ShieldCheck size={18} className="text-amber-400" />
                 <div>
                   <p className="text-support text-amber-300 font-bold">Super Admin Security Recovery Email</p>
-                  <p className="text-body font-mono text-primary-light">ziaulislam83413@gmail.com</p>
+                  <p className="text-body font-mono text-primary-light">{user?.email || 'admin@aivioncare.com'}</p>
                   <p className="text-[11px] text-amber-200/70 mt-0.5">Account protected from deletion; only authorized recovery email can reset root credentials.</p>
                 </div>
               </div>
@@ -177,16 +187,65 @@ export default function ProfilePage() {
                 </div>
               </div>
             )}
-            {user?.patientId && (
+            {(user?.patientId || user?.role === 'PATIENT') && (
               <div className="flex items-center gap-3 p-3 bg-surface-10/50 rounded-xl">
                 <User size={18} className="text-accent" />
                 <div>
                   <p className="text-support text-primary-light/60">Patient ID</p>
-                  <p className="text-body text-primary-light">#{user.patientId}</p>
+                  <p className="text-body text-primary-light">#{user?.patientId || user?.id}</p>
                 </div>
               </div>
             )}
           </div>
+
+          {(user?.role === 'PATIENT' || user?.patientId || user?.patientCode) && (
+            <div className="mt-6 border-t border-tonal-20/50 pt-6">
+              <div className="p-4 rounded-2xl border border-accent/30 bg-accent/5 backdrop-blur-sm">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="flex items-start gap-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent/20 text-accent">
+                      <QrCode size={20} />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-bold text-primary-light">Universal Patient Token</h3>
+                        <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                          Active Token
+                        </span>
+                      </div>
+                      <p className="mt-1 text-xs text-primary-light/70 max-w-lg leading-relaxed">
+                        Share this Universal Token with any doctor on the Aivion Care network to instantly grant clinical access to your longitudinal health records, consultations, and lab diagnostics.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 self-start sm:self-center">
+                    <div className="px-3.5 py-1.5 rounded-xl bg-surface-20 border border-tonal-20 font-mono font-bold text-sm tracking-wide text-accent select-all">
+                      {user?.patientCode || `PAT-${user?.id}`}
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => copyPatientToken(user?.patientCode || `PAT-${user?.id}`)}
+                      className="flex items-center gap-1.5 shrink-0"
+                    >
+                      {copiedToken ? (
+                        <>
+                          <Check size={15} className="text-emerald-400" />
+                          <span className="text-emerald-400">Copied</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy size={15} />
+                          <span>Copy</span>
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {user?.role === 'DOCTOR' && (
             <div className="mt-6 border-t border-tonal-20/50 pt-6">
@@ -278,6 +337,8 @@ export default function ProfilePage() {
                   placeholder="Re-enter new password"
                   required
                 />
+
+                <PasswordRequirements password={newPassword} confirmPassword={confirmPassword} />
 
                 <div className="flex items-center justify-between pt-1">
                   <button

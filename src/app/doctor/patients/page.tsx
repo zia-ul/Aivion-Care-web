@@ -1,8 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import AppLayout from '@/components/layout/AppLayout';
-import { doctorApi } from '@/lib/api/endpoints';
+import { doctorApi, patientDocumentApi, chatApi } from '@/lib/api/endpoints';
+import toast from 'react-hot-toast';
 import { 
   Users, 
   Search, 
@@ -18,17 +20,42 @@ import {
   AlertCircle,
   Eye,
   FileCheck2,
-  Printer
+  Printer,
+  Brain,
+  MessageCircle,
+  Download,
+  Loader2,
+  ExternalLink
 } from 'lucide-react';
 import { Card, EmptyState } from '@/components/ui';
 
 interface Patient { 
   patientId: number; 
+  id?: number;
   patientName: string; 
+  fullName?: string;
   lastAppointmentDate?: string; 
   appointmentId?: number; 
   chatRoomId?: number | null; 
   patientUserId?: number | null; 
+  age?: number;
+  gender?: string;
+  bloodGroup?: string;
+  chronicConditions?: string;
+  patientCode?: string;
+}
+
+interface VaultDocumentItem {
+  id: number;
+  title: string;
+  fileName?: string;
+  originalFileName?: string;
+  mimeType?: string;
+  category?: { value?: string; label?: string } | string;
+  uploadedAt?: string;
+  documentDate?: string;
+  analysisStatus?: string;
+  storagePath?: string;
 }
 
 interface PrescriptionItem {
@@ -64,6 +91,8 @@ interface PreviousDoctorRecord {
 }
 
 interface ReferralRecord {
+  patientId?: number;
+  patientUserId?: number;
   referralCode: string;
   patientName: string;
   patientAge: number;
@@ -71,146 +100,18 @@ interface ReferralRecord {
   bloodGroup: string;
   contactNumber: string;
   primaryCondition: string;
+  allergies?: string;
+  chronicConditions?: string;
+  medications?: string[];
+  documents?: VaultDocumentItem[];
   previousDoctors: PreviousDoctorRecord[];
 }
 
-const mockReferrals: Record<string, ReferralRecord> = {
-  'REF-7892': {
-    referralCode: 'REF-7892',
-    patientName: 'Aarav Sharma',
-    patientAge: 46,
-    patientGender: 'Male',
-    bloodGroup: 'O+',
-    contactNumber: '+91 98765 43210',
-    primaryCondition: 'Hypertensive Heart Disease & Secondary Angina',
-    previousDoctors: [
-      {
-        doctorId: 101,
-        doctorName: 'Dr. Vikram Sethi, MD',
-        speciality: 'Interventional Cardiology',
-        hospitalName: 'AMU Institute of Cardiology',
-        visitDate: '2026-09-14',
-        prescriptionNumber: 'RX-2026-CARD-8921',
-        diagnosis: 'Grade II Essential Hypertension with recurrent exertional chest pain',
-        notes: 'Resting ECG showed sinus bradycardia with mild LVH. Patient advised telemetry and sodium reduction.',
-        prescriptions: [
-          { medicineName: 'Telmisartan 40mg', dosage: '1 Tablet', frequency: 'Once daily (Morning)', duration: '30 Days', instructions: 'After breakfast' },
-          { medicineName: 'Amlodipine 5mg', dosage: '1 Tablet', frequency: 'Once daily (Night)', duration: '30 Days', instructions: 'Before bed' },
-          { medicineName: 'Rosuvastatin 10mg', dosage: '1 Tablet', frequency: 'Once daily (Night)', duration: '60 Days', instructions: 'Post-dinner lipid management' }
-        ],
-        labReports: [
-          { 
-            id: 'REP-901',
-            testName: 'Comprehensive Lipid Profile & hs-CRP', 
-            date: '2026-09-12', 
-            labName: 'Aivion Central Pathology',
-            status: 'Abnormal', 
-            summary: 'Total Cholesterol: 224 mg/dL, LDL: 142 mg/dL, hs-CRP: 2.4 mg/L (Elevated cardiovascular risk)',
-            fileSize: '1.4 MB',
-            details: [
-              { parameter: 'Total Cholesterol', result: '224 mg/dL', normalRange: '< 200 mg/dL' },
-              { parameter: 'HDL Cholesterol', result: '38 mg/dL', normalRange: '> 40 mg/dL' },
-              { parameter: 'LDL Cholesterol', result: '142 mg/dL', normalRange: '< 100 mg/dL' },
-              { parameter: 'Triglycerides', result: '185 mg/dL', normalRange: '< 150 mg/dL' },
-              { parameter: 'High Sensitivity CRP', result: '2.4 mg/L', normalRange: '< 1.0 mg/L' }
-            ]
-          },
-          { 
-            id: 'REP-902',
-            testName: 'Renal Function & Serum Electrolytes', 
-            date: '2026-09-12', 
-            labName: 'AMUIF Diagnostic Wing',
-            status: 'Normal', 
-            summary: 'Creatinine: 0.9 mg/dL, eGFR: >90 mL/min/1.73m², Potassium: 4.2 mEq/L',
-            fileSize: '850 KB',
-            details: [
-              { parameter: 'Serum Creatinine', result: '0.9 mg/dL', normalRange: '0.7 - 1.3 mg/dL' },
-              { parameter: 'Blood Urea Nitrogen (BUN)', result: '14 mg/dL', normalRange: '7 - 20 mg/dL' },
-              { parameter: 'eGFR', result: '94 mL/min', normalRange: '> 90 mL/min' },
-              { parameter: 'Potassium', result: '4.2 mEq/L', normalRange: '3.5 - 5.0 mEq/L' }
-            ]
-          }
-        ]
-      },
-      {
-        doctorId: 104,
-        doctorName: 'Dr. Priya Nandini, MBBS, DNB',
-        speciality: 'General & Internal Medicine',
-        hospitalName: 'City Care Clinic',
-        visitDate: '2026-07-22',
-        prescriptionNumber: 'RX-2026-MED-4412',
-        diagnosis: 'Acute Bronchial Spasm & Generalized Malaise',
-        notes: 'Seasonal exacerbation treated. Blood pressure was borderline (138/88 mmHg). Advised follow-up with cardiologist.',
-        prescriptions: [
-          { medicineName: 'Montelukast + Levocetirizine', dosage: '1 Tablet', frequency: 'Once daily (Night)', duration: '10 Days', instructions: 'At bedtime' },
-          { medicineName: 'Budesonide Inhaler 200mcg', dosage: '2 Puffs', frequency: 'Twice daily', duration: '14 Days', instructions: 'Rinse mouth after inhalation' }
-        ],
-        labReports: [
-          {
-            id: 'REP-804',
-            testName: 'Complete Blood Count (CBC) with Differential',
-            date: '2026-07-21',
-            labName: 'City Care Pathology Labs',
-            status: 'Normal',
-            summary: 'Hemoglobin: 14.8 g/dL, Total Leukocyte Count (TLC): 7,800 /uL, Absolute Eosinophils: 420 /uL',
-            fileSize: '920 KB',
-            details: [
-              { parameter: 'Hemoglobin', result: '14.8 g/dL', normalRange: '13.5 - 17.5 g/dL' },
-              { parameter: 'WBC Count', result: '7,800 /uL', normalRange: '4,500 - 11,000 /uL' },
-              { parameter: 'Platelet Count', result: '240,000 /uL', normalRange: '150,000 - 450,000 /uL' },
-              { parameter: 'Absolute Eosinophils', result: '420 /uL', normalRange: '30 - 350 /uL (Mild Allergic)' }
-            ]
-          }
-        ]
-      }
-    ]
-  },
-  'REF-4410': {
-    referralCode: 'REF-4410',
-    patientName: 'Meera Patel',
-    patientAge: 38,
-    patientGender: 'Female',
-    bloodGroup: 'B+',
-    contactNumber: '+91 91234 56789',
-    primaryCondition: 'Type 2 Diabetes Mellitus with Peripheral Neuropathy',
-    previousDoctors: [
-      {
-        doctorId: 108,
-        doctorName: 'Dr. Rajesh K. Gupta, MD',
-        speciality: 'Endocrinology & Diabetology',
-        hospitalName: 'Apollo Health Centre',
-        visitDate: '2026-08-30',
-        prescriptionNumber: 'RX-2026-ENDO-3301',
-        diagnosis: 'Uncontrolled Hyperglycemia with Early Peripheral Sensation Loss',
-        notes: 'HbA1c reported at 8.4%. Switched to combination oral hypoglycemic therapy.',
-        prescriptions: [
-          { medicineName: 'Metformin 500mg SR', dosage: '1 Tablet', frequency: 'Twice daily', duration: '90 Days', instructions: 'With meals' },
-          { medicineName: 'Dapagliflozin 10mg', dosage: '1 Tablet', frequency: 'Once daily (Morning)', duration: '90 Days', instructions: 'Morning before food' },
-          { medicineName: 'Methylcobalamin + Pregabalin', dosage: '1 Capsule', frequency: 'Once daily (Night)', duration: '30 Days', instructions: 'Bedtime for neuropathy' }
-        ],
-        labReports: [
-          { 
-            id: 'REP-712',
-            testName: 'Glycated Hemoglobin (HbA1c) & Fasting Plasma Sugar', 
-            date: '2026-08-28', 
-            labName: 'Apollo Diagnostics',
-            status: 'High', 
-            summary: 'HbA1c: 8.4%, Fasting Glucose: 168 mg/dL, Post-Prandial Glucose: 242 mg/dL',
-            fileSize: '1.1 MB',
-            details: [
-              { parameter: 'HbA1c', result: '8.4 %', normalRange: '< 5.7 % (Normal), < 7.0 % (Target)' },
-              { parameter: 'Fasting Blood Sugar', result: '168 mg/dL', normalRange: '70 - 99 mg/dL' },
-              { parameter: 'Post-Prandial Blood Sugar', result: '242 mg/dL', normalRange: '< 140 mg/dL' },
-              { parameter: 'Urine Microalbumin', result: '38 mg/L', normalRange: '< 20 mg/L (Microalbuminuria)' }
-            ]
-          }
-        ]
-      }
-    ]
-  }
-};
+const mockReferrals: Record<string, ReferralRecord> = {};
+
 
 export default function DoctorPatients() {
+  const router = useRouter();
   const [patients, setPatients] = useState<Patient[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -222,6 +123,30 @@ export default function DoctorPatients() {
   const [newPatientName, setNewPatientName] = useState('');
   const [newCondition, setNewCondition] = useState('');
   const [generatedCode, setGeneratedCode] = useState<string | null>(null);
+  const [downloadingDocId, setDownloadingDocId] = useState<number | null>(null);
+  const [startingChatUserId, setStartingChatUserId] = useState<number | null>(null);
+
+  const handleStartPatientChat = async (targetUserId?: number | null, patientName?: string) => {
+    if (!targetUserId) {
+      toast.error('Patient chat profile is not linked yet.');
+      return;
+    }
+    setStartingChatUserId(targetUserId);
+    try {
+      await chatApi.createRoom({
+        type: 'ONE_TO_ONE',
+        participantUserIds: [targetUserId],
+      });
+      toast.success(`Direct chat ready with ${patientName || 'patient'}`);
+      router.push('/doctor/chat');
+    } catch (err: any) {
+      console.error('Failed to open patient chat:', err);
+      // Even if creation throws because room exists, redirect to chat
+      router.push('/doctor/chat');
+    } finally {
+      setStartingChatUserId(null);
+    }
+  };
 
   // Document Viewer Modals
   const [viewingPrescription, setViewingPrescription] = useState<{
@@ -249,19 +174,104 @@ export default function DoctorPatients() {
     load();
   }, []);
 
-  const handleLookupReferral = (codeToLookup?: string) => {
+  const [lookupLoading, setLookupLoading] = useState(false);
+
+  const handleLookupReferral = async (codeToLookup?: string) => {
     const code = (codeToLookup || referralInput).trim().toUpperCase();
     if (!code) {
-      setSearchError('Please enter a referral code (e.g. REF-7892 or REF-4410)');
+      setSearchError('Please enter a Universal Patient Token or code (e.g. PAT-39)');
       return;
     }
 
-    if (mockReferrals[code]) {
-      setActiveReferral(mockReferrals[code]);
-      setSearchError('');
-    } else {
-      setSearchError(`No patient found for code "${code}". Try sample codes REF-7892 or REF-4410`);
-      setActiveReferral(null);
+    setLookupLoading(true);
+    setSearchError('');
+
+    try {
+      // Query backend token / universal identifier endpoint
+      let res;
+      try {
+        res = await doctorApi.addPatientByIdentifier(code);
+      } catch (err: any) {
+        // Fallback to GET endpoint if add-by-identifier returned an error
+        res = await doctorApi.getPatientByIdentifier(code);
+      }
+
+      if (res && res.data) {
+        const d = res.data;
+        const mappedReferral: ReferralRecord = {
+          patientId: d.id,
+          patientUserId: d.patientUserId || d.userId,
+          referralCode: d.patientCode || code,
+          patientName: d.name || 'Unknown Patient',
+          patientAge: d.age || 0,
+          patientGender: d.sex || 'Unspecified',
+          bloodGroup: d.bloodGroup || 'Unknown',
+          contactNumber: d.contactNumber || '',
+          primaryCondition: d.primaryCondition || (d.previousDiagnoses && d.previousDiagnoses[0]) || 'General Consultation',
+          allergies: d.allergies,
+          chronicConditions: d.chronicConditions,
+          medications: d.medications || [],
+          documents: Array.isArray(d.documents) ? d.documents : [],
+          previousDoctors: (d.previousDoctors && d.previousDoctors.length > 0)
+            ? d.previousDoctors.map((p: any) => ({
+                doctorId: p.doctorId || 0,
+                doctorName: p.doctorName || 'Attending Physician',
+                speciality: p.speciality || 'General Medicine',
+                hospitalName: p.hospitalName || 'Aivion Care Network',
+                visitDate: p.visitDate || '',
+                prescriptionNumber: p.prescriptionNumber || 'RX-STANDARD',
+                diagnosis: p.diagnosis || 'Clinical Consultation',
+                notes: p.notes || '',
+                prescriptions: (p.prescriptions || []).map((rx: any) => ({
+                  medicineName: rx.medicineName,
+                  dosage: rx.dosage,
+                  frequency: rx.frequency,
+                  duration: rx.duration,
+                  instructions: rx.instructions
+                })),
+                labReports: (p.labReports || []).map((lr: any) => ({
+                  id: lr.id,
+                  testName: lr.testName,
+                  date: lr.date,
+                  labName: lr.labName,
+                  status: lr.status,
+                  summary: lr.summary,
+                  fileSize: lr.fileSize || '1.0 MB',
+                  details: lr.details || []
+                }))
+              }))
+            : []
+        };
+
+        setActiveReferral(mappedReferral);
+        setSearchError('');
+        setLookupLoading(false);
+        return;
+      }
+    } catch (apiErr: any) {
+      console.warn('API lookup returned error:', apiErr?.message);
+    }
+
+    setSearchError(`No patient records found for token or code "${code}". Enter a valid Universal Patient Token (e.g. PAT-39).`);
+    setActiveReferral(null);
+    setLookupLoading(false);
+  };
+
+  const handleDownloadDocument = async (docId: number, title: string) => {
+    try {
+      setDownloadingDocId(docId);
+      const res = await patientDocumentApi.download(docId);
+      const rawMime = res.headers ? (res.headers as any)['content-type'] : null;
+      const mime = typeof rawMime === 'string' ? rawMime : 'application/pdf';
+      const blob = new Blob([res.data], { type: mime });
+      const blobUrl = window.URL.createObjectURL(blob);
+      window.open(blobUrl, '_blank', 'noopener,noreferrer');
+      toast.success(`Opened: ${title}`);
+    } catch (err: any) {
+      console.error('Failed to open document:', err);
+      toast.error(err?.response?.data?.message || 'Could not download document');
+    } finally {
+      setDownloadingDocId(null);
     }
   };
 
@@ -353,7 +363,7 @@ export default function DoctorPatients() {
               <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-primary-light/50" />
               <input
                 type="text"
-                placeholder="Enter patient referral code (e.g. REF-7892 or REF-4410)"
+                placeholder="Enter Universal Patient Token or code (e.g. PAT-39)"
                 value={referralInput}
                 onChange={(e) => {
                   setReferralInput(e.target.value);
@@ -370,32 +380,7 @@ export default function DoctorPatients() {
               onClick={() => handleLookupReferral()}
               className="inline-flex items-center justify-center gap-1.5 rounded-2xl bg-cyan-600 hover:bg-cyan-500 px-5 py-2.5 text-xs font-bold text-white transition shadow-sm"
             >
-              <Search size={14} /> Search Code
-            </button>
-          </div>
-
-          {/* Sample quick pills */}
-          <div className="mt-3 flex flex-wrap items-center gap-2 text-[11px] text-primary-light/60">
-            <span>Quick test codes:</span>
-            <button
-              type="button"
-              onClick={() => {
-                setReferralInput('REF-7892');
-                handleLookupReferral('REF-7892');
-              }}
-              className="rounded-full border border-cyan-500/30 bg-cyan-500/10 px-2.5 py-0.5 font-mono font-bold text-cyan-600 dark:text-cyan-300 hover:bg-cyan-500/20 transition"
-            >
-              REF-7892 (Cardiology + 2 Docs)
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setReferralInput('REF-4410');
-                handleLookupReferral('REF-4410');
-              }}
-              className="rounded-full border border-teal-500/30 bg-teal-500/10 px-2.5 py-0.5 font-mono font-bold text-teal-600 dark:text-teal-300 hover:bg-teal-500/20 transition"
-            >
-              REF-4410 (Diabetology & Labs)
+              <Search size={14} /> Fetch Patient Records
             </button>
           </div>
 
@@ -437,7 +422,29 @@ export default function DoctorPatients() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
+                {activeReferral.patientId && (
+                  <button
+                    type="button"
+                    onClick={() => router.push(`/doctor/clinical-assessment/${activeReferral.patientId}`)}
+                    className="inline-flex items-center gap-1.5 rounded-2xl bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 text-xs font-bold transition shadow-sm"
+                  >
+                    <Brain size={14} /> Open Clinical Assessment
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => handleStartPatientChat(activeReferral.patientUserId, activeReferral.patientName)}
+                  disabled={startingChatUserId === activeReferral.patientUserId}
+                  className="inline-flex items-center gap-1.5 rounded-2xl border border-tonal-20 bg-surface-10 hover:bg-surface-10/80 px-3.5 py-2 text-xs font-semibold text-primary-light transition disabled:opacity-50"
+                >
+                  {startingChatUserId === activeReferral.patientUserId ? (
+                    <Loader2 size={14} className="animate-spin text-teal-500" />
+                  ) : (
+                    <MessageCircle size={14} className="text-teal-500" />
+                  )}
+                  <span>Patient Chat</span>
+                </button>
                 <button
                   type="button"
                   onClick={() => setActiveReferral(null)}
@@ -467,10 +474,72 @@ export default function DoctorPatients() {
                 </p>
               </div>
               <div className="p-3.5 rounded-2xl bg-surface-10 border border-tonal-20">
-                <p className="text-[11px] font-semibold text-primary-light/60">Clinical Continuity</p>
-                <p className="mt-1 text-xs font-extrabold text-emerald-600 dark:text-emerald-400 mt-2">100% Synced</p>
+                <p className="text-[11px] font-semibold text-primary-light/60">Vault Documents</p>
+                <p className="mt-1 text-xl font-black text-indigo-600 dark:text-indigo-400">
+                  {activeReferral.documents ? activeReferral.documents.length : 0} Files
+                </p>
               </div>
             </div>
+
+            {/* Patient Uploaded Records / Vault Documents */}
+            {activeReferral.documents && activeReferral.documents.length > 0 && (
+              <div className="rounded-2xl border border-indigo-500/30 bg-surface-10/80 p-5 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-base font-bold text-primary-light flex items-center gap-2">
+                    <FileText size={16} className="text-indigo-500" /> Patient Vault & Uploaded Medical Documents ({activeReferral.documents.length})
+                  </h4>
+                  <span className="text-[11px] font-semibold text-indigo-600 dark:text-indigo-300 bg-indigo-500/10 px-2.5 py-1 rounded-full border border-indigo-500/20">
+                    Cross-Hospital Medical Vault
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {activeReferral.documents.map((doc) => {
+                    const catLabel = typeof doc.category === 'object' && doc.category !== null 
+                      ? (doc.category.label || doc.category.value || 'Medical Document') 
+                      : (doc.category || 'Medical Document');
+                    const uploadDate = doc.documentDate || doc.uploadedAt || 'Recent';
+
+                    return (
+                      <div key={doc.id} className="flex items-center justify-between p-3.5 rounded-xl border border-tonal-20 bg-surface-20 hover:border-indigo-500/40 transition gap-3">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-10 h-10 rounded-xl bg-indigo-500/15 flex items-center justify-center shrink-0">
+                            <FileCheck2 className="text-indigo-500" size={20} />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-xs font-bold text-primary-light truncate" title={doc.title || doc.originalFileName || doc.fileName}>
+                              {doc.title || doc.originalFileName || doc.fileName || `Document #${doc.id}`}
+                            </p>
+                            <p className="text-[11px] text-primary-light/60 mt-0.5">
+                              {catLabel} • {uploadDate ? new Date(uploadDate).toLocaleDateString() : 'Recent'}
+                            </p>
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => handleDownloadDocument(doc.id, doc.title || `Document #${doc.id}`)}
+                          disabled={downloadingDocId === doc.id}
+                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition shrink-0 disabled:opacity-50"
+                        >
+                          {downloadingDocId === doc.id ? (
+                            <>
+                              <Loader2 size={13} className="animate-spin" />
+                              <span>Opening...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Eye size={13} />
+                              <span>View</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             {/* Previous Doctors Clinical Timeline */}
             <div>
@@ -609,22 +678,67 @@ export default function DoctorPatients() {
             <EmptyState icon={Users} title="No direct consultations yet" />
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {patients.map((patient) => (
-                <div key={patient.patientId} className="p-4 bg-surface-10/50 rounded-xl border border-tonal-20/30 hover:border-cyan-500/40 transition">
-                  <div className="flex items-center justify-between">
-                    <p className="font-semibold text-primary-light">{patient.patientName}</p>
-                    <span className="text-[10px] font-mono text-cyan-600 dark:text-cyan-300 bg-cyan-500/10 px-2 py-0.5 rounded-full">
-                      ID #{patient.patientId}
-                    </span>
+              {patients.map((patient, pIdx) => {
+                const patId = patient.patientId ?? patient.id;
+                const codeDisplay = patient.patientCode || (patId ? `PAT-${patId}` : 'PAT-PENDING');
+                const displayName = patient.patientName || patient.fullName || `Patient #${patId ?? pIdx + 1}`;
+
+                return (
+                  <div 
+                    key={patId ? `pat-${patId}` : `pat-idx-${pIdx}`} 
+                    className="p-4 bg-surface-10/50 rounded-xl border border-tonal-20/30 hover:border-cyan-500/40 transition flex flex-col justify-between cursor-pointer"
+                    onClick={() => {
+                      if (patId) {
+                        router.push(`/doctor/clinical-assessment/${patId}`);
+                      }
+                    }}
+                  >
+                    <div>
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="font-semibold text-primary-light truncate">{displayName}</p>
+                        <span className="text-[10px] font-mono text-cyan-600 dark:text-cyan-300 bg-cyan-500/10 px-2 py-0.5 rounded-full shrink-0">
+                          {codeDisplay}
+                        </span>
+                      </div>
+                      <div className="mt-1 text-xs text-primary-light/60 flex flex-wrap gap-2">
+                        {patient.age !== undefined && <span>{patient.age} yrs</span>}
+                        {patient.gender && <span>• {patient.gender}</span>}
+                        {patient.bloodGroup && <span>• {patient.bloodGroup}</span>}
+                      </div>
+                      {patient.chronicConditions && (
+                        <p className="mt-1 text-[11px] text-cyan-500/80 truncate">
+                          {patient.chronicConditions}
+                        </p>
+                      )}
+                      {patient.lastAppointmentDate && (
+                        <p className="mt-2 text-support text-primary-light/60">Last visit: {patient.lastAppointmentDate}</p>
+                      )}
+                    </div>
+                    <div className="mt-3 pt-2 border-t border-tonal-20/40 flex items-center justify-between text-xs gap-2">
+                      <div className="flex items-center gap-1.5 text-cyan-600 dark:text-cyan-400 font-semibold">
+                        <span>Assessment</span>
+                        <Brain size={14} />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleStartPatientChat(patient.patientUserId, displayName);
+                        }}
+                        disabled={startingChatUserId === patient.patientUserId}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-500 dark:text-emerald-400 font-bold transition text-[11px]"
+                      >
+                        {startingChatUserId === patient.patientUserId ? (
+                          <Loader2 size={12} className="animate-spin" />
+                        ) : (
+                          <MessageCircle size={12} />
+                        )}
+                        <span>Chat</span>
+                      </button>
+                    </div>
                   </div>
-                  {patient.lastAppointmentDate && (
-                    <p className="mt-2 text-support text-primary-light/60">Last visit: {patient.lastAppointmentDate}</p>
-                  )}
-                  {patient.chatRoomId && (
-                    <p className="text-support text-primary-light/50">Chat Room #{patient.chatRoomId}</p>
-                  )}
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </Card>

@@ -12,6 +12,8 @@ import {
   ArrowRight, LogOut, RefreshCw, Building2, Stethoscope, FlaskConical, UserRound
 } from 'lucide-react';
 
+import { useAuthStore } from '@/lib/stores/auth';
+
 type Role = 'doctor' | 'pathology';
 
 interface VerificationProfile {
@@ -78,7 +80,9 @@ const ROLE_LABELS: Record<Role, string> = {
 };
 
 export default function VerificationPage() {
-  const [role, setRole] = useState<Role>('doctor');
+  const user = useAuthStore((state) => state.user);
+  const initialRole: Role = user?.role === 'PATHOLOGY' ? 'pathology' : 'doctor';
+  const [role, setRole] = useState<Role>(initialRole);
   const [profile, setProfile] = useState<VerificationProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -178,7 +182,10 @@ export default function VerificationPage() {
     toast.success('Draft saved');
   };
 
-  const canSubmit = profile && profile.approvalStatus === 'DRAFT' && requiredDocs.every(d => d.uploaded);
+  const canSubmit =
+    profile &&
+    ['DRAFT', 'REJECTED', 'RESUBMIT_REQUIRED'].includes(profile.approvalStatus) &&
+    requiredDocs.every(d => d.uploaded);
 
   if (loading) {
     return (

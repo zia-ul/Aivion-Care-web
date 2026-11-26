@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import Link from 'next/link';
 import { Activity, LayoutDashboard, Calendar, MessageCircle, Bell, User, Users, Building2, UserCheck, BarChart3, Radio, X, FileText, Pill, Wallet, CalendarDays, Sparkles, CreditCard, ShieldCheck, Shield, MapPin, Stethoscope, Building, Microscope, TestTube, ClipboardList, ShieldPlus, HeartPulse, type LucideIcon } from 'lucide-react';
@@ -101,7 +101,7 @@ const receptionistNavItems: NavItem[] = [
 
 const adminNavItems: NavItem[] = [
   { href: '/super-admin/hospitals', label: 'Hospitals', icon: Building2 },
-  { href: '/super-admin/doctors/verification', label: 'Doctors', icon: UserCheck },
+  { href: '/super-admin/doctors/approval', label: 'Doctor Verification', icon: UserCheck },
   { href: '/super-admin/pharmacy/approval', label: 'Pharmacy', icon: Pill },
   { href: '/super-admin/pathology/approval', label: 'Pathology', icon: Microscope },
   { href: '/super-admin/analytics', label: 'Analytics', icon: BarChart3 },

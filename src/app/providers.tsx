@@ -93,13 +93,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
     }
   }, [isAuthenticated, accessToken]);
 
-  // The server refuses the STOMP handshake when the access token is missing,
-  // expired or revoked. Retrying cannot recover from that, so end the session
-  // and let the user sign in again rather than silently losing realtime updates.
+  // If the server refuses the STOMP handshake (e.g. dev reload, network blip),
+  // warn in console without dropping the user's active session.
   useEffect(() => {
     return wsService.onAuthError((reason) => {
-      console.warn('Realtime connection rejected:', reason);
-      useAuthStore.getState().clearAuth();
+      console.warn('Realtime connection issue:', reason);
     });
   }, []);
 

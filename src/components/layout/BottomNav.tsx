@@ -32,9 +32,8 @@ const doctorNavItems: NavItem[] = [
 const hospitalHeadNavItems: NavItem[] = [
   { href: '/hospital-head/dashboard', label: 'Home', icon: LayoutDashboard },
   { href: '/hospital-head/doctors', label: 'Doctors', icon: UserCheck },
-  { href: '/hospital-head/staff-approval', label: 'Approval', icon: ShieldPlus },
-  { href: '/hospital-head/profile', label: 'Profile', icon: Building2 },
-  { href: '/notifications', label: 'Alerts', icon: Bell },
+  { href: '/hospital-head/staff-approval', label: 'Staff', icon: ShieldPlus },
+  { href: '/hospital-head/profile', label: 'Hospital', icon: Building2 },
   { href: '/profile', label: 'Profile', icon: User },
 ];
 
@@ -43,7 +42,6 @@ const pharmacistNavItems: NavItem[] = [
   { href: '/pharmacist/inventory', label: 'Inventory', icon: Pill },
   { href: '/pharmacist/orders', label: 'Orders', icon: ClipboardList },
   { href: '/pharmacist/chat', label: 'Chat', icon: MessageCircle },
-  { href: '/notifications', label: 'Alerts', icon: Bell },
   { href: '/profile', label: 'Profile', icon: User },
 ];
 
@@ -52,7 +50,6 @@ const pathologyNavItems: NavItem[] = [
   { href: '/pathology/workflow', label: 'Workflow', icon: TestTube },
   { href: '/pathology/labs', label: 'Labs', icon: Microscope },
   { href: '/pathology/chat', label: 'Chat', icon: MessageCircle },
-  { href: '/notifications', label: 'Alerts', icon: Bell },
   { href: '/profile', label: 'Profile', icon: User },
 ];
 
@@ -61,7 +58,6 @@ const labAssistantNavItems: NavItem[] = [
   { href: '/lab-assistant/tests', label: 'Tests', icon: TestTube },
   { href: '/lab-assistant/bookings', label: 'Bookings', icon: Calendar },
   { href: '/lab-assistant/upload-report', label: 'Reports', icon: FileText },
-  { href: '/notifications', label: 'Alerts', icon: Bell },
   { href: '/profile', label: 'Profile', icon: User },
 ];
 
@@ -70,17 +66,14 @@ const receptionistNavItems: NavItem[] = [
   { href: '/receptionist/appointments', label: 'Appts', icon: Calendar },
   { href: '/receptionist/schedule', label: 'Schedule', icon: CalendarDays },
   { href: '/receptionist/surgeries', label: 'Surgeries', icon: Stethoscope },
-  { href: '/notifications', label: 'Alerts', icon: Bell },
   { href: '/profile', label: 'Profile', icon: User },
 ];
 
 const adminNavItems: NavItem[] = [
   { href: '/super-admin/hospitals', label: 'Hospitals', icon: Building2 },
-  { href: '/super-admin/doctors/verification', label: 'Doctors', icon: UserCheck },
+  { href: '/super-admin/doctors/approval', label: 'Doctors', icon: UserCheck },
   { href: '/super-admin/pharmacy/approval', label: 'Pharmacy', icon: Pill },
   { href: '/super-admin/pathology/approval', label: 'Pathology', icon: Microscope },
-  { href: '/super-admin/analytics', label: 'Analytics', icon: BarChart3 },
-  { href: '/super-admin/broadcast', label: 'Broadcast', icon: Radio },
   { href: '/profile', label: 'Profile', icon: User },
 ];
 

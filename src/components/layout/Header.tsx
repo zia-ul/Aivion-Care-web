@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Bell } from 'lucide-react';
+import { Bell, HelpCircle } from 'lucide-react';
 import { useAuthStore } from '@/lib/stores/auth';
 import { useNotificationPopupStore } from '@/lib/stores/notification-popup';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
@@ -34,6 +34,14 @@ export default function Header({ title, subtitle }: { title: string; subtitle?: 
             )}
           </Link>
 
+                    <Link
+            href="/help"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-tonal-20/70 bg-surface-20/70 text-primary-light/70 transition hover:border-accent/40 hover:bg-surface-30/70 hover:text-primary-light"
+            title="User Help & Documentation"
+            aria-label="User Documentation"
+          >
+            <HelpCircle size={18} />
+          </Link>
           <ThemeToggle />
 
           <Link href="/profile" className="group flex items-center gap-2 rounded-full border border-tonal-20/70 bg-surface-20/70 p-1.5 pr-2 transition hover:border-accent/40 hover:bg-surface-30/70" aria-label="Open profile">

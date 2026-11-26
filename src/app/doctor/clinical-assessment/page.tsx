@@ -29,6 +29,9 @@ export default function ClinicalAssessmentPatientList() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [showAll, setShowAll] = useState(false);
+  const [tokenInput, setTokenInput] = useState('');
+  const [tokenLoading, setTokenLoading] = useState(false);
+  const [tokenError, setTokenError] = useState('');
 
   const loadPatients = useCallback(async () => {
     if (!user?.doctorId) { setLoading(false); return; }
@@ -102,13 +105,13 @@ export default function ClinicalAssessmentPatientList() {
           <StandaloneDocumentStudio />
         ) : (
           <>
-            {/* Header with search */}
-            <DarkCard className="space-y-4">
+            {/* Header with search and Token Lookup */}
+            <DarkCard className="space-y-5">
               <div className="flex items-center justify-between flex-wrap gap-4">
                 <div>
                   <h3 className="text-primary-light font-semibold text-lg">AI-Assisted Patient Assessment</h3>
                   <p className="text-sm text-doctor-muted">
-                    Select a patient to run an AI-powered disease risk/matching assessment
+                    Enter Universal Patient Token (e.g. PAT-39) or search current active patients
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
@@ -117,15 +120,71 @@ export default function ClinicalAssessmentPatientList() {
                 </div>
               </div>
 
-              <Field label="Search Patients">
+              {/* Direct Token Access Bar */}
+              <div className="p-4 rounded-2xl bg-gradient-to-r from-doctor-lavender/15 to-doctor-mint/10 border border-doctor-lavender/30 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-primary-light flex items-center gap-1.5">
+                    <Sparkles size={14} className="text-doctor-lavender" /> Universal Patient Token (Cross-Hospital Vault)
+                  </span>
+                  <span className="text-[10px] text-doctor-muted font-mono">e.g. PAT-39, #39</span>
+                </div>
+                <form
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    const code = tokenInput.trim().toUpperCase();
+                    if (!code) return;
+                    setTokenLoading(true);
+                    setTokenError('');
+                    try {
+                      let res;
+                      try {
+                        res = await doctorApi.addPatientByIdentifier(code);
+                      } catch (err: any) {
+                        res = await doctorApi.getPatientByIdentifier(code);
+                      }
+                      if (res && res.data && res.data.id) {
+                        router.push(`/doctor/clinical-assessment/${res.data.id}`);
+                        return;
+                      }
+                      setTokenError(`Could not locate records for token "${code}".`);
+                    } catch (err: any) {
+                      setTokenError(`No patient records found for token "${code}".`);
+                    } finally {
+                      setTokenLoading(false);
+                    }
+                  }}
+                  className="flex items-center gap-2"
+                >
+                  <input
+                    type="text"
+                    placeholder="Enter Token (e.g. PAT-39)..."
+                    value={tokenInput}
+                    onChange={(e) => setTokenInput(e.target.value)}
+                    className="flex-1 px-4 py-2.5 bg-doctor-surface/80 border border-doctor-border-soft rounded-xl text-primary-light placeholder-doctor-muted focus:outline-none focus:ring-2 focus:ring-doctor-lavender/50 text-xs font-mono font-bold uppercase tracking-wider"
+                  />
+                  <button
+                    type="submit"
+                    disabled={tokenLoading || !tokenInput.trim()}
+                    className="px-4 py-2.5 bg-accent-fill hover:bg-accent-fill/90 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 disabled:opacity-50 shrink-0"
+                  >
+                    <Brain size={14} />
+                    <span>{tokenLoading ? 'Verifying...' : 'Access Records'}</span>
+                  </button>
+                </form>
+                {tokenError && (
+                  <p className="text-xs text-rose-400 font-medium">{tokenError}</p>
+                )}
+              </div>
+
+              <Field label="Filter Assigned Patients">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-doctor-muted" size={18} />
                   <input
                     type="text"
-                    placeholder="Search by name, ID, or condition..."
+                    placeholder="Filter by name, ID, or condition..."
                     value={searchQuery}
                     onChange={e => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2.5 bg-doctor-surface/50 border border-doctor-border-soft/50 rounded-2xl text-primary-light placeholder-doctor-muted focus:outline-none focus:ring-2 focus:ring-doctor-lavender/50"
+                    className="w-full pl-10 pr-4 py-2.5 bg-doctor-surface/50 border border-doctor-border-soft/50 rounded-2xl text-primary-light placeholder-doctor-muted focus:outline-none focus:ring-2 focus:ring-doctor-lavender/50 text-xs"
                   />
                 </div>
               </Field>

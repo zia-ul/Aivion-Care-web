@@ -4,8 +4,9 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { authApi } from '@/lib/api/endpoints';
+import { ValidationHelpers } from '@/lib/helpers/validation';
 import toast from 'react-hot-toast';
-import { Card, Button, Input, Select, Textarea } from '@/components/ui';
+import { Card, Button, Input, Select, Textarea, PasswordRequirements } from '@/components/ui';
 import { Building2, Eye, EyeOff, Mail, Phone, ShieldCheck, UserRound } from 'lucide-react';
 
 export default function RegisterHospitalPage() {
@@ -34,10 +35,53 @@ export default function RegisterHospitalPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const nameCheck = ValidationHelpers.validateTextLength(form.name, 'Facility Name', 2, 100);
+    if (!nameCheck.isValid) return toast.error(nameCheck.error!);
+
+    if (form.registrationNumber && form.registrationNumber.trim()) {
+      const regCheck = ValidationHelpers.validateTextLength(form.registrationNumber, 'Registration Number', 3, 50);
+      if (!regCheck.isValid) return toast.error(regCheck.error!);
+    }
+
+    if (form.email && form.email.trim()) {
+      const emailCheck = ValidationHelpers.validateEmail(form.email, 'Facility Email');
+      if (!emailCheck.isValid) return toast.error(emailCheck.error!);
+    }
+
+    if (form.phone && form.phone.trim()) {
+      const phoneCheck = ValidationHelpers.validatePhone(form.phone, 'Facility Phone');
+      if (!phoneCheck.isValid) return toast.error(phoneCheck.error!);
+    }
+
+    const headNameCheck = ValidationHelpers.validateAlphabeticName(form.headName, 'Administrator Name', 2, 70);
+    if (!headNameCheck.isValid) return toast.error(headNameCheck.error!);
+
+    const headEmailCheck = ValidationHelpers.validateEmail(form.headEmail, 'Administrator Email');
+    if (!headEmailCheck.isValid) return toast.error(headEmailCheck.error!);
+
+    const headPhoneCheck = ValidationHelpers.validatePhone(form.headPhone, 'Administrator Phone');
+    if (!headPhoneCheck.isValid) return toast.error(headPhoneCheck.error!);
+
+    if (form.pincode && form.pincode.trim()) {
+      const pinCheck = ValidationHelpers.validatePincode(form.pincode, 'Pincode');
+      if (!pinCheck.isValid) return toast.error(pinCheck.error!);
+    }
+
+    const passCheck = ValidationHelpers.validatePassword(form.password, 'Password');
+    if (!passCheck.isValid) return toast.error(passCheck.error!);
+
     if (form.password !== form.confirmPassword) return toast.error('Passwords do not match');
+
     setLoading(true);
     try {
-      await authApi.registerHospital(form);
+      await authApi.registerHospital({
+        ...form,
+        name: nameCheck.sanitizedValue || form.name.trim(),
+        headName: headNameCheck.sanitizedValue || form.headName.trim(),
+        headEmail: headEmailCheck.sanitizedValue || form.headEmail.trim(),
+        headPhone: headPhoneCheck.sanitizedValue || form.headPhone.trim(),
+      });
       toast.success('Hospital registration submitted! Please wait for approval.');
       router.push('/login');
     } catch (error: any) {
@@ -79,23 +123,24 @@ export default function RegisterHospitalPage() {
             </div>
             <div className="border-b border-tonal-20/50 pb-1 pt-2"><p className="text-heading font-bold text-primary-light">Administrator contact</p><p className="text-support text-primary-light/55">First admin for the facility account.</p></div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Input icon={<UserRound size={17} />} label="Administrator Full Name" placeholder="Hospital head name" required value={form.headName} onChange={(e) => update('headName', e.target.value)} />
-              <Input icon={<Mail size={17} />} label="Administrator Email" type="email" placeholder="head@example.com" required value={form.headEmail} onChange={(e) => update('headEmail', e.target.value)} />
-              <Input icon={<Phone size={17} />} label="Administrator Phone" placeholder="Head phone number" required value={form.headPhone} onChange={(e) => update('headPhone', e.target.value)} />
+              <Input icon={<UserRound size={17} />} label="Administrator Full Name" placeholder="Hospital head name" filterType="alphabets" hint="Letters and spaces only" required value={form.headName} onChange={(e) => update('headName', e.target.value)} />
+              <Input icon={<Mail size={17} />} label="Administrator Email" type="email" placeholder="head@example.com" hint="Work email for alerts" required value={form.headEmail} onChange={(e) => update('headEmail', e.target.value)} />
+              <Input icon={<Phone size={17} />} label="Administrator Phone" placeholder="e.g. 9876543210" filterType="phone" hint="10-15 digits" required value={form.headPhone} onChange={(e) => update('headPhone', e.target.value)} />
             </div>
-            <div className="border-b border-tonal-20/50 pb-1 pt-2"><p className="text-heading font-bold text-primary-light">Location</p><p className="text-support text-primary-light/55">Optional now, useful for approvals and discovery.</p></div>
+            <div className="border-b border-tonal-20/50 pb-1 pt-2"><p className="text-heading font-bold text-primary-light">Location</p><p className="text-support text-primary-light/55">Facility physical address and postal code.</p></div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Textarea label="Address" placeholder="Address" value={form.address} onChange={(e) => update('address', e.target.value)} className="sm:col-span-2" rows={4} />
               <Input label="City" value={form.city} onChange={(e) => update('city', e.target.value)} />
               <Input label="State" value={form.state} onChange={(e) => update('state', e.target.value)} />
               <Input label="Country" value={form.country} onChange={(e) => update('country', e.target.value)} />
-              <Input label="Pincode" value={form.pincode} onChange={(e) => update('pincode', e.target.value)} />
+              <Input label="Pincode" placeholder="e.g. 110001" filterType="numeric" hint="Postal PIN code" value={form.pincode} onChange={(e) => update('pincode', e.target.value)} />
             </div>
             <div className="border-b border-tonal-20/50 pb-1 pt-2"><p className="text-heading font-bold text-primary-light">Security</p><p className="text-support text-primary-light/55">Protect the admin account with a strong password.</p></div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="relative"><Input icon={<ShieldCheck size={17} />} className="pr-12" label="Password" placeholder="Create a strong password" type={showPassword ? 'text' : 'password'} required value={form.password} onChange={(e) => update('password', e.target.value)} /><button type="button" aria-label={showPassword ? 'Hide password' : 'Show password'} onClick={() => setShowPassword((v) => !v)} className="absolute right-3 top-[2.65rem] z-10 text-primary-light/80 hover:text-accent">{showPassword ? <EyeOff size={18} /> : <Eye size={18} />}</button></div>
               <div className="relative"><Input icon={<ShieldCheck size={17} />} className="pr-12" label="Confirm Password" placeholder="Re-enter your password" type={showConfirmPassword ? 'text' : 'password'} required value={form.confirmPassword} onChange={(e) => update('confirmPassword', e.target.value)} /><button type="button" aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'} onClick={() => setShowConfirmPassword((v) => !v)} className="absolute right-3 top-[2.65rem] z-10 text-primary-light/80 hover:text-accent">{showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}</button></div>
             </div>
+            <PasswordRequirements password={form.password} confirmPassword={form.confirmPassword} />
             <Button type="submit" loading={loading} className="w-full">{loading ? 'Submitting...' : 'Register Hospital'}</Button>
           </form>
           <p className="mt-4 text-center text-body text-primary-light/70">Already have an account? <Link href="/login" className="text-accent font-semibold hover:underline">Sign in</Link></p>

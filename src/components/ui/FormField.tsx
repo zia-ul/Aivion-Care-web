@@ -24,19 +24,43 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
   icon?: ReactNode;
+  hint?: string;
+  filterType?: 'numeric' | 'phone' | 'alphabets';
 }
 
 const controlClasses = 'w-full rounded-input border border-tonal-30/90 bg-surface-20/80 px-4 py-3 text-body text-primary-light shadow-sm shadow-black/10 outline-none transition duration-200 placeholder:text-primary-light/30 hover:border-tonal-40 focus:border-accent/80 focus:bg-surface-20 focus:ring-4 focus:ring-accent/10 disabled:cursor-not-allowed disabled:opacity-50';
 
-export const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ label, error, icon, className, id, ...props }, ref) {
+export const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ label, error, icon, hint, filterType, className, id, onChange, ...props }, ref) {
   const generatedId = useId();
   const inputId = id || generatedId;
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (filterType === 'numeric') {
+      e.target.value = e.target.value.replace(/[^\d]/g, '');
+    } else if (filterType === 'phone') {
+      const hasPlus = e.target.value.startsWith('+');
+      const digits = e.target.value.replace(/[^\d]/g, '');
+      e.target.value = hasPlus ? `+${digits}` : digits;
+    } else if (filterType === 'alphabets') {
+      e.target.value = e.target.value.replace(/[^a-zA-Z\s]/g, '');
+    }
+    if (onChange) onChange(e);
+  };
+
   return (
     <div>
-      {label && <label htmlFor={inputId} className="mb-2 block text-sm font-semibold text-primary-light/85">{label}</label>}
+      {label && <label htmlFor={inputId} className="mb-1.5 block text-sm font-semibold text-primary-light/85">{label}</label>}
+      {hint && <p className="mb-1 text-xs text-primary-light/60">{hint}</p>}
       <div className="relative">
         {icon && <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-accent/70" aria-hidden="true">{icon}</span>}
-        <input ref={ref} id={inputId} aria-invalid={Boolean(error) || undefined} className={cn(controlClasses, icon && 'pl-11', error && 'border-danger focus:border-danger focus:ring-danger/10', className)} {...props} />
+        <input
+          ref={ref}
+          id={inputId}
+          onChange={handleChange}
+          aria-invalid={Boolean(error) || undefined}
+          className={cn(controlClasses, icon && 'pl-11', error && 'border-danger focus:border-danger focus:ring-danger/10', className)}
+          {...props}
+        />
       </div>
       {error && <p className="mt-1.5 text-xs font-medium text-danger-light" role="alert">{error}</p>}
     </div>
@@ -73,7 +97,11 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select
     <div>
       {label && <label htmlFor={selectId} className="mb-2 block text-sm font-semibold text-primary-light/85">{label}</label>}
       <select ref={ref} id={selectId} aria-invalid={Boolean(error) || undefined} className={cn(controlClasses, 'cursor-pointer appearance-none', error && 'border-danger focus:border-danger focus:ring-danger/10', className)} {...props}>
-        {options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+        {options.map((option, idx) => (
+          <option key={`${option.value}-${idx}`} value={option.value}>
+            {option.label}
+          </option>
+        ))}
       </select>
       {error && <p className="mt-1.5 text-xs font-medium text-danger-light" role="alert">{error}</p>}
     </div>

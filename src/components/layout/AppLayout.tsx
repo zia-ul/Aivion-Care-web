@@ -50,9 +50,9 @@ export default function AppLayout({ children, role, title, subtitle }: { childre
     if (role === 'SUPER_ADMIN' && actualRole !== 'SUPER_ADMIN') {
       router.replace('/login');
     }
-    // Gate unapproved doctors to verification or approval-pending
+    // Gate unapproved doctors to dedicated Doctor Approval Page
     if (role === 'DOCTOR' && actualRole === 'DOCTOR' && user?.doctorApproved !== true) {
-      router.replace(user?.doctorApprovalStatus === 'PENDING' ? '/approval-pending' : '/verification');
+      router.replace('/doctor/waiting-approval');
     }
     // Gate unapproved / resubmission hospital heads
     if (role === 'HOSPITAL_HEAD' && actualRole === 'HOSPITAL_HEAD') {

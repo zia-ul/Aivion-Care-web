@@ -52,8 +52,8 @@ export function getRoleHomePathWithGate(user?: {
   switch (role) {
     case 'DOCTOR':
       if (user.doctorApproved !== true) {
-        // If doctor has submitted and is waiting, or needs document verification:
-        return user.doctorApprovalStatus === 'PENDING' ? '/approval-pending' : '/verification';
+        // Route unapproved doctor to the dedicated Doctor Approval Page
+        return '/doctor/waiting-approval';
       }
       return ROLE_HOME.DOCTOR;
 

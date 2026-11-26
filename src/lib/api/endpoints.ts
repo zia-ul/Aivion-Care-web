@@ -110,6 +110,7 @@ export const appointmentApi = {
 };
 
 export const doctorApi = {
+  getAll: () => apiClient.get('/api/v1/doctors'),
   search: (params?: { hospitalId?: number; speciality?: string }) =>
     apiClient.get('/api/v1/doctors', { params }),
   get: (id: number) => apiClient.get(`/api/v1/doctors/${id}`),
@@ -137,6 +138,8 @@ export const doctorApi = {
     apiClient.get(`/api/v1/doctors/${doctorId}/slots`, { params: { date } }),
   getMyPatients: () => apiClient.get('/api/v1/doctors/my-patients'),
   getPatientDetails: (patientId: number) => apiClient.get(`/api/v1/doctors/patients/${patientId}`),
+  addPatientByIdentifier: (identifier: string) => apiClient.post("/api/v1/doctors/patients/add-by-identifier", { identifier }),
+  getPatientByIdentifier: (identifier: string) => apiClient.get("/api/v1/doctors/patients/by-identifier", { params: { identifier } }),
   listForApproval: (status?: string) =>
     apiClient.get('/api/v1/super-admin/doctors/verification', { params: status ? { status } : {} }),
   getProfileForAdmin: (doctorId: number) =>
@@ -234,6 +237,8 @@ export const chatApi = {
     apiClient.post(`/api/v1/chat/files/${messageId}/signed-url`, null, {
       params: ttlSeconds ? { ttlSeconds } : undefined,
     }),
+  searchUsers: (query?: string) =>
+    apiClient.get('/api/v1/chat/users', { params: query ? { query } : undefined }),
 };
 
 export const hospitalApi = {
@@ -490,6 +495,17 @@ export const labApi = {
     apiClient.post(`/api/v1/labs/bookings/${id}/upload-report`, data),
 };
 
+export const clinicalConsentApi = {
+  requestConsent: (data: { patientId: number; requestNote?: string; allowRecords?: boolean; allowLabReports?: boolean; allowVitalsEcg?: boolean; allowAiPredictions?: boolean }) =>
+    apiClient.post('/api/v1/clinical-consents/request', data),
+  respondConsent: (consentId: number, data: { action: 'GRANTED' | 'DECLINED' | 'REVOKED'; allowRecords?: boolean; allowLabReports?: boolean; allowVitalsEcg?: boolean; allowAiPredictions?: boolean }) =>
+    apiClient.post(`/api/v1/clinical-consents/${consentId}/respond`, data),
+  getDoctorRequests: () => apiClient.get('/api/v1/clinical-consents/my-requests'),
+  getPatientConsents: () => apiClient.get('/api/v1/clinical-consents/my-consents'),
+  getStatus: (doctorId: number, patientId: number) =>
+    apiClient.get('/api/v1/clinical-consents/status', { params: { doctorId, patientId } }),
+};
+
 export const clinicalAssessmentApi = {
   create: (patientId: number, data: ClinicalAssessmentRequest) =>
     apiClient.post<ClinicalAssessmentResponse>(`/api/v1/patients/${patientId}/clinical-assessments`, data),
@@ -497,6 +513,8 @@ export const clinicalAssessmentApi = {
     apiClient.get<ClinicalAssessmentResponse[]>(`/api/v1/patients/${patientId}/clinical-assessments`),
   getById: (patientId: number, assessmentId: number) =>
     apiClient.get<ClinicalAssessmentResponse>(`/api/v1/patients/${patientId}/clinical-assessments/${assessmentId}`),
+  getPredictionDashboard: (patientId: number) =>
+    apiClient.get<any>(`/api/v1/patients/${patientId}/clinical-assessments/prediction-dashboard`),
   analyzeStandaloneDocument: (file: File, category: string = 'LAB_REPORT', extractionMode: string = 'structured', notes?: string) => {
     const formData = new FormData();
     formData.append('file', file);

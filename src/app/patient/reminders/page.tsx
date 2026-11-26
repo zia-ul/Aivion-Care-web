@@ -272,33 +272,41 @@ export default function PatientRemindersPage() {
                             <Play className="mr-2" size={14} /> Start Reminder
                           </Button>
                         )}
-{r.todayDoses
+                        {r.todayDoses
                           .filter((dose) => dose.status === 'PENDING')
                           .map((dose) => (
-                            <div key={dose.doseTime} className="flex-1 sm:flex-none">
+                            <div key={dose.doseTime} className="flex items-center gap-1.5 flex-wrap">
+                              <span className="text-xs font-semibold text-primary-light/70 mr-1">{dose.doseTime}</span>
                               <Button
                                 variant="success"
                                 size="sm"
-                                onClick={() => logDose(r.id, dose.doseTime, 'TAKEN')}
+                                onClick={async () => {
+                                  setBusyId(r.id);
+                                  try {
+                                    await logDose(r.id, dose.doseTime, 'TAKEN');
+                                  } finally {
+                                    setBusyId(null);
+                                  }
+                                }}
                                 disabled={busyId === r.id}
                                 loading={busyId === r.id}
-                                className="w-full justify-center gap-1"
+                                className="justify-center gap-1"
                               >
                                 <CheckCircle size={14} /> Taken
                               </Button>
-                            </div>
-                          ))}
-{r.todayDoses
-                          .filter((dose) => dose.status === 'PENDING')
-                          .map((dose) => (
-                            <div key={dose.doseTime} className="flex-1 sm:flex-none">
                               <Button
-                                variant="danger"
+                                variant="ghost"
                                 size="sm"
-                                onClick={() => logDose(r.id, dose.doseTime, 'SKIPPED')}
+                                onClick={async () => {
+                                  setBusyId(r.id);
+                                  try {
+                                    await logDose(r.id, dose.doseTime, 'SKIPPED');
+                                  } finally {
+                                    setBusyId(null);
+                                  }
+                                }}
                                 disabled={busyId === r.id}
-                                loading={busyId === r.id}
-                                className="w-full justify-center gap-1"
+                                className="justify-center gap-1 text-rose-400 hover:text-rose-300"
                               >
                                 <XCircle size={14} /> Skip
                               </Button>

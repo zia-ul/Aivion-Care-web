@@ -93,7 +93,7 @@ export default function PatientPharmacyDiscoveryPage() {
     setSelectedPharmacyForRx(pharmacy);
     setSelectedDocId(null);
     setNewRxFile(null);
-    setDeliveryAddress(pharmacy.city ? `${pharmacy.city}, Delivery Address` : '');
+    setDeliveryAddress('');
     setOrderNotes('');
 
     setLoadingPrescriptions(true);

@@ -8,6 +8,7 @@ export interface User {
   hospitalLoginId?: string;
   doctorId?: number;
   patientId?: number;
+  patientCode?: string;
   pharmacistId?: number;
   pharmacyId?: number;
   doctorApprovalStatus?: string;

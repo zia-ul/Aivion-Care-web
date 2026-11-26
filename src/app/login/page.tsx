@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { authApi } from '@/lib/api/endpoints';
+import { ValidationHelpers } from '@/lib/helpers/validation';
 import { getRoleHomePath, getRoleHomePathWithGate } from '@/lib/helpers';
 import { useAuthStore } from '@/lib/stores/auth';
 import toast from 'react-hot-toast';
@@ -19,8 +20,21 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!loginId.trim() || !password) {
-      toast.error('Enter login ID and password');
+    const trimmedLogin = loginId.trim();
+    if (!trimmedLogin) {
+      toast.error("Please enter your login ID or email address");
+      return;
+    }
+    if (trimmedLogin.includes("@")) {
+      const emailCheck = ValidationHelpers.validateEmail(trimmedLogin, "Email");
+      if (!emailCheck.isValid) {
+        toast.error(emailCheck.error || "Please enter a valid email address");
+        return;
+      }
+    }
+    const pwdCheck = ValidationHelpers.validatePassword(password, "Password");
+    if (!pwdCheck.isValid && password.length < 6) {
+      toast.error("Password must be at least 6 characters");
       return;
     }
     setLoading(true);
@@ -45,7 +59,7 @@ export default function LoginPage() {
       const msg =
         error?.response?.data?.message ||
         (error?.code === 'ERR_NETWORK'
-          ? 'Cannot reach backend at http://localhost:8080. Start the backend first.'
+          ? 'Cannot reach backend server. Please verify your network or server status.'
           : 'Login failed');
       toast.error(msg);
     } finally {

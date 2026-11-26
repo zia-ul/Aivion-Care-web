@@ -2,11 +2,12 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { appointmentApi, chatApi, patientDocumentApi } from '@/lib/api/endpoints';
+import { appointmentApi, chatApi, doctorApi, patientDocumentApi, clinicalConsentApi } from '@/lib/api/endpoints';
 import { wsService } from '@/lib/websocket/client';
 import {
   MessageCircle, Send, User, Stethoscope, Video, ChevronRight, Paperclip,
   FileText, Download, Loader2, AlertTriangle, Share2, FolderOpen, CheckCircle2,
+  Plus, Search, X, Check, ShieldCheck, FileCheck, CheckSquare,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuthStore } from '@/lib/stores/auth';
@@ -24,6 +25,8 @@ interface ChatRoom {
   participantUserIds?: number[] | null;
   lastMessage?: string | null;
   lastMessageAt?: string | null;
+  otherParticipantName?: string | null;
+  otherParticipantRole?: string | null;
 }
 interface ChatMessage {
   id?: number;
@@ -172,6 +175,9 @@ function counterpartName(
   appointments: AppointmentLike[],
   role: ChatRole
 ): string {
+  if (room.otherParticipantName && room.otherParticipantName.trim().length > 0) {
+    return room.otherParticipantName.trim();
+  }
   const appointment = appointments.find((a) => a.id === room.appointmentId);
   if (role === 'DOCTOR') return appointment?.patientName || 'Patient';
   if (role === 'PATIENT') {
@@ -228,7 +234,9 @@ function buildConversations(
     }
 
     const counterpartRole =
-      role === 'DOCTOR' ? 'PATIENT' : role === 'PATIENT' ? 'DOCTOR' : 'PATIENT';
+      room.otherParticipantRole && room.otherParticipantRole.trim().length > 0
+        ? room.otherParticipantRole.trim()
+        : role === 'DOCTOR' ? 'PATIENT' : role === 'PATIENT' ? 'DOCTOR' : 'PATIENT';
 
     groups.set(key, {
       key,
@@ -298,7 +306,7 @@ function useChatRooms(role: ChatRole) {
   }, [role]);
 
   useEffect(() => { load(); }, [load]);
-  return { rooms, appointments, loading };
+  return { rooms, appointments, loading, refetchRooms: load };
 }
 
 function useChatMessages(roomIds: number[]) {
@@ -366,13 +374,20 @@ function useChatMessages(roomIds: number[]) {
 export function ChatPanel({ role }: { role: ChatRole }) {
   const { user } = useAuthStore();
   const router = useRouter();
-  const { rooms, appointments, loading } = useChatRooms(role);
+  const { rooms, appointments, loading, refetchRooms } = useChatRooms(role);
   const [activeKey, setActiveKey] = useState<string | null>(null);
   const [newMessage, setNewMessage] = useState('');
   const [connected, setConnected] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [openingFileId, setOpeningFileId] = useState<number | null>(null);
+  const [showNewChatModal, setShowNewChatModal] = useState(false);
+  const [loadingUsers, setLoadingUsers] = useState(false);
+  const [availableUsers, setAvailableUsers] = useState<any[]>([]);
+  const [doctorSearchQuery, setDoctorSearchQuery] = useState('');
+  const [selectedRoleFilter, setSelectedRoleFilter] = useState('ALL');
+  const [startingChatWithId, setStartingChatWithId] = useState<number | null>(null);
+  const [requestingConsentId, setRequestingConsentId] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const conversations = useMemo(
@@ -428,6 +443,87 @@ const selectedAppointment = useMemo(() => {
   }, [activeKey, loading, conversations]);
 
   useEffect(() => wsService.onStatusChange(setConnected), []);
+
+  const openNewChatModal = async (searchQuery: string = '') => {
+    setShowNewChatModal(true);
+    setLoadingUsers(true);
+    try {
+      const res = await chatApi.searchUsers(searchQuery);
+      setAvailableUsers(Array.isArray(res.data) ? res.data : []);
+    } catch {
+      // Fallback to doctor list if searchUsers fails
+      try {
+        const docRes = await doctorApi.getAll();
+        const docs = Array.isArray(docRes.data) ? docRes.data : [];
+        setAvailableUsers(docs.map((d: any) => ({
+          id: d.userId || d.id,
+          fullName: d.name || 'Doctor',
+          role: 'DOCTOR',
+          hospitalName: d.speciality,
+        })));
+      } catch {
+        setAvailableUsers([]);
+        toast.error('Could not load users list');
+      }
+    } finally {
+      setLoadingUsers(false);
+    }
+  };
+
+  const handleRequestConsent = async (targetUser: any) => {
+    if (!targetUser?.id) return toast.error('Missing patient ID');
+    setRequestingConsentId(targetUser.id);
+    try {
+      await clinicalConsentApi.requestConsent({
+        patientId: targetUser.id,
+        requestNote: 'Consent requested via direct chat',
+        allowRecords: true,
+        allowLabReports: true,
+        allowVitalsEcg: true,
+        allowAiPredictions: true,
+      });
+      toast.success(`Consent request sent to ${targetUser.fullName || 'patient'}`);
+    } catch (err: any) {
+      toast.error(readableError(err, 'Could not send consent request'));
+    } finally {
+      setRequestingConsentId(null);
+    }
+  };
+
+  const handleStartDirectChat = async (targetUser: any) => {
+    const targetUserId = targetUser.id;
+    if (!targetUserId) {
+      toast.error('User profile is missing user ID.');
+      return;
+    }
+
+    setStartingChatWithId(targetUserId);
+    try {
+      const existingConv = conversations.find(c => c.key === `u:${targetUserId}`);
+      if (existingConv) {
+        setActiveKey(existingConv.key);
+        setShowNewChatModal(false);
+        setSidebarOpen(false);
+        return;
+      }
+
+      const res = await chatApi.createRoom({
+        type: 'ONE_TO_ONE',
+        participantUserIds: [targetUserId],
+      });
+      await refetchRooms();
+      setShowNewChatModal(false);
+      setSidebarOpen(false);
+      if (res?.data?.id) {
+        setActiveKey(`u:${targetUserId}`);
+      }
+      toast.success(`Direct message opened with ${targetUser.fullName || 'user'}`);
+    } catch (err: any) {
+      toast.error(readableError(err, 'Could not start direct conversation'));
+    } finally {
+      setStartingChatWithId(null);
+    }
+  };
 
   const handleSend = async () => {
     const text = newMessage.trim();
@@ -612,7 +708,19 @@ const selectedAppointment = useMemo(() => {
           can take the whole screen. Desktop keeps the collapsible rail. */}
       <aside className={`flex-col border-r border-tonal-20/50 bg-surface-20/80 transition-all duration-300 ${sidebarOpen ? 'flex w-full md:w-80' : 'hidden md:flex md:w-0 md:overflow-hidden'}`}>
         <div className="p-4 border-b border-tonal-20/50 flex items-center justify-between">
-          <h2 className="text-heading font-bold text-primary-light">Messages</h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-heading font-bold text-primary-light">Messages</h2>
+            <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">E2EE</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => openNewChatModal('')}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold shadow-sm transition"
+            title="Find people, specialists, or doctors"
+          >
+            <Plus size={14} />
+            <span>New Chat</span>
+          </button>
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className="md:hidden p-2 text-primary-light/60 hover:text-primary-light"
@@ -767,14 +875,7 @@ const selectedAppointment = useMemo(() => {
                 )}
                 <div className={`flex ${mine ? 'justify-end' : 'justify-start'}`}>
                 <div className={`max-w-[70%] p-3 rounded-xl break-words ${mine ? 'bg-accent/20 text-primary-light' : 'bg-surface-10/50 text-primary-light'}`}>
-                  {msg.senderName && (
-                    <div className="flex items-center gap-1.5 text-support text-primary-light/50 mb-1">
-                      {msg.senderRole === 'DOCTOR' && <Stethoscope size={12} />}
-                      {msg.senderRole === 'PATIENT' && <User size={12} />}
-                      <span>{msg.senderName}</span>
-                      {msg.senderRole && <span className="text-[10px] px-1.5 py-0.5 rounded bg-tonal-20/50">{msg.senderRole}</span>}
-                    </div>
-                  )}
+                  {/* WhatsApp-style 1-to-1 chat: counterpart name is anchored in the top header, not repeated inside every bubble */}
 
                   {hasAttachment(msg) && (
                     <div className="mt-1 flex items-center gap-1.5 w-full">
@@ -782,7 +883,7 @@ const selectedAppointment = useMemo(() => {
                         type="button"
                         onClick={() => handleOpenFile(msg)}
                         disabled={openingFileId === msg.id}
-                        className="flex-1 flex items-center gap-3 rounded-lg border border-tonal-20/60 bg-surface-20/40 p-2.5 text-left transition hover:border-accent/50 hover:bg-surface-20/70 disabled:opacity-60"
+                        className="flex-1 flex items-center gap-3 rounded-lg border border-tonal-20/60 bg-surface-20/40 p-2.5 text-left transition duration-200 hover:scale-[1.01] hover:border-accent/60 hover:shadow-md hover:bg-surface-20/70 disabled:opacity-60 animate-document-flow"
                       >
                         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent/15 text-accent">
                           {openingFileId === msg.id
@@ -897,6 +998,154 @@ const selectedAppointment = useMemo(() => {
           shareUrl={shareAttachmentTarget.shareUrl}
         />
       )}
+
+      {/* Telegram-style Global User Search Modal */}
+      <Modal
+        isOpen={showNewChatModal}
+        onClose={() => setShowNewChatModal(false)}
+        title="Start Direct Chat (Global Search)"
+        size="lg"
+      >
+        <div className="space-y-4">
+          <p className="text-body text-primary-light/70">
+            Search any registered user across all roles (Doctors, Patients, Pharmacies, Pathology labs, Nurses, Hospital Staff) by name, ID, phone, or email.
+          </p>
+
+          <div className="relative">
+            <Search size={16} className="absolute left-3.5 top-3 text-primary-light/40" />
+            <input
+              type="text"
+              autoFocus
+              value={doctorSearchQuery}
+              onChange={(e) => {
+                setDoctorSearchQuery(e.target.value);
+                openNewChatModal(e.target.value);
+              }}
+              placeholder="Search user by name, ID, phone, or email..."
+              className="w-full pl-10 pr-4 py-2 bg-surface-20 border border-tonal-20 rounded-input text-primary-light focus:outline-none focus:border-accent text-sm"
+            />
+          </div>
+
+          {/* Role Filter Chips */}
+          <div className="flex gap-1.5 overflow-x-auto pb-1 text-xs">
+            {['ALL', 'DOCTOR', 'PATIENT', 'PHARMACY', 'PATHOLOGY', 'NURSE', 'RECEPTIONIST'].map((r) => (
+              <button
+                key={r}
+                type="button"
+                onClick={() => setSelectedRoleFilter(r)}
+                className={`px-2.5 py-1 rounded-full border transition whitespace-nowrap ${selectedRoleFilter === r ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400 font-bold' : 'border-tonal-20/60 text-primary-light/60 hover:text-primary-light'}`}
+              >
+                {r}
+              </button>
+            ))}
+          </div>
+
+          <div className="text-[11px] font-bold text-primary-light/50 tracking-wide uppercase">
+            Global Search Results ({availableUsers.filter(u => selectedRoleFilter === 'ALL' || (u.role || '').toUpperCase() === selectedRoleFilter).length})
+          </div>
+
+          {loadingUsers ? (
+            <div className="flex flex-col items-center justify-center py-10">
+              <Loader2 className="h-8 w-8 animate-spin text-accent mb-2" />
+              <p className="text-support text-primary-light/60">Searching across system users...</p>
+            </div>
+          ) : availableUsers.length === 0 ? (
+            <div className="text-center py-8 rounded-xl border border-dashed border-tonal-20 bg-surface-20/40 p-6">
+              <User className="mx-auto h-10 w-10 text-primary-light/30 mb-2" />
+              <p className="text-body font-medium text-primary-light">No users found</p>
+            </div>
+          ) : (
+            <div className="max-h-80 overflow-y-auto space-y-2 pr-1">
+              {availableUsers
+                .filter(u => selectedRoleFilter === 'ALL' || (u.role || '').toUpperCase() === selectedRoleFilter)
+                .map((targetUser) => {
+                  const cleanName = (targetUser.fullName || 'User').replace(/^Dr\.\s*/, '');
+                  const roleName = (targetUser.role || 'USER').toUpperCase();
+                  const roleBadgeColor =
+                    roleName === 'DOCTOR' ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' :
+                    roleName === 'PATIENT' ? 'bg-blue-500/15 text-blue-400 border-blue-500/30' :
+                    roleName === 'PHARMACY' ? 'bg-amber-500/15 text-amber-400 border-amber-500/30' :
+                    roleName === 'PATHOLOGY' ? 'bg-purple-500/15 text-purple-400 border-purple-500/30' :
+                    'bg-slate-500/15 text-slate-300 border-slate-500/30';
+
+                  return (
+                    <div
+                      key={targetUser.id}
+                      className="flex items-center justify-between p-3 rounded-xl border border-tonal-20 bg-surface-20/60 hover:border-accent/50 transition gap-3"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="h-10 w-10 rounded-full bg-surface-10 border border-tonal-20 flex items-center justify-center shrink-0 text-primary-light font-bold">
+                          {cleanName ? cleanName.charAt(0).toUpperCase() : 'U'}
+                        </div>
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2">
+                            <p className="text-sm font-semibold text-primary-light truncate">{targetUser.fullName}</p>
+                            <span className={`text-[10px] px-1.5 py-0.5 rounded border font-bold ${roleBadgeColor}`}>
+                              {roleName}
+                            </span>
+                          </div>
+                          <p className="text-xs text-primary-light/50 truncate mt-0.5">
+                            {[
+                              targetUser.hospitalName,
+                              targetUser.hospitalLoginId ? `ID: ${targetUser.hospitalLoginId}` : null,
+                              targetUser.email,
+                            ].filter(Boolean).join(' • ')}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        {role === 'DOCTOR' && roleName === 'PATIENT' && (
+                          <button
+                            type="button"
+                            onClick={() => handleRequestConsent(targetUser)}
+                            disabled={requestingConsentId === targetUser.id}
+                            className="px-2.5 py-1.5 rounded-lg border border-cyan-500/40 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 text-xs font-semibold disabled:opacity-50 flex items-center gap-1 transition"
+                            title="Request medical records and assessment permission"
+                          >
+                            {requestingConsentId === targetUser.id ? (
+                              <Loader2 size={13} className="animate-spin" />
+                            ) : (
+                              <ShieldCheck size={14} />
+                            )}
+                            <span className="hidden sm:inline">Request Consent</span>
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => handleStartDirectChat(targetUser)}
+                          disabled={startingChatWithId === targetUser.id}
+                          className="px-3 py-1.5 rounded-lg bg-emerald-500 text-white hover:bg-emerald-600 text-xs font-semibold shrink-0 disabled:opacity-50 flex items-center gap-1.5 transition"
+                        >
+                        {startingChatWithId === targetUser.id ? (
+                          <>
+                            <Loader2 size={13} className="animate-spin" />
+                            <span>Opening...</span>
+                          </>
+                        ) : (
+                          <>
+                            <MessageCircle size={14} />
+                            <span>Chat</span>
+                          </>
+                        )}
+                      </button>
+                      </div>
+                    </div>
+                  );
+                })}
+            </div>
+          )}
+
+          <div className="flex justify-end pt-2 border-t border-tonal-20">
+            <button
+              type="button"
+              onClick={() => setShowNewChatModal(false)}
+              className="px-4 py-2 rounded-xl border border-tonal-20 text-primary-light/70 hover:bg-surface-20 text-sm font-medium"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </Modal>
 
       {/* Medical Document Vault Picker Modal */}
       <Modal

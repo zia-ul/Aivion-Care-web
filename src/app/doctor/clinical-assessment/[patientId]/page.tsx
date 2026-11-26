@@ -20,6 +20,7 @@ import { SymptomInputSection, SymptomInput } from '@/components/doctor/SymptomIn
 import { VitalsInputSection, VitalsInput } from '@/components/doctor/VitalsInputSection';
 import { PatientClinicalContext } from '@/components/doctor/PatientClinicalContext';
 import { AssessmentResultsDisplay } from '@/components/doctor/AssessmentResultsDisplay';
+import DiseasePredictionDashboard from '@/components/doctor/DiseasePredictionDashboard';
 import type { 
   ClinicalAssessmentRequest, 
   ClinicalAssessmentResponse,
@@ -91,6 +92,8 @@ export default function ClinicalAssessmentPage({
   const [clinicalNotes, setClinicalNotes] = useState('');
   const [assessment, setAssessment] = useState<ClinicalAssessmentResponse | null>(null);
   const [history, setHistory] = useState<ClinicalAssessmentHistoryItem[]>([]);
+  const [dashboardData, setDashboardData] = useState<any>(null);
+  const [loadingDashboard, setLoadingDashboard] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -182,6 +185,7 @@ export default function ClinicalAssessmentPage({
           ? { ...d, ...data, status: data.status || 'completed' }
           : d
       ));
+      if (patientId) loadDashboard(patientId);
     } catch (err: any) {
       console.error('Document analysis failed:', err);
       setUploadedDocuments(prev => prev.map(d =>
@@ -206,10 +210,25 @@ export default function ClinicalAssessmentPage({
       setPatientId(id);
       loadPatientData(id);
       loadHistory(id);
+      loadDashboard(id);
     });
   }, []);
 
-  const loadPatientData = async (id: number) => {
+  const loadDashboard = async (id: number) => {
+    setLoadingDashboard(true);
+    try {
+      const res = await clinicalAssessmentApi.getPredictionDashboard(id);
+      if (res.data) {
+        setDashboardData(res.data);
+      }
+    } catch (e) {
+      console.error("Failed to load prediction dashboard:", e);
+    } finally {
+      setLoadingDashboard(false);
+    }
+  };
+
+    const loadPatientData = async (id: number) => {
     try {
       const res = await doctorApi.getPatientDetails(id);
       const data = res.data;
@@ -355,6 +374,13 @@ export default function ClinicalAssessmentPage({
             </button>
           </div>
         )}
+
+        {/* Timely Disease Prediction Dashboard (Aggregated from all documents & past history) */}
+        <DiseasePredictionDashboard
+          dashboardData={dashboardData}
+          onRefresh={() => patientId && loadDashboard(patientId)}
+          loading={loadingDashboard}
+        />
 
         {/* Patient Context - Auto-loaded */}
         <PatientClinicalContext
