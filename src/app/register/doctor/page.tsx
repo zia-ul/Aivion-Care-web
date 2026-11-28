@@ -151,7 +151,7 @@ export default function RegisterDoctorPage() {
         hospitalId: isHospitalDoctor && form.hospitalId ? Number(form.hospitalId) : undefined,
         clinicName: isHospitalDoctor ? undefined : (form.clinicName.trim() || undefined)
       });
-      toast.success('Registration successful! Please login.');
+      toast.success('Registration submitted successfully! Your account request is pending Super Admin approval. You can sign in once approved.', { duration: 6000 });
       router.push('/login');
     } catch (error: any) {
       toast.error(error?.response?.data?.message || 'Registration failed');

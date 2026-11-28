@@ -82,12 +82,12 @@ export default function DoctorApprovalPage() {
           </span>
           <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-white">
             {isApproved && 'Account Approved!'}
-            {isPending && 'Application Under Review'}
+            {isPending && 'Super Admin Request Pending'}
             {isRejected && 'Application Declined'}
             {isResubmit && 'Action Required: Re-upload Documents'}
           </h1>
           <p className="mt-2 text-sm text-slate-400 max-w-md mx-auto">
-            {isPending && 'Your credentials and clinic details have been submitted to hospital administration & Super Admin for compliance review.'}
+            {isPending && 'Your doctor registration request has been submitted and is currently pending review and verification by the Super Admin.'}
             {isResubmit && 'Reviewers requested updates or clear scans for certain verification documents before approval.'}
             {isRejected && 'Your application could not be verified. Please check the review notes below or contact support.'}
           </p>
